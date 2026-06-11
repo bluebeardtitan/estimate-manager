@@ -1,0 +1,1508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Estimate Manager</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --primary:#1b3d52;--accent:#d9870f;--accent-light:#f0a030;
+  --surface:#f5f7fa;--surface2:#edf0f4;--white:#ffffff;
+  --border:#d4dbe4;--border-strong:#b8c4cf;
+  --text:#1c2b37;--text-soft:#5a7080;--text-muted:#8ea3b0;
+  --danger:#c0392b;--danger-light:#fdf0ee;
+  --font:'IBM Plex Sans',sans-serif;--mono:'IBM Plex Mono',monospace;
+  --shadow:0 2px 12px rgba(27,61,82,.10);--shadow-lg:0 6px 32px rgba(27,61,82,.15);
+  --radius:6px;--radius-lg:10px;
+  --row-hover:#f4f7fa;
+  --row-drag:#ddeef8;
+  --input-bg:transparent;
+  --input-focus-bg:#fffdf5;
+  --input-focus-ring:var(--accent);
+  --badge-s-bg:#e4f2fb;--badge-s-text:#1a5f85;
+  --badge-m-bg:#fef0dd;--badge-m-text:#904a00;
+  --hint-bg:#fffde7;--hint-border:#ffe082;--hint-text:var(--text-muted);
+  --modal-overlay:rgba(27,61,82,.45);
+  --group-hdr-bg:var(--surface2);--group-hdr-text:var(--primary);
+}
+html.dark{
+  --primary:#4a9ec4;--accent:#e8920f;--accent-light:#f5a830;
+  --surface:#111a22;--surface2:#182430;--white:#1a2736;
+  --border:#253545;--border-strong:#2e4558;
+  --text:#cfe0ec;--text-soft:#6c9ab5;--text-muted:#3e6278;
+  --danger:#e05545;--danger-light:#2a1515;
+  --shadow:0 2px 12px rgba(0,0,0,.4);--shadow-lg:0 8px 36px rgba(0,0,0,.6);
+  --row-hover:#1d2f3e;
+  --row-drag:#18304a;
+  --input-bg:transparent;
+  --input-focus-bg:#182030;
+  --input-focus-ring:#e8920f;
+  --badge-s-bg:#0d2030;--badge-s-text:#5abbe8;
+  --badge-m-bg:#241800;--badge-m-text:#e0a050;
+  --hint-bg:#1a2410;--hint-border:#3a5220;--hint-text:#6a8f5a;
+  --modal-overlay:rgba(0,0,0,.65);
+  --group-hdr-bg:#182030;--group-hdr-text:#4a9ec4;
+}
+.theme-capsule{display:flex;align-items:center;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:3px;gap:2px;margin-left:8px}
+.theme-cap-btn{display:flex;align-items:center;justify-content:center;width:28px;height:22px;border-radius:16px;border:none;cursor:pointer;font-size:13px;background:transparent;color:rgba(255,255,255,.6);transition:all .18s;line-height:1}
+.theme-cap-btn.active{background:rgba(255,255,255,.22);color:#fff;box-shadow:0 1px 4px rgba(0,0,0,.25)}
+body{font-family:var(--font);background:var(--surface);color:var(--text);min-height:100vh;font-size:14px;line-height:1.5}
+#topbar{background:var(--primary);color:#fff;height:54px;display:flex;align-items:center;padding:0 28px;gap:16px;box-shadow:0 2px 8px rgba(0,0,0,.18);position:sticky;top:0;z-index:100}
+.logo{font-size:18px;font-weight:600;color:#fff;display:flex;align-items:center;gap:8px}
+.logo span{color:var(--accent-light)}
+#breadcrumb{display:flex;align-items:center;gap:6px;font-size:13px;color:rgba(255,255,255,.65);flex:1;margin-left:20px}
+.crumb{cursor:pointer}.crumb:hover{color:#fff;text-decoration:underline}
+.bc-sep{opacity:.4}.bc-cur{color:#fff;font-weight:500}
+#topbar-actions{margin-left:auto;display:flex;gap:8px;align-items:center}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 16px;border-radius:var(--radius);font-family:var(--font);font-size:13px;font-weight:500;cursor:pointer;border:none;transition:all .15s;white-space:nowrap}
+.btn-primary{background:var(--accent);color:#fff}.btn-primary:hover{background:var(--accent-light)}
+.btn-secondary{background:var(--white);color:var(--primary);border:1.5px solid var(--border-strong)}.btn-secondary:hover{background:var(--surface2)}
+.btn-ghost{background:transparent;color:var(--text-soft);border:1.5px solid transparent}.btn-ghost:hover{background:var(--surface2);color:var(--text)}
+.btn-danger-ghost{color:var(--danger)!important}.btn-danger-ghost:hover{background:var(--danger-light)!important;color:var(--danger)!important}
+.btn-sm{padding:5px 12px;font-size:12px}
+.btn-topbar{background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.2)}.btn-topbar:hover{background:rgba(255,255,255,.22)}
+.view{display:none}.view.active{display:block}
+#view-main{padding:32px 36px;max-width:1200px;margin:0 auto}
+.main-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:28px;gap:16px;flex-wrap:wrap}
+.main-header h1{font-size:22px;font-weight:600;color:var(--text)}
+.main-header p{font-size:13px;color:var(--text-soft);margin-top:3px}
+.main-header .hdr-actions{display:flex;gap:10px}
+.estimates-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px}
+.estimate-card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius-lg);padding:20px 22px;cursor:pointer;transition:all .17s;position:relative;box-shadow:var(--shadow)}
+.estimate-card:hover{border-color:var(--accent);box-shadow:var(--shadow-lg);transform:translateY(-2px)}
+.card-type{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;padding:3px 9px;border-radius:20px;margin-bottom:12px}
+.card-type-s{background:var(--badge-s-bg);color:var(--badge-s-text)}.card-type-m{background:var(--badge-m-bg);color:var(--badge-m-text)}
+.estimate-card h3{font-size:15px;font-weight:600;color:var(--text);margin-bottom:6px}
+.estimate-card .card-meta{font-size:12px;color:var(--text-soft)}
+.estimate-card .card-amount{font-size:18px;font-weight:600;color:var(--primary);font-family:var(--mono);margin-top:12px}
+.card-del{position:absolute;top:14px;right:14px;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:transparent;border:none;cursor:pointer;color:var(--text-muted);font-size:14px;transition:all .15s}
+.card-del:hover{background:var(--danger-light);color:var(--danger)}
+.empty-state{grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--text-muted)}
+.empty-state .icon{font-size:48px;margin-bottom:16px;opacity:.5}
+.modal-overlay{display:none;position:fixed;inset:0;background:var(--modal-overlay);z-index:200;align-items:center;justify-content:center;backdrop-filter:blur(2px)}
+.modal-overlay.open{display:flex}
+.modal{background:var(--white);border-radius:var(--radius-lg);padding:28px 30px;width:440px;max-width:95vw;box-shadow:var(--shadow-lg);max-height:90vh;overflow-y:auto}
+.modal h2{font-size:17px;font-weight:600;color:var(--primary);margin-bottom:20px}
+.modal-wide{width:700px;max-width:95vw}
+.modal-full{width:90vw;max-width:1100px}
+.fg{margin-bottom:16px}
+.fg label{display:block;font-size:12px;font-weight:500;color:var(--text-soft);margin-bottom:5px}
+.fg input{width:100%;padding:8px 12px;border:1.5px solid var(--border);border-radius:var(--radius);font-family:var(--font);font-size:13px;color:var(--text);background:var(--white)}
+.fg input:focus{outline:none;border-color:var(--accent)}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:22px}
+.est-hbar{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius-lg);padding:18px 22px;margin-bottom:20px;display:flex;align-items:flex-start;justify-content:space-between;gap:20px;box-shadow:var(--shadow);flex-wrap:wrap}
+.eh-title{font-size:18px;font-weight:600;color:var(--primary)}
+.eh-sub{font-size:12px;color:var(--text-soft);margin-top:3px}
+.eh-right{text-align:right;flex-shrink:0}
+.eh-right label{font-size:11px;color:var(--text-soft);font-weight:500;text-transform:uppercase;letter-spacing:.4px;display:block}
+.total-val{font-size:26px;font-weight:600;color:var(--primary);font-family:var(--mono)}
+.tbl-wrap{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow)}
+.tbl-scroll{overflow-x:auto}
+table.et{width:100%;border-collapse:collapse;min-width:820px}
+table.et thead{background:var(--primary);color:#fff}
+table.et thead th{padding:10px 10px;text-align:left;font-size:11px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;white-space:nowrap;border-right:1px solid rgba(255,255,255,.1);user-select:none}
+table.et thead th:last-child{border-right:none}
+table.et tbody tr{border-bottom:1px solid var(--border);transition:background .1s}
+table.et tbody tr:last-child{border-bottom:none}
+table.et tbody tr:hover{background:var(--row-hover)}
+table.et tbody tr.dragging{background:var(--row-drag);opacity:.7}
+table.et tbody tr.drag-over{border-top:2.5px solid var(--accent)}
+table.et td{padding:0;border-right:1px solid var(--border);vertical-align:middle}
+table.et td:last-child{border-right:none}
+table.et td input{width:100%;height:36px;padding:0 8px;border:none;background:var(--input-bg);font-family:var(--font);font-size:13px;color:var(--text);outline:none}
+table.et td input:focus{background:var(--input-focus-bg);box-shadow:inset 0 0 0 1.5px var(--input-focus-ring)}
+.td-amt{padding:0 10px;font-family:var(--mono);font-size:13px;text-align:right;white-space:nowrap;color:var(--primary);font-weight:500;min-width:96px}
+.td-sl{padding:0 8px;font-family:var(--mono);font-size:12px;text-align:center;color:var(--text-muted);user-select:none;min-width:42px}
+.drag-h{cursor:grab;color:var(--text-muted);padding:0 8px;font-size:16px;user-select:none;display:inline-block;line-height:36px}
+.drag-h:active{cursor:grabbing}
+.rdel{width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;background:transparent;border:none;cursor:pointer;color:var(--text-muted);font-size:14px;border-radius:4px;transition:all .15s}
+.rdel:hover{background:var(--danger-light);color:var(--danger)}
+.tda{padding:0 4px;width:52px;text-align:center}
+.tbl-foot{padding:12px 16px;border-top:1.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--surface);flex-wrap:wrap;gap:8px}
+.foot-l{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.foot-r{font-size:13px;color:var(--text-soft)}
+.foot-r strong{font-size:15px;color:var(--primary);font-family:var(--mono);font-weight:600}
+.paste-hint{font-size:11px;color:var(--hint-text);padding:4px 8px;background:var(--hint-bg);border:1px solid var(--hint-border);border-radius:4px}
+#view-single{padding:24px 28px}
+#view-multi{padding:24px 28px}
+.multi-wrap{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow)}
+.multi-scroll{overflow-x:auto}
+table.mt{width:100%;border-collapse:collapse;min-width:400px}
+table.mt thead{background:var(--primary);color:#fff}
+table.mt thead th{padding:10px 12px;text-align:left;font-size:11px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;white-space:nowrap;border-right:1px solid rgba(255,255,255,.1)}
+table.mt thead th:last-child{border-right:none}
+table.mt thead th.th-q{text-align:right;min-width:85px}
+table.mt thead .th-s{font-size:9px;opacity:.7;display:block;font-weight:400;letter-spacing:0;text-transform:none}
+table.mt tbody tr{border-bottom:1px solid var(--border)}
+table.mt tbody tr:last-child{border-bottom:none}
+table.mt tbody tr:hover{background:var(--row-hover)}
+table.mt tbody td{padding:10px 12px;border-right:1px solid var(--border);font-size:13px;vertical-align:middle}
+table.mt tbody td:last-child{border-right:none}
+.site-lnk{cursor:pointer;display:inline-flex;align-items:center;gap:6px;color:var(--primary);font-weight:600}
+.site-lnk:hover{color:var(--accent)}
+.site-arr{font-size:12px;opacity:.5}
+.td-qc{text-align:right;font-family:var(--mono);font-size:12px;color:var(--text-soft)}
+.td-tc{text-align:right;font-family:var(--mono);font-size:13px;font-weight:600;color:var(--primary)}
+.multi-foot{padding:12px 16px;border-top:1.5px solid var(--border);display:flex;align-items:center;gap:12px;background:var(--surface)}
+.notif{position:fixed;bottom:24px;right:24px;z-index:300;background:var(--primary);color:#fff;padding:10px 18px;border-radius:var(--radius);font-size:13px;box-shadow:var(--shadow-lg);transform:translateY(80px);opacity:0;transition:all .25s cubic-bezier(.34,1.56,.64,1);pointer-events:none}
+.notif.show{transform:translateY(0);opacity:1}
+tr.group-hdr td{background:var(--group-hdr-bg);padding:5px 10px;font-size:11px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--group-hdr-text);border-bottom:1.5px solid var(--border-strong);border-top:1.5px solid var(--border-strong);cursor:default}
+tr.group-hdr:hover{background:var(--group-hdr-bg) !important}
+table.mt td.col-group-first,table.mt th.col-group-first{border-left:2px solid rgba(255,255,255,.3)}
+
+/* Integrated features: search, GST summary, calculator, schedule, archive, history, print annexures */
+.search-bar{margin-bottom:12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.search-bar input{flex:1;min-width:180px;padding:8px 12px;border:1.5px solid var(--border);border-radius:var(--radius);font-family:var(--font);font-size:13px;background:var(--white);color:var(--text)}
+.search-bar input:focus{outline:none;border-color:var(--accent)}
+.gst-summary{background:var(--surface);border-top:1.5px solid var(--border-strong);padding:14px 20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;font-size:13px}
+.gst-summary .gs-item{display:flex;flex-direction:column;gap:2px}
+.gst-summary .gs-item .gs-label{font-size:11px;color:var(--text-soft);font-weight:500;text-transform:uppercase;letter-spacing:.3px}
+.gst-summary .gs-item .gs-val{font-family:var(--mono);font-size:14px;font-weight:600;color:var(--primary)}
+.gst-summary .gs-item.gs-final .gs-val{color:var(--accent);font-size:16px}
+.row-checkbox{width:16px;height:16px;cursor:pointer;margin:0;display:block}
+td.td-cb{padding:0 6px;width:30px;text-align:center}
+.calc-btn{width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;background:transparent;border:none;cursor:pointer;color:var(--text-muted);font-size:15px;border-radius:4px;transition:all .15s;line-height:1}
+.calc-btn:hover{background:var(--badge-s-bg);color:var(--badge-s-text)}
+.calc-modal-body{display:flex;gap:20px;min-height:260px}
+.calc-editor{flex:2;display:flex;flex-direction:column;gap:8px}
+.calc-editor textarea{width:100%;min-height:180px;padding:10px;border:1.5px solid var(--border);border-radius:var(--radius);font-family:var(--mono);font-size:13px;resize:vertical;background:var(--white);color:var(--text)}
+.calc-editor textarea:focus{outline:none;border-color:var(--accent)}
+.calc-buttons{display:flex;gap:6px;justify-content:flex-end}
+.calc-results{flex:1;background:var(--surface2);padding:12px;border-radius:var(--radius);border:1px solid var(--border);overflow-y:auto;max-height:300px}
+.calc-results h4{font-size:12px;font-weight:600;color:var(--text-soft);margin-bottom:8px;text-transform:uppercase;letter-spacing:.4px}
+#calcLiveResults{font-family:var(--mono);font-size:12px;white-space:pre-wrap;color:var(--text);line-height:1.7}
+.schedule-table{width:100%;border-collapse:collapse}
+.schedule-table th,.schedule-table td{border:1px solid var(--border);padding:6px 8px;font-size:13px;text-align:left}
+.schedule-table th{background:var(--primary);color:#fff;font-size:11px;font-weight:600;letter-spacing:.4px;text-transform:uppercase}
+.schedule-table tbody tr:hover{background:var(--row-hover)}
+.schedule-table input[type=checkbox]{cursor:pointer}
+.modal-search{margin-bottom:10px}
+.modal-search input{width:100%;padding:8px 12px;border:1.5px solid var(--border);border-radius:var(--radius);font-family:var(--font);font-size:13px;background:var(--white);color:var(--text)}
+.modal-search input:focus{outline:none;border-color:var(--accent)}
+.archive-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius);margin-bottom:6px;background:var(--surface)}
+.archive-item .arch-preview{flex:1;font-size:12px;color:var(--text-soft);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.archive-item button{flex-shrink:0}
+.history-panel{position:fixed;left:-300px;top:54px;width:300px;height:calc(100% - 54px);background:var(--white);border-right:1.5px solid var(--border);box-shadow:var(--shadow-lg);transition:left .3s ease;z-index:150;padding:16px;overflow-y:auto}
+.history-panel.open{left:0}
+.history-panel h3{font-size:14px;font-weight:600;color:var(--primary);margin-bottom:12px}
+.history-panel ul{list-style:none;padding:0}
+.history-panel li{padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius);margin-bottom:6px;cursor:pointer;font-size:12px;color:var(--text-soft);transition:all .12s;white-space:pre-wrap}
+.history-panel li:hover{background:var(--row-hover);border-color:var(--accent);color:var(--text)}
+.side-tabs{position:fixed;left:0;top:54px;z-index:151;display:flex;flex-direction:column;gap:0}
+.side-tab{display:flex;align-items:center;justify-content:center;width:32px;min-height:80px;writing-mode:vertical-rl;transform:rotate(180deg);cursor:pointer;font-size:11px;font-weight:500;letter-spacing:.3px;color:#fff;border:none;padding:8px 4px;border-radius:0 8px 8px 0;transition:all .2s;margin-bottom:2px}
+.side-tab:hover{width:38px}
+.side-tab.st-blue{background:#5b7db5}.side-tab.st-pink{background:#d4808a}.side-tab.st-teal{background:#5ba89e}.side-tab.st-orange{background:#d4a050}
+#printAnnexures{display:none}
+#printAnnexures h3{font-size:1.3em;text-transform:uppercase;margin-top:0;border-bottom:2px solid #000;padding-bottom:4px;color:#000}
+.annex-item{margin-top:10px;margin-bottom:15px;padding:6px 10px;border:1px solid #888;border-radius:4px;background:#f4f4f4}
+.annex-item-title{font-weight:bold;margin-bottom:4px}
+.annex-step{margin-left:15px;margin-bottom:2px;font-family:monospace;color:#333}
+@media print{
+  #topbar,.side-tabs,.history-panel,.search-bar,.btn,.paste-hint,.notif,.modal-overlay,
+  .rdel,.calc-btn,.drag-h,.card-del,.row-checkbox,.tbl-foot .foot-l,
+  #btn-add-row,#btn-blank-row,#btn-auto-arrange,#btn-clear-all{display:none!important}
+  body{background:#fff;color:#000;font-size:12px}
+  .tbl-wrap{border:none;box-shadow:none}
+  table.et thead{background:#333!important;color:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  table.et thead th{color:#fff!important}
+  table.et tbody tr{border-bottom:1px solid #ccc}
+  table.et td input{background:#fff!important;box-shadow:none!important;border:none!important;padding:4px 8px;height:auto}
+  td.td-amt{padding:4px 10px}
+  .gst-summary{border-top:2px solid #333;padding:10px 16px}
+  #printAnnexures{display:block;margin-top:30px}
+  #printAnnexures>div{page-break-before:always;margin-bottom:20px}
+  .est-hbar{border:1px solid #ccc;box-shadow:none}
+  .multi-wrap{border:1px solid #ccc;box-shadow:none}
+  table.mt thead{background:#333!important;color:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <div class="logo">📋 <span>Estimate</span>Pro</div>
+  <nav id="breadcrumb"></nav>
+  <div id="topbar-actions"></div>
+  <div style="display:flex;gap:8px;align-items:center;margin-left:8px;border-left:1px solid rgba(255,255,255,.2);padding-left:12px">
+    <button class="btn btn-topbar btn-sm" onclick="saveSession()">💾 Save</button>
+    <button class="btn btn-topbar btn-sm" onclick="document.getElementById('load-file-input').click()">📂 Load</button>
+    <input type="file" id="load-file-input" accept=".json" style="display:none" onchange="loadSession(this)">
+  </div>
+  <div class="theme-capsule">
+    <button class="theme-cap-btn" id="theme-light" onclick="setTheme('light')">☀️</button>
+    <button class="theme-cap-btn" id="theme-dark"  onclick="setTheme('dark')">🌙</button>
+  </div>
+</div>
+
+<!-- MAIN DASHBOARD -->
+<div class="view active" id="view-main">
+  <div style="padding:32px 36px;max-width:1200px;margin:0 auto">
+    <div class="main-header">
+      <div><h1>All Estimates</h1><p>Manage single-site and multi-site project estimates</p></div>
+      <div class="hdr-actions">
+        <button class="btn btn-secondary" onclick="openNewModal('single')">＋ Single Site</button>
+        <button class="btn btn-primary" onclick="openNewModal('multi')">＋ Multi-Site</button>
+      </div>
+    </div>
+    <div class="estimates-grid" id="estimates-grid"></div>
+  </div>
+</div>
+
+<!-- SINGLE SITE ESTIMATE -->
+<div class="view" id="view-single">
+  <div class="est-hbar">
+    <div><div class="eh-title" id="s-title"></div><div class="eh-sub" id="s-sub"></div></div>
+    <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+      <button class="btn btn-ghost btn-sm" onclick="openScheduleModal()" title="Load items from CSV schedule">📋 Schedule</button>
+      <div class="eh-right"><label>Grand Total</label><div class="total-val" id="s-total-h">₹ 0.00</div></div>
+    </div>
+  </div>
+  <div class="search-bar">
+    <input type="text" id="single-search" placeholder="🔍 Search rows..." oninput="filterSingleRows()">
+    <span style="font-size:11px;color:var(--text-muted)" id="row-count"></span>
+  </div>
+  <div class="tbl-wrap">
+    <div class="tbl-scroll">
+      <table class="et" id="single-table">
+        <colgroup>
+          <col style="width:30px"><col style="width:36px"><col style="width:44px">
+          <col style="width:120px"><col style="width:140px">
+          <col style="width:110px"><col style="min-width:200px">
+          <col style="width:80px"><col style="width:88px">
+          <col style="width:68px"><col style="width:100px">
+          <col style="width:36px"><col style="width:52px">
+        </colgroup>
+        <thead>
+          <tr>
+            <th><input type="checkbox" id="selectAllRows" onchange="toggleSelectAll(this)"></th>
+            <th></th><th>Sl.</th><th>Group</th><th>Short Desc.</th>
+            <th>Ref. <span style="font-weight:400;opacity:.6;font-size:10px">(optional)</span></th>
+            <th>Description of Items</th>
+            <th style="text-align:right">Qty</th>
+            <th style="text-align:right">Rate</th>
+            <th>Unit</th>
+            <th style="text-align:right">Amount</th>
+            <th></th><th></th>
+          </tr>
+        </thead>
+        <tbody id="single-tbody"></tbody>
+      </table>
+    </div>
+    <div class="tbl-foot">
+      <div class="foot-l">
+        <button class="btn btn-secondary btn-sm" id="btn-add-row">＋ Add Row</button>
+        <button class="btn btn-ghost btn-sm" id="btn-blank-row">＋ Blank Row</button>
+        <button class="btn btn-ghost btn-sm" id="btn-auto-arrange">⇅ Auto-Arrange</button>
+        <button class="btn btn-ghost btn-sm" id="btn-archive-selected" title="Archive selected rows">📦 Archive</button>
+        <button class="btn btn-ghost btn-sm" id="btn-open-archived" title="View archived rows">📂 Archived</button>
+        <button class="btn btn-ghost btn-sm btn-danger-ghost" id="btn-clear-all">🗑 Clear All</button>
+        <span class="paste-hint">💡 Paste from Excel</span>
+      </div>
+      <div class="foot-r">Total: <strong id="s-total-f">₹ 0.00</strong></div>
+    </div>
+    <div class="gst-summary" id="gst-summary">
+      <div class="gs-item"><span class="gs-label">Base Total</span><span class="gs-val" id="gs-base">₹ 0.00</span></div>
+      <div class="gs-item"><span class="gs-label">GST @ 18%</span><span class="gs-val" id="gs-gst">₹ 0.00</span></div>
+      <div class="gs-item"><span class="gs-label">Cess @ 1%</span><span class="gs-val" id="gs-cess">₹ 0.00</span></div>
+      <div class="gs-item"><span class="gs-label">Subtotal (incl. GST + Cess)</span><span class="gs-val" id="gs-subtotal">₹ 0.00</span></div>
+      <div class="gs-item"><span class="gs-label">Contingency @ <span id="gs-contingency-rate" contenteditable="true" style="cursor:text;border-bottom:1px dashed var(--border)">2.5</span>%</span><span class="gs-val" id="gs-contingency">₹ 0.00</span></div>
+      <div class="gs-item gs-final"><span class="gs-label">Final Total</span><span class="gs-val" id="gs-final">₹ 0.00</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- MULTI-SITE ESTIMATE -->
+<div class="view" id="view-multi">
+  <div class="est-hbar">
+    <div><div class="eh-title" id="m-title"></div><div class="eh-sub" id="m-sub"></div></div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <span class="paste-hint" style="font-size:10px">💡 Paste site names from clipboard</span>
+      <button class="btn btn-secondary btn-sm" id="btn-add-site">＋ Add Site</button>
+    </div>
+  </div>
+  <div class="multi-wrap">
+    <div class="multi-scroll">
+      <table class="mt"><thead id="multi-thead"></thead><tbody id="multi-tbody"></tbody></table>
+    </div>
+    <div class="multi-foot">
+      <button class="btn btn-secondary btn-sm" id="btn-add-site-2">＋ Add Site</button>
+      <span style="font-size:12px;color:var(--text-soft)">Click a site name to open its estimate</span>
+    </div>
+  </div>
+</div>
+
+<!-- NEW ESTIMATE MODAL -->
+<div class="modal-overlay" id="new-modal">
+  <div class="modal">
+    <h2 id="modal-title">New Estimate</h2>
+    <div class="fg"><label>ESTIMATE NAME</label><input type="text" id="modal-name" placeholder="e.g. Road Repair Phase 1"></div>
+    <div class="fg"><label>DATE</label><input type="date" id="modal-date"></div>
+    <div class="fg"><label>PREPARED BY</label><input type="text" id="modal-by" placeholder="Engineer / Officer name"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="createEstimate()">Create</button>
+    </div>
+  </div>
+</div>
+
+<!-- CALCULATOR MODAL -->
+<div class="modal-overlay" id="calc-modal">
+  <div class="modal modal-wide">
+    <h2>📐 Expression Calculator</h2>
+    <div class="calc-modal-body">
+      <div class="calc-editor">
+        <textarea id="calcInput" placeholder="Enter expressions, one per line&#10;Use !!expr!! for hidden calculation&#10;Use #comment# for visible notes&#10;Use //hidden// for hidden notes"></textarea>
+        <div class="calc-buttons">
+          <button class="btn btn-primary btn-sm" id="calcSave">Save to Cell</button>
+          <button class="btn btn-ghost btn-sm" id="calcClear">Clear</button>
+          <button class="btn btn-ghost btn-sm" id="calcClose">Close</button>
+        </div>
+      </div>
+      <div class="calc-results">
+        <h4>Live Results</h4>
+        <pre id="calcLiveResults"></pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SCHEDULE MODAL -->
+<div class="modal-overlay" id="schedule-modal">
+  <div class="modal modal-full" style="display:flex;flex-direction:column;max-height:90vh">
+    <h2>📋 Load Schedule from CSV</h2>
+    <div class="modal-search"><input type="text" id="scheduleSearch" placeholder="🔍 Search items..." oninput="filterScheduleModal()"></div>
+    <div style="flex:1;overflow-y:auto;margin-bottom:12px"><div id="scheduleList"></div></div>
+    <div class="modal-actions" style="margin-top:0">
+      <span style="font-size:11px;color:var(--text-soft);margin-right:auto">Reference, Description, Unit, Rate</span>
+      <button class="btn btn-ghost btn-sm" onclick="closeScheduleModal()">Cancel</button>
+      <button class="btn btn-secondary btn-sm" onclick="document.getElementById('csvUpload').click()">📂 Load CSV</button>
+      <button class="btn btn-primary btn-sm" onclick="addSelectedItems()">Add Selected</button>
+    </div>
+    <input type="file" id="csvUpload" accept=".csv" style="display:none" onchange="handleCSVUpload(this)">
+  </div>
+</div>
+
+<!-- ARCHIVE MODAL -->
+<div class="modal-overlay" id="archive-modal">
+  <div class="modal" style="max-height:80vh;display:flex;flex-direction:column">
+    <h2>📦 Archived Rows</h2>
+    <div id="archiveList" style="flex:1;overflow-y:auto;margin-bottom:12px"></div>
+    <div class="modal-actions" style="margin-top:0">
+      <button class="btn btn-ghost" onclick="closeArchive()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- HISTORY PANEL -->
+<div class="history-panel" id="historyPanel">
+  <h3>📜 CSV History</h3>
+  <ul id="historyList"></ul>
+</div>
+
+<!-- SIDE TABS -->
+<div class="side-tabs">
+  <button class="side-tab st-blue" onclick="toggleHistoryPanel()">📜 History</button>
+  <button class="side-tab st-pink" onclick="openScheduleModal()">📋 Schedule</button>
+  <button class="side-tab st-teal" onclick="exportCSV()">⬇ Export</button>
+  <button class="side-tab st-orange" onclick="window.print()">🖨 Print</button>
+</div>
+
+<!-- PRINT ANNEXURES -->
+<div id="printAnnexures"></div>
+
+<div class="notif" id="notif"></div>
+
+<script>
+/* ═══════════════════════════════════════════════════════
+   DATA — persisted in localStorage
+═══════════════════════════════════════════════════════ */
+var DB = [];
+try { DB = JSON.parse(localStorage.getItem('ep3') || '[]'); } catch(e) { DB = []; }
+function saveDB() { try { localStorage.setItem('ep3', JSON.stringify(DB)); } catch(e) {} }
+function findEst(id) { for (var i=0;i<DB.length;i++) if(DB[i].id===id) return DB[i]; return null; }
+function genId() { return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
+
+/* ═══════════════════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════════════════ */
+var ctx = { view: 'main' };
+
+function ctxGetItems() {
+  if (ctx.view !== 'single') return [];
+  if (ctx.multiId !== undefined) {
+    var me = findEst(ctx.multiId);
+    return (me && me.sites[ctx.siteIdx]) ? me.sites[ctx.siteIdx].items : [];
+  }
+  var e = findEst(ctx.estId);
+  return e ? e.items : [];
+}
+function ctxSetItems(items) {
+  if (ctx.view !== 'single') return;
+  if (ctx.multiId !== undefined) {
+    var me = findEst(ctx.multiId);
+    if (me && me.sites[ctx.siteIdx]) me.sites[ctx.siteIdx].items = items;
+  } else {
+    var e = findEst(ctx.estId);
+    if (e) e.items = items;
+  }
+  saveDB();
+}
+
+/* ═══════════════════════════════════════════════════════
+   CALCULATOR STATE
+═══════════════════════════════════════════════════════ */
+var calcHistoryMap = {};
+var calcInputMap = {};
+var activeCalcCell = null;
+var mathScope = {};
+
+/* ═══════════════════════════════════════════════════════
+   ARCHIVE STATE
+═══════════════════════════════════════════════════════ */
+var archivedItems = [];
+
+/* ═══════════════════════════════════════════════════════
+   UTILITIES
+═══════════════════════════════════════════════════════ */
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function fmtN(n) { return Number(n||0).toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function showNotif(msg) {
+  var el = document.getElementById('notif');
+  el.textContent = msg; el.classList.add('show');
+  setTimeout(function(){ el.classList.remove('show'); }, 2200);
+}
+function makeRow(d) {
+  d = d || {};
+  return { id:genId(), blank:d.blank||false, group:d.group||'', shortDesc:d.shortDesc||'', ref:d.ref||'', desc:d.desc||'', qty:d.qty!==undefined?d.qty:'', rate:d.rate!==undefined?d.rate:'', unit:d.unit||'', calc:d.calc||'' };
+}
+function rowAmt(r) {
+  var q = parseFloat(r.qty), rt = parseFloat(r.rate);
+  if (isNaN(q)||isNaN(rt)||r.qty===''||r.rate==='') return null;
+  return Math.round(q*rt*100)/100;
+}
+function sumItems(items) {
+  return (items||[]).reduce(function(s,r){ var a=rowAmt(r); return s+(a!==null?a:0); }, 0);
+}
+
+/* ═══════════════════════════════════════════════════════
+   VIEW MANAGEMENT
+═══════════════════════════════════════════════════════ */
+function showView(name) {
+  document.querySelectorAll('.view').forEach(function(v){ v.classList.remove('active'); });
+  document.getElementById('view-'+name).classList.add('active');
+}
+function renderBreadcrumb() {
+  var bc = document.getElementById('breadcrumb');
+  if (ctx.view === 'main') { bc.innerHTML = ''; return; }
+  var html = '<span class="crumb" onclick="goMain()">All Estimates</span><span class="bc-sep"> › </span>';
+  if (ctx.view === 'multi') {
+    var e = findEst(ctx.estId);
+    html += '<span class="bc-cur">' + esc(e?e.name:'') + '</span>';
+  } else if (ctx.view === 'single') {
+    if (ctx.multiId !== undefined) {
+      var me = findEst(ctx.multiId);
+      var site = me && me.sites[ctx.siteIdx];
+      html += '<span class="crumb" onclick="openMulti(\''+ctx.multiId+'\')">' + esc(me?me.name:'') + '</span>';
+      html += '<span class="bc-sep"> › </span><span class="bc-cur">' + esc(site?site.name:'') + '</span>';
+    } else {
+      var es = findEst(ctx.estId);
+      html += '<span class="bc-cur">' + esc(es?es.name:'') + '</span>';
+    }
+  }
+  bc.innerHTML = html;
+}
+function renderTopActions() {
+  var ta = document.getElementById('topbar-actions');
+  if (ctx.view === 'single') {
+    ta.innerHTML = '<button class="btn btn-topbar btn-sm" onclick="exportCSV()">⬇ Export CSV</button>' +
+      '<button class="btn btn-topbar btn-sm" onclick="window.print()">🖨 Print</button>';
+  } else {
+    ta.innerHTML = '';
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   MAIN DASHBOARD
+═══════════════════════════════════════════════════════ */
+function goMain() {
+  ctx = { view: 'main' };
+  showView('main'); renderMain(); renderBreadcrumb(); renderTopActions();
+}
+function renderMain() {
+  var grid = document.getElementById('estimates-grid');
+  if (!DB.length) {
+    grid.innerHTML = '<div class="empty-state"><div class="icon">📄</div><p>No estimates yet</p><p style="font-size:13px;margin-top:6px">Use the buttons above to create one</p></div>';
+    return;
+  }
+  grid.innerHTML = DB.map(function(est) {
+    var typeLabel = est.type==='single'?'Single Site':'Multi-Site';
+    var typeClass = est.type==='single'?'card-type-s':'card-type-m';
+    var total = est.type==='single' ? sumItems(est.items) : (est.sites||[]).reduce(function(s,site){ return s+sumItems(site.items); },0);
+    var dateStr = est.date ? new Date(est.date).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}) : '';
+    var cnt = est.type==='multi' ? (est.sites||[]).length+' site(s)' : (est.items||[]).filter(function(r){ return !r.blank; }).length+' item(s)';
+    return '<div class="estimate-card" onclick="openEst(\''+est.id+'\')">'+
+      '<button class="card-del" onclick="event.stopPropagation();delEst(\''+est.id+'\')" title="Delete">✕</button>'+
+      '<span class="card-type '+typeClass+'">◆ '+typeLabel+'</span>'+
+      '<h3>'+esc(est.name)+'</h3>'+
+      '<div class="card-meta">'+dateStr+(est.by?' · '+esc(est.by):'')+(cnt?' · '+cnt:'')+'</div>'+
+      '<div class="card-amount">₹ '+fmtN(total)+'</div></div>';
+  }).join('');
+}
+function openEst(id) {
+  var e = findEst(id);
+  if (!e) return;
+  if (e.type === 'single') openSingle(id);
+  else openMulti(id);
+}
+function delEst(id) {
+  if (!confirm('Delete this estimate? This cannot be undone.')) return;
+  DB = DB.filter(function(e){ return e.id !== id; });
+  saveDB(); renderMain();
+}
+
+/* ═══════════════════════════════════════════════════════
+   MODAL
+═══════════════════════════════════════════════════════ */
+var _newType = 'single';
+function openNewModal(type) {
+  _newType = type;
+  document.getElementById('modal-title').textContent = type==='single'?'New Single Site Estimate':'New Multi-Site Estimate';
+  document.getElementById('modal-name').value = '';
+  document.getElementById('modal-date').value = new Date().toISOString().slice(0,10);
+  document.getElementById('modal-by').value = '';
+  document.getElementById('new-modal').classList.add('open');
+  setTimeout(function(){ document.getElementById('modal-name').focus(); }, 60);
+}
+function closeModal() { document.getElementById('new-modal').classList.remove('open'); }
+document.getElementById('new-modal').addEventListener('click', function(e){ if(e.target===this) closeModal(); });
+document.getElementById('modal-name').addEventListener('keydown', function(e){ if(e.key==='Enter') createEstimate(); });
+function createEstimate() {
+  var name = document.getElementById('modal-name').value.trim();
+  if (!name) { document.getElementById('modal-name').focus(); return; }
+  var est = { id:genId(), type:_newType, name:name, date:document.getElementById('modal-date').value, by:document.getElementById('modal-by').value.trim() };
+  if (_newType==='single') est.items = [makeRow()];
+  else est.sites = [];
+  DB.unshift(est); saveDB(); closeModal(); renderMain();
+  if (_newType==='single') openSingle(est.id);
+  else openMulti(est.id);
+}
+
+/* ═══════════════════════════════════════════════════════
+   SINGLE ESTIMATE — open
+═══════════════════════════════════════════════════════ */
+function openSingle(estId) {
+  var e = findEst(estId);
+  if (!e) return;
+  if (!e.items || !e.items.length) e.items = [makeRow()];
+  ctx = { view:'single', estId:estId };
+  archivedItems = e._archived || [];
+  var dateStr = e.date ? new Date(e.date).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}) : '';
+  document.getElementById('s-title').textContent = e.name;
+  document.getElementById('s-sub').textContent = [dateStr, e.by].filter(Boolean).join(' · ');
+  showView('single');
+  wireSingleButtons();
+  renderSingleTable();
+  renderBreadcrumb();
+  renderTopActions();
+}
+
+function openSiteInSingle(multiEstId, siteIdx) {
+  var me = findEst(multiEstId);
+  if (!me || !me.sites[siteIdx]) return;
+  var site = me.sites[siteIdx];
+  if (!site.items || !site.items.length) site.items = [makeRow()];
+  ctx = { view:'single', multiId:multiEstId, siteIdx:siteIdx };
+  archivedItems = site._archived || [];
+  var dateStr = me.date ? new Date(me.date).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}) : '';
+  document.getElementById('s-title').textContent = site.name;
+  document.getElementById('s-sub').textContent = [me.name, dateStr, me.by].filter(Boolean).join(' · ');
+  showView('single');
+  wireSingleButtons();
+  renderSingleTable();
+  renderBreadcrumb();
+  renderTopActions();
+}
+
+function wireSingleButtons() {
+  var tbl = document.getElementById('single-table');
+  var newTbl = tbl.cloneNode(true);
+  tbl.parentNode.replaceChild(newTbl, tbl);
+  newTbl.addEventListener('paste', handlePaste);
+  newTbl.addEventListener('focusin', function(e){
+    var td = e.target.closest('td');
+    if (td) {
+      var ci = Array.from(td.parentNode.children).indexOf(td);
+      if (ci === 7 || ci === 8) activeCalcCell = td;
+    }
+  });
+
+  function wireBtn(id, fn) {
+    var el = document.getElementById(id);
+    var n = el.cloneNode(true);
+    el.parentNode.replaceChild(n, el);
+    n.addEventListener('click', fn);
+  }
+  wireBtn('btn-add-row', function(){ addRow(); });
+  wireBtn('btn-blank-row', function(){ addBlankRow(); });
+  wireBtn('btn-auto-arrange', function(){ autoArrangeRows(); });
+  wireBtn('btn-clear-all', function(){ clearAllRows(); });
+  wireBtn('btn-archive-selected', function(){ archiveSelectedRows(); });
+  wireBtn('btn-open-archived', function(){ openArchiveModal(); });
+}
+
+/* ═══════════════════════════════════════════════════════
+   SINGLE TABLE RENDER
+═══════════════════════════════════════════════════════ */
+function renderSingleTable() {
+  var items = ctxGetItems();
+  var tbody = document.getElementById('single-tbody');
+  var sl = 0;
+  var lastGroup = null;
+  var rows = [];
+  items.forEach(function(row, i) {
+    if (!row.blank) sl++;
+    if (!row.blank && row.group && row.group !== lastGroup) {
+      rows.push('<tr class="group-hdr" draggable="false"><td colspan="13">'+esc(row.group)+'</td></tr>');
+      lastGroup = row.group;
+    }
+    var slDisp = row.blank ? '' : sl;
+    var amt = rowAmt(row);
+    var amtDisp = amt !== null ? '₹ '+fmtN(amt) : '';
+    var hasCalc = row.calc ? ' style="color:var(--accent)"' : '';
+    rows.push('<tr draggable="true" data-idx="'+i+'">'+
+      '<td class="td-cb"><input type="checkbox" class="row-checkbox" data-idx="'+i+'" onchange="updateRowCheckbox()"></td>'+
+      '<td class="tda"><span class="drag-h" draggable="false">⠿</span></td>'+
+      '<td class="td-sl">'+slDisp+'</td>'+
+      '<td><input value="'+esc(row.group)+'" placeholder="Group" onchange="updateCell('+i+',\'group\',this.value)"></td>'+
+      '<td><input value="'+esc(row.shortDesc)+'" placeholder="Short Desc" onchange="updateCell('+i+',\'shortDesc\',this.value)"></td>'+
+      '<td><input value="'+esc(row.ref||'')+'" placeholder="Ref." style="color:var(--text-soft)" onchange="updateCell('+i+',\'ref\',this.value)"></td>'+
+      '<td><input value="'+esc(row.desc)+'" placeholder="Description of item" onchange="updateCell('+i+',\'desc\',this.value)"></td>'+
+      '<td><input type="number" value="'+(row.qty!==''?row.qty:'')+'" placeholder="0" min="0" style="text-align:right" onchange="updateCell('+i+',\'qty\',this.value)"></td>'+
+      '<td><input type="number" value="'+(row.rate!==''?row.rate:'')+'" placeholder="0.00" min="0" step="0.01" style="text-align:right" onchange="updateCell('+i+',\'rate\',this.value)"></td>'+
+      '<td><input value="'+esc(row.unit)+'" placeholder="Unit" onchange="updateCell('+i+',\'unit\',this.value)"></td>'+
+      '<td class="td-amt" id="amt-'+i+'">'+amtDisp+'</td>'+
+      '<td class="tda"><button class="calc-btn" onclick="openCalculator('+i+')" title="Calculator"'+hasCalc+'>🔢</button></td>'+
+      '<td class="tda"><button class="rdel" onclick="deleteRow('+i+')" title="Delete">✕</button></td>'+
+      '</tr>');
+  });
+  tbody.innerHTML = rows.join('');
+  updateTotals();
+  updateRowCount();
+  setupRowDrag(tbody);
+}
+
+function updateCell(idx, field, value) {
+  var items = ctxGetItems();
+  if (!items[idx]) return;
+  items[idx][field] = value;
+  ctxSetItems(items);
+  var amt = rowAmt(items[idx]);
+  var el = document.getElementById('amt-'+idx);
+  if (el) el.textContent = amt!==null ? '₹ '+fmtN(amt) : '';
+  updateTotals();
+}
+
+function updateTotals() {
+  var items = ctxGetItems();
+  var total = sumItems(items);
+  var disp = '₹ '+fmtN(total);
+  document.getElementById('s-total-h').textContent = disp;
+  document.getElementById('s-total-f').textContent = disp;
+
+  // GST summary
+  var gst = total * 0.18;
+  var subt = total + gst;
+  var cess = subt * 0.01;
+  var subt2 = subt + cess;
+  var contRate = parseFloat(document.getElementById('gs-contingency-rate').textContent) / 100;
+  var cont = subt2 * contRate;
+  var final = subt2 + cont;
+  document.getElementById('gs-base').textContent = '₹ '+fmtN(total);
+  document.getElementById('gs-gst').textContent = '₹ '+fmtN(gst);
+  document.getElementById('gs-cess').textContent = '₹ '+fmtN(cess);
+  document.getElementById('gs-subtotal').textContent = '₹ '+fmtN(subt2);
+  document.getElementById('gs-contingency').textContent = '₹ '+fmtN(cont);
+  document.getElementById('gs-final').textContent = '₹ '+fmtN(final);
+}
+
+function updateRowCount() {
+  var items = ctxGetItems();
+  var cnt = items.filter(function(r){ return !r.blank; }).length;
+  document.getElementById('row-count').textContent = cnt + ' item(s)';
+}
+
+function addRow(data) {
+  var items = ctxGetItems();
+  items.push(makeRow(data));
+  ctxSetItems(items);
+  renderSingleTable();
+  var tbody = document.getElementById('single-tbody');
+  var last = tbody.lastElementChild;
+  if (last) { var inp = last.querySelector('input'); if (inp) inp.focus(); }
+}
+
+function addBlankRow() {
+  var items = ctxGetItems();
+  items.push(makeRow({blank:true}));
+  ctxSetItems(items);
+  renderSingleTable();
+}
+
+function clearAllRows() {
+  var items = ctxGetItems();
+  var dataCount = items.filter(function(r){ return !r.blank; }).length;
+  if (!dataCount) { showNotif('⚠ Nothing to clear'); return; }
+  if (!confirm('Delete all ' + dataCount + ' item(s)? This cannot be undone.')) return;
+  ctxSetItems([makeRow()]);
+  renderSingleTable();
+  showNotif('🗑 All items cleared');
+}
+
+function deleteRow(idx) {
+  var items = ctxGetItems();
+  items.splice(idx, 1);
+  if (!items.length) items.push(makeRow());
+  ctxSetItems(items);
+  renderSingleTable();
+}
+
+/* ── DRAG & DROP ─────────────────── */
+var dragSrc = null;
+function setupRowDrag(tbody) {
+  tbody.querySelectorAll('tr').forEach(function(tr) {
+    tr.addEventListener('dragstart', function(e) {
+      dragSrc = tr; tr.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+    });
+    tr.addEventListener('dragend', function() {
+      tr.classList.remove('dragging');
+      tbody.querySelectorAll('tr').forEach(function(r){ r.classList.remove('drag-over'); });
+      dragSrc = null;
+    });
+    tr.addEventListener('dragover', function(e) {
+      e.preventDefault();
+      tbody.querySelectorAll('tr').forEach(function(r){ r.classList.remove('drag-over'); });
+      if (tr !== dragSrc) tr.classList.add('drag-over');
+    });
+    tr.addEventListener('drop', function(e) {
+      e.preventDefault();
+      if (!dragSrc || dragSrc === tr) return;
+      var from = parseInt(dragSrc.dataset.idx);
+      var to = parseInt(tr.dataset.idx);
+      var items = ctxGetItems();
+      var moved = items.splice(from, 1)[0];
+      items.splice(to, 0, moved);
+      ctxSetItems(items);
+      renderSingleTable();
+    });
+  });
+}
+
+/* ── SEARCH ──────────────────────── */
+function filterSingleRows() {
+  var q = document.getElementById('single-search').value.toLowerCase().trim();
+  var items = ctxGetItems();
+  var tbody = document.getElementById('single-tbody');
+  var trs = tbody.querySelectorAll('tr');
+  trs.forEach(function(tr, i){
+    if (!q) { tr.style.display = ''; return; }
+    var idx = parseInt(tr.dataset.idx);
+    if (isNaN(idx)) { tr.style.display = ''; return; }
+    var row = items[idx];
+    if (!row) { tr.style.display = ''; return; }
+    var text = (row.group+' '+row.shortDesc+' '+row.ref+' '+row.desc+' '+row.unit).toLowerCase();
+    tr.style.display = text.includes(q) ? '' : 'none';
+  });
+}
+
+/* ── CHECKBOXES ──────────────────── */
+function toggleSelectAll(cb) {
+  document.querySelectorAll('.row-checkbox').forEach(function(c){ c.checked = cb.checked; });
+}
+function updateRowCheckbox() {
+  var all = document.querySelectorAll('.row-checkbox');
+  var checked = document.querySelectorAll('.row-checkbox:checked');
+  document.getElementById('selectAllRows').checked = all.length > 0 && all.length === checked.length;
+}
+
+/* ── CALCULATOR ──────────────────── */
+function openCalculator(idx) {
+  var items = ctxGetItems();
+  var row = items[idx];
+  if (!row) return;
+  activeCalcCell = { rowIdx: idx, row: row };
+  var raw = row.calc ? row.calc.split('\n') : [];
+  document.getElementById('calcInput').value = raw.join('\n') || '';
+  updateLivePreview(raw.length ? raw : ['']);
+  document.getElementById('calc-modal').classList.add('open');
+  setTimeout(function(){ document.getElementById('calcInput').focus(); }, 60);
+}
+
+function updateLivePreview(lines) {
+  mathScope = {};
+  var preview = lines.map(function(line) {
+    var label = line.replace(/!!(.*?)!!/g,'').replace(/\/\/.*?\/\//g,'').replace(/#(.*?)#/g,'$1').trim();
+    var expr = line.replace(/\/\/.*?\/\//g,'').replace(/#.*?#/g,'').replace(/!!(.*?)!!/g,'$1').trim();
+    var hiddenMatch = line.match(/!!(.*?)!!/);
+    if (!expr && label) return label;
+    if (!expr) return '';
+    if (hiddenMatch) {
+      try { var r = math.evaluate(hiddenMatch[1], mathScope); return label ? label+' = '+parseFloat(r).toFixed(4) : parseFloat(r).toFixed(4); }
+      catch(e) { return (label||'')+' ❌'; }
+    }
+    try { var r = math.evaluate(expr, mathScope); return label+' = '+parseFloat(r).toFixed(4); }
+    catch(e) { return label+' ❌'; }
+  });
+  document.getElementById('calcLiveResults').textContent = preview.join('\n');
+}
+
+document.getElementById('calcInput').addEventListener('input', function() {
+  updateLivePreview(this.value.split('\n'));
+});
+
+document.getElementById('calcSave').addEventListener('click', function() {
+  if (!activeCalcCell) return;
+  var lines = document.getElementById('calcInput').value.split('\n');
+  var items = ctxGetItems();
+  var row = items[activeCalcCell.rowIdx];
+  if (!row) return;
+  row.calc = lines.join('\n');
+  ctxSetItems(items);
+  var lastValid = null;
+  lines.forEach(function(l){
+    var expr = l.replace(/\/\/.*?\/\//g,'').replace(/#.*?#/g,'').replace(/!!(.*?)!!/g,'$1').trim();
+    try { var v = math.evaluate(expr, mathScope); if (!isNaN(v)) lastValid = v; } catch(e) {}
+  });
+  if (lastValid !== null) {
+    row.qty = String(parseFloat(lastValid).toFixed(2));
+    ctxSetItems(items);
+  }
+  document.getElementById('calc-modal').classList.remove('open');
+  document.getElementById('calcLiveResults').textContent = '';
+  renderSingleTable();
+  showNotif('✓ Calculator saved');
+});
+
+document.getElementById('calcClear').addEventListener('click', function() {
+  document.getElementById('calcInput').value = '';
+  document.getElementById('calcLiveResults').textContent = '';
+});
+
+document.getElementById('calcClose').addEventListener('click', function() {
+  document.getElementById('calc-modal').classList.remove('open');
+});
+
+document.getElementById('calc-modal').addEventListener('click', function(e) {
+  if (e.target === this) document.getElementById('calc-modal').classList.remove('open');
+});
+
+/* ── SCHEDULE / CSV IMPORT ──────── */
+var scheduleItems = [];
+
+function openScheduleModal() {
+  document.getElementById('schedule-modal').classList.add('open');
+  populateHistoryInModal();
+}
+
+function closeScheduleModal() {
+  document.getElementById('schedule-modal').classList.remove('open');
+}
+
+document.getElementById('schedule-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeScheduleModal();
+});
+
+function handleCSVUpload(input) {
+  var file = input.files[0];
+  input.value = '';
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var txt = e.target.result;
+    parseCSV(txt);
+    populateModal();
+    storeCsvHistory(file.name, txt);
+  };
+  reader.readAsText(file);
+}
+
+function parseCSV(text) {
+  var lines = text.trim().split(/\r?\n/).slice(1);
+  scheduleItems = lines.map(function(l) {
+    var parts = l.split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/).map(function(s){ return s.replace(/^"|"$/g,''); });
+    return { reference: parts[0]||'', description: parts[1]||'', unit: parts[2]||'', rate: parts[3]||'' };
+  });
+}
+
+function populateModal() {
+  var c = document.getElementById('scheduleList');
+  c.innerHTML = '';
+  if (!scheduleItems.length) { c.innerHTML = '<p style="padding:20px;color:var(--text-muted);text-align:center">No items found in CSV</p>'; return; }
+  var table = document.createElement('table');
+  table.className = 'schedule-table';
+  table.innerHTML = '<thead><tr><th>Select</th><th>Reference</th><th>Description</th><th>Unit</th><th>Rate</th></tr></thead>';
+  var tbody = document.createElement('tbody');
+  scheduleItems.forEach(function(it, i) {
+    var tr = document.createElement('tr');
+    tr.innerHTML = '<td><input type="checkbox" data-idx="'+i+'"></td><td>'+(it.reference||'')+'</td><td>'+(it.description||'')+'</td><td>'+(it.unit||'')+'</td><td>'+(it.rate||'')+'</td>';
+    tbody.appendChild(tr);
+  });
+  table.appendChild(tbody);
+  c.appendChild(table);
+}
+
+function filterScheduleModal() {
+  var q = document.getElementById('scheduleSearch').value.toLowerCase().trim();
+  var rows = document.querySelectorAll('#scheduleList table tbody tr');
+  rows.forEach(function(r){
+    r.style.display = (!q || r.textContent.toLowerCase().includes(q)) ? '' : 'none';
+  });
+}
+
+function addSelectedItems() {
+  var items = ctxGetItems();
+  var checked = document.querySelectorAll('#scheduleList input:checked');
+  if (!checked.length) { showNotif('⚠ No items selected'); return; }
+  checked.forEach(function(chk) {
+    var idx = parseInt(chk.dataset.idx);
+    var si = scheduleItems[idx];
+    if (!si) return;
+    items.push(makeRow({ group:'', shortDesc:si.description||'', ref:si.reference||'', desc:'', qty:'', rate:si.rate||'', unit:si.unit||'' }));
+  });
+  ctxSetItems(items);
+  renderSingleTable();
+  showNotif('✓ Added ' + checked.length + ' item(s)');
+}
+
+function storeCsvHistory(fn, txt) {
+  var hist = JSON.parse(localStorage.getItem('csvHistory') || '[]');
+  var h = btoa(unescape(encodeURIComponent(txt))).slice(0,50);
+  if (!hist.some(function(x){ return x.filename === fn && x.hash === h; })) {
+    hist.unshift({ filename: fn, csvText: txt, hash: h, timestamp: Date.now() });
+    if (hist.length > 10) hist.pop();
+    localStorage.setItem('csvHistory', JSON.stringify(hist));
+  }
+}
+
+function populateHistoryInModal() {
+  var hist = JSON.parse(localStorage.getItem('csvHistory') || '[]');
+  var ul = document.getElementById('historyList');
+  ul.innerHTML = '';
+  hist.forEach(function(e) {
+    var li = document.createElement('li');
+    li.textContent = e.filename + ' — ' + new Date(e.timestamp).toLocaleString();
+    li.onclick = function() {
+      parseCSV(e.csvText);
+      populateModal();
+      toggleHistoryPanel();
+    };
+    ul.appendChild(li);
+  });
+}
+
+function toggleHistoryPanel() {
+  var p = document.getElementById('historyPanel');
+  p.classList.toggle('open');
+  if (p.classList.contains('open')) populateHistoryInModal();
+}
+
+/* ── PASTE ───────────────────────── */
+var COL_FIELDS = ['group','shortDesc','ref','desc','qty','rate','unit'];
+
+function parseTSV(raw) {
+  raw = raw.replace(/[\r\n]+$/, '');
+  var rows = [], i = 0, n = raw.length;
+  while (i < n) {
+    var row = [];
+    while (i < n) {
+      if (raw[i] === '"') {
+        i++;
+        var field = '';
+        while (i < n) {
+          if (raw[i] === '"') { if (raw[i+1] === '"') { field += '"'; i += 2; } else { i++; break; } }
+          else { field += raw[i++]; }
+        }
+        row.push(field);
+      } else {
+        var start = i;
+        while (i < n && raw[i] !== '\t' && raw[i] !== '\n' && raw[i] !== '\r') i++;
+        row.push(raw.slice(start, i));
+      }
+      if (i < n && raw[i] === '\t') { i++; continue; }
+      break;
+    }
+    if (i < n && raw[i] === '\r') i++;
+    if (i < n && raw[i] === '\n') i++;
+    if (row.length) rows.push(row);
+  }
+  return rows;
+}
+
+function focusedColIndex(inputEl, tr) {
+  var inputs = tr.querySelectorAll('input');
+  for (var i = 0; i < inputs.length; i++) if (inputs[i] === inputEl) return i;
+  return 0;
+}
+
+function handlePaste(e) {
+  var active = document.activeElement;
+  if (!active || !active.closest('#single-tbody')) return;
+  var tr = active.closest('tr[data-idx]');
+  if (!tr) return;
+  var raw = (e.clipboardData || window.clipboardData).getData('text');
+  if (!raw) return;
+  var rows = parseTSV(raw);
+  if (!rows.length) return;
+  var isSingleCell = rows.length === 1 && rows[0].length === 1;
+  if (isSingleCell) return;
+  e.preventDefault();
+  var startIdx = parseInt(tr.dataset.idx);
+  var colOffset = focusedColIndex(active, tr);
+  var items = ctxGetItems();
+  rows.forEach(function(cols, ri) {
+    var targetIdx = startIdx + ri;
+    var isNewRow = targetIdx >= items.length;
+    var patch = {};
+    cols.forEach(function(val, ci) {
+      var fieldIdx = colOffset + ci;
+      var field = COL_FIELDS[fieldIdx];
+      if (!field) return;
+      val = val.trim();
+      if (field === 'qty' || field === 'rate') { patch[field] = val !== '' ? (parseFloat(val) || '') : ''; }
+      else { patch[field] = val; }
+    });
+    if (isNewRow) { items.push(makeRow(patch)); }
+    else { Object.keys(patch).forEach(function(k){ items[targetIdx][k] = patch[k]; }); }
+  });
+  ctxSetItems(items);
+  renderSingleTable();
+  showNotif('✓ Pasted ' + rows.length + ' row(s)');
+}
+
+/* ── ARCHIVE ─────────────────────── */
+function archiveSelectedRows() {
+  var items = ctxGetItems();
+  var checked = document.querySelectorAll('.row-checkbox:checked');
+  if (!checked.length) { showNotif('⚠ Select rows to archive'); return; }
+  var indices = [];
+  checked.forEach(function(cb) {
+    var idx = parseInt(cb.dataset.idx);
+    if (!isNaN(idx) && items[idx] && !items[idx].blank) indices.push(idx);
+  });
+  indices.sort(function(a,b){ return b-a; });
+  indices.forEach(function(idx) {
+    archivedItems.push(JSON.parse(JSON.stringify(items[idx])));
+    items.splice(idx, 1);
+  });
+  if (!items.length) items.push(makeRow());
+  ctxSetItems(items);
+  saveArchived();
+  renderSingleTable();
+  showNotif('📦 ' + indices.length + ' item(s) archived');
+}
+
+function saveArchived() {
+  var e;
+  if (ctx.multiId !== undefined) {
+    var me = findEst(ctx.multiId);
+    if (me && me.sites[ctx.siteIdx]) me.sites[ctx.siteIdx]._archived = archivedItems;
+  } else {
+    e = findEst(ctx.estId);
+    if (e) e._archived = archivedItems;
+  }
+  saveDB();
+}
+
+function openArchiveModal() {
+  var list = document.getElementById('archiveList');
+  list.innerHTML = '';
+  if (!archivedItems.length) {
+    list.innerHTML = '<p style="text-align:center;padding:20px;color:var(--text-muted)">No archived items</p>';
+  } else {
+    archivedItems.forEach(function(item, idx) {
+      var div = document.createElement('div');
+      div.className = 'archive-item';
+      var preview = (item.group||'') + ' ' + (item.shortDesc||'') + ' ' + (item.desc||'');
+      var span = document.createElement('span');
+      span.className = 'arch-preview';
+      span.textContent = preview.trim() || '(item #'+(idx+1)+')';
+      var restoreBtn = document.createElement('button');
+      restoreBtn.className = 'btn btn-ghost btn-sm';
+      restoreBtn.textContent = '↩';
+      restoreBtn.onclick = function(){ restoreArchived(idx); };
+      var delBtn = document.createElement('button');
+      delBtn.className = 'btn btn-ghost btn-sm btn-danger-ghost';
+      delBtn.textContent = '✕';
+      delBtn.onclick = function(){
+        archivedItems.splice(idx, 1);
+        saveArchived();
+        openArchiveModal();
+      };
+      div.appendChild(span); div.appendChild(restoreBtn); div.appendChild(delBtn);
+      list.appendChild(div);
+    });
+  }
+  document.getElementById('archive-modal').classList.add('open');
+}
+
+function restoreArchived(idx) {
+  var items = ctxGetItems();
+  var item = archivedItems.splice(idx, 1)[0];
+  if (item) {
+    items.push(item);
+    ctxSetItems(items);
+    saveArchived();
+    renderSingleTable();
+    if (!document.querySelectorAll('.archive-item').length) closeArchive();
+    else openArchiveModal();
+    showNotif('↩ Item restored');
+  }
+}
+
+function closeArchive() {
+  document.getElementById('archive-modal').classList.remove('open');
+}
+
+document.getElementById('archive-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeArchive();
+});
+
+/* ── EXPORT CSV ──────────────────── */
+function exportCSV() {
+  var items = ctxGetItems();
+  var name = '';
+  if (ctx.multiId !== undefined) {
+    var me = findEst(ctx.multiId);
+    name = me && me.sites[ctx.siteIdx] ? me.sites[ctx.siteIdx].name : 'site';
+  } else {
+    var es = findEst(ctx.estId);
+    name = es ? es.name : 'estimate';
+  }
+  var headers = ['Sl.No.','Group','Short Description','Ref.','Description of Items','Quantity','Rate','Unit','Amount'];
+  var sl = 0;
+  var rows = items.map(function(row) {
+    if (!row.blank) sl++;
+    var amt = rowAmt(row);
+    return [row.blank?'':sl, row.group, row.shortDesc, row.ref||'', row.desc, row.qty===''?'':row.qty, row.rate===''?'':row.rate, row.unit, amt!==null?fmtN(amt):'']
+      .map(function(v){ return '"'+String(v).replace(/"/g,'""')+'"'; }).join(',');
+  });
+  rows.push(['','','','','','','','TOTAL','"'+fmtN(sumItems(items))+'"'].join(','));
+  var csv = [headers.map(function(h){ return '"'+h+'"'; }).join(',')].concat(rows).join('\r\n');
+  var a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);
+  a.download = name.replace(/[^a-z0-9]/gi,'_')+'_estimate.csv';
+  a.click();
+  showNotif('✓ CSV exported');
+}
+
+/* ═══════════════════════════════════════════════════════
+   AUTO-ARRANGE ROWS
+═══════════════════════════════════════════════════════ */
+function autoArrangeRows() {
+  var items = ctxGetItems();
+  var blanks = items.filter(function(r){ return r.blank; });
+  var data   = items.filter(function(r){ return !r.blank; });
+  data.sort(function(a, b) {
+    var ga = (a.group||'').toLowerCase(), gb = (b.group||'').toLowerCase();
+    if (ga < gb) return -1; if (ga > gb) return 1;
+    var sa = (a.shortDesc||'').toLowerCase(), sb = (b.shortDesc||'').toLowerCase();
+    if (sa < sb) return -1; if (sa > sb) return 1;
+    return 0;
+  });
+  ctxSetItems(data.concat(blanks));
+  renderSingleTable();
+  showNotif('✓ Rows arranged by Group → Short Desc');
+}
+
+/* ═══════════════════════════════════════════════════════
+   MULTI-SITE ESTIMATE
+═══════════════════════════════════════════════════════ */
+function openMulti(estId) {
+  var e = findEst(estId);
+  if (!e) return;
+  ctx = { view:'multi', estId:estId };
+  var dateStr = e.date ? new Date(e.date).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}) : '';
+  document.getElementById('m-title').textContent = e.name;
+  document.getElementById('m-sub').textContent = [dateStr, e.by].filter(Boolean).join(' · ');
+  showView('multi');
+
+  function wireMultiBtns() {
+    var b1 = document.getElementById('btn-add-site');
+    var n1 = b1.cloneNode(true); b1.parentNode.replaceChild(n1, b1);
+    n1.addEventListener('click', addSite);
+    var b2 = document.getElementById('btn-add-site-2');
+    var n2 = b2.cloneNode(true); b2.parentNode.replaceChild(n2, b2);
+    n2.addEventListener('click', addSite);
+  }
+  wireMultiBtns();
+  renderMultiTable();
+  renderBreadcrumb();
+  renderTopActions();
+}
+
+function getMultiCols(est) {
+  var map = [], seen = {};
+  (est.sites||[]).forEach(function(site) {
+    (site.items||[]).forEach(function(row) {
+      if (row.blank) return;
+      if (!row.group && !row.shortDesc) return;
+      var k = row.group+'|||'+row.shortDesc;
+      if (!seen[k]) { seen[k]=1; map.push({group:row.group, shortDesc:row.shortDesc}); }
+    });
+  });
+  map.sort(function(a, b) {
+    var ga = (a.group||'').toLowerCase(), gb = (b.group||'').toLowerCase();
+    if (ga < gb) return -1; if (ga > gb) return 1;
+    var sa = (a.shortDesc||'').toLowerCase(), sb = (b.shortDesc||'').toLowerCase();
+    if (sa < sb) return -1; if (sa > sb) return 1;
+    return 0;
+  });
+  return map;
+}
+
+function renderMultiTable() {
+  if (ctx.view !== 'multi') return;
+  var est = findEst(ctx.estId);
+  if (!est) return;
+  var cols = getMultiCols(est);
+  var sites = est.sites || [];
+  var groups = [];
+  cols.forEach(function(col) {
+    var g = col.group || '—';
+    if (groups.length && groups[groups.length-1].name === g) { groups[groups.length-1].count++; }
+    else { groups.push({name: g, count: 1}); }
+  });
+
+  var row1 = '<tr>';
+  row1 += '<th rowspan="2" style="min-width:180px;vertical-align:middle">Site Name</th>';
+  row1 += '<th rowspan="2" class="th-q" style="min-width:110px;vertical-align:middle">Total (₹)</th>';
+  groups.forEach(function(g) {
+    var bs = g.count > 1 ? 'border-left:2px solid rgba(255,255,255,.25)' : '';
+    row1 += '<th colspan="'+g.count+'" style="text-align:center;'+bs+';border-bottom:1px solid rgba(255,255,255,.2)">'+esc(g.name)+'</th>';
+  });
+  if (!cols.length) row1 += '<th></th>';
+  row1 += '<th rowspan="2" style="width:56px;vertical-align:middle"></th></tr>';
+
+  var row2 = '<tr>';
+  cols.forEach(function(col, ci) {
+    var isFirst = (ci === 0) || (col.group !== cols[ci-1].group);
+    var bs = isFirst ? 'border-left:2px solid rgba(255,255,255,.25)' : '';
+    row2 += '<th class="th-q" style="'+bs+'font-size:10px;font-weight:500;opacity:.85">'+esc(col.shortDesc||'—')+'</th>';
+  });
+  row2 += '</tr>';
+
+  document.getElementById('multi-thead').innerHTML = row1 + row2;
+
+  var tbody = document.getElementById('multi-tbody');
+  if (!sites.length) {
+    tbody.innerHTML = '<tr><td colspan="'+(cols.length+3)+'" style="text-align:center;padding:36px;color:var(--text-muted)">No sites yet — click "＋ Add Site" to begin</td></tr>';
+  } else {
+    tbody.innerHTML = sites.map(function(site, si) {
+      var sTotal = sumItems(site.items||[]);
+      var qmap = {};
+      (site.items||[]).forEach(function(row) {
+        if (!row.blank && (row.group || row.shortDesc)) { var k=row.group+'|||'+row.shortDesc; qmap[k]=(qmap[k]||0)+(parseFloat(row.qty)||0); }
+      });
+      var td = '<tr>';
+      td += '<td><span class="site-lnk" onclick="openSiteInSingle(\''+est.id+'\','+si+')">'+esc(site.name||'Unnamed Site')+' <span class="site-arr">›</span></span></td>';
+      td += '<td class="td-tc">₹ '+fmtN(sTotal)+'</td>';
+      cols.forEach(function(col, ci) {
+        var isFirst = (ci === 0) || (col.group !== cols[ci-1].group);
+        var bs = isFirst ? 'border-left:2px solid var(--border-strong)' : '';
+        var k=col.group+'|||'+col.shortDesc;
+        td += '<td class="td-qc" style="'+bs+'">'+(qmap[k]!==undefined ? fmtN(qmap[k]) : '')+'</td>';
+      });
+      td += '<td class="tda"><button class="rdel" onclick="deleteSite('+si+')" title="Delete site">✕</button></td>';
+      td += '</tr>';
+      return td;
+    }).join('');
+  }
+  wireMultiPaste(est);
+}
+
+var _mPasteEl = null;
+var _mPasteHandler = null;
+function wireMultiPaste(est) {
+  var tbody = document.getElementById('multi-tbody');
+  if (_mPasteEl && _mPasteHandler) _mPasteEl.removeEventListener('paste', _mPasteHandler);
+  _mPasteEl = tbody;
+  _mPasteHandler = function(e) {
+    var text = (e.clipboardData||window.clipboardData).getData('text');
+    if (!text.trim()) return;
+    e.preventDefault();
+    var lines = text.trim().split('\n').filter(function(l){ return l.trim(); });
+    lines.forEach(function(line) {
+      var name = line.split('\t')[0].trim();
+      if (name) est.sites.push({id:genId(), name:name, items:[makeRow()]});
+    });
+    saveDB(); renderMultiTable();
+    showNotif('✓ Added '+lines.length+' site(s)');
+  };
+  tbody.addEventListener('paste', _mPasteHandler);
+}
+
+function addSite() {
+  if (ctx.view !== 'multi') return;
+  var est = findEst(ctx.estId);
+  if (!est) return;
+  var n = (est.sites||[]).length + 1;
+  est.sites.push({id:genId(), name:'Site '+n, items:[makeRow()]});
+  saveDB(); renderMultiTable();
+  showNotif('✓ Site added — click its name to open');
+}
+
+function deleteSite(si) {
+  if (ctx.view !== 'multi') return;
+  var est = findEst(ctx.estId);
+  if (!est || !confirm('Delete this site and all its items?')) return;
+  est.sites.splice(si, 1);
+  saveDB(); renderMultiTable();
+}
+
+/* ═══════════════════════════════════════════════════════
+   SAVE / LOAD SESSION
+═══════════════════════════════════════════════════════ */
+function saveSession() {
+  if (!DB.length) { showNotif('⚠ No data to save'); return; }
+  var json = JSON.stringify({_v:1, saved:new Date().toISOString(), estimates:DB}, null, 2);
+  var blob = new Blob([json], {type:'application/json'});
+  var url  = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'estimatepro_session_' + new Date().toISOString().slice(0,10) + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  showNotif('✓ Session saved (' + DB.length + ' estimate' + (DB.length!==1?'s':'') + ')');
+}
+
+function loadSession(input) {
+  var file = input.files[0];
+  input.value = '';
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      var parsed = JSON.parse(e.target.result);
+      var incoming = Array.isArray(parsed) ? parsed : (parsed.estimates || []);
+      if (!Array.isArray(incoming) || !incoming.length) throw new Error('No estimates found');
+      var action = DB.length
+        ? confirm('Replace current data with ' + incoming.length + ' estimate(s) from file?\n\nOK = Replace all  |  Cancel = Merge (add without duplicates)')
+        : true;
+      if (action === true) {
+        DB = incoming;
+      } else if (action === false) {
+        var existing = {};
+        DB.forEach(function(e){ existing[e.id] = 1; });
+        var added = 0;
+        incoming.forEach(function(e){ if (!existing[e.id]) { DB.unshift(e); added++; } });
+        showNotif('✓ Merged: ' + added + ' new estimate(s) added');
+        saveDB(); if (ctx.view==='main') renderMain(); return;
+      } else { return; }
+      saveDB();
+      ctx = { view: 'main' };
+      showView('main'); renderMain(); renderBreadcrumb(); renderTopActions();
+      showNotif('✓ Session loaded: ' + DB.length + ' estimate(s)');
+    } catch(err) {
+      alert('Could not load file: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+}
+
+/* ═══════════════════════════════════════════════════════
+   THEME
+═══════════════════════════════════════════════════════ */
+function setTheme(t) {
+  document.documentElement.classList.toggle('dark', t === 'dark');
+  document.getElementById('theme-light').classList.toggle('active', t === 'light');
+  document.getElementById('theme-dark').classList.toggle('active',  t === 'dark');
+  try { localStorage.setItem('ep3-theme', t); } catch(e) {}
+}
+function initTheme() {
+  var saved = 'light';
+  try { saved = localStorage.getItem('ep3-theme') || 'light'; } catch(e) {}
+  setTheme(saved);
+}
+
+/* ── CONTINGENCY RATE LIVE UPDATE ─── */
+document.addEventListener('DOMContentLoaded', function() {
+  var cr = document.getElementById('gs-contingency-rate');
+  if (cr) {
+    cr.addEventListener('input', function() {
+      if (ctx.view === 'single') updateTotals();
+    });
+  }
+});
+
+/* ═══════════════════════════════════════════════════════
+   KEYBOARD NAV
+═══════════════════════════════════════════════════════ */
+document.addEventListener('keydown', function(e) {
+  if (e.key !== 'Escape') return;
+  if (ctx.view === 'single' && ctx.multiId !== undefined) openMulti(ctx.multiId);
+  else if (ctx.view !== 'main') goMain();
+});
+
+/* ═══════════════════════════════════════════════════════
+   PRINT — ANNEXURES
+═══════════════════════════════════════════════════════ */
+window.addEventListener('beforeprint', function() {
+  mathScope = {};
+  var items = ctxGetItems();
+  var container = document.getElementById('printAnnexures');
+  container.innerHTML = '';
+  var hasCalc = items.some(function(r){ return r.calc; });
+  if (!hasCalc) return;
+
+  ['quantity','rate'].forEach(function(type, idx) {
+    var section = document.createElement('div');
+    var hdr = document.createElement('h3');
+    hdr.textContent = idx === 0 ? 'Annexure-I: Quantity Estimate' : 'Annexure-II: Rate Analysis';
+    section.appendChild(hdr);
+    var count = 1;
+    items.forEach(function(row, ri) {
+      if (row.blank || !row.calc) return;
+      var lines = row.calc.split('\n');
+      var itemDiv = document.createElement('div');
+      itemDiv.className = 'annex-item';
+      var title = document.createElement('div');
+      title.className = 'annex-item-title';
+      title.textContent = (count++) + '. [Item S.No.-'+(ri+1)+'] ' + (row.shortDesc||row.desc||'Item');
+      itemDiv.appendChild(title);
+      lines.forEach(function(line) {
+        var expr = line.replace(/\/\/.*?\/\//g,'').replace(/#.*?#/g,'').replace(/!!(.*?)!!/g,'$1').trim();
+        var label = line.replace(/!!(.*?)!!/g,'').replace(/\/\/.*?\/\//g,'').replace(/#(.*?)#/g,'$1').trim();
+        var stepDiv = document.createElement('div');
+        stepDiv.className = 'annex-step';
+        var hiddenMatch = line.match(/!!(.*?)!!/);
+        if (hiddenMatch) {
+          try { var v = math.evaluate(hiddenMatch[1], mathScope); stepDiv.textContent = label + ' = ' + parseFloat(v).toFixed(2); }
+          catch(e) { stepDiv.textContent = label + ' ❌'; }
+          itemDiv.appendChild(stepDiv);
+          return;
+        }
+        if (!expr && label) { stepDiv.textContent = label; itemDiv.appendChild(stepDiv); return; }
+        if (!expr) return;
+        try { var v = math.evaluate(expr, mathScope); stepDiv.textContent = label + ' = ' + parseFloat(v).toFixed(2); }
+        catch(e) { stepDiv.textContent = label + ' ❌'; }
+        itemDiv.appendChild(stepDiv);
+      });
+      section.appendChild(itemDiv);
+    });
+    container.appendChild(section);
+  });
+});
+
+/* ═══════════════════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════════════════ */
+renderMain();
+renderBreadcrumb();
+renderTopActions();
+initTheme();
+</script>
+</body>
+</html>

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Estimate</title>
+  <link rel="stylesheet" href="estimate-app/style.css" />
+</head>
+<body>
+
+  <header>
+    <h1>Estimate</h1>
+    <h2 contenteditable="true">[Name of Office]</h2>
+    <p><strong>Name of Work:</strong> <span contenteditable="true">[Work Name]</span></p>
+    <p><strong>Reference:</strong> <span contenteditable="true">[Enter Reference]</span></p>
+  </header>
+
+  <section class="controls">
+    <button onclick="loadSession()">📂 Load Session</button>
+    <button onclick="saveSession()">💾 Save Session</button>
+    <button onclick="clearSavedSession()">🧹 Reset Data & Session</button>
+    <button onclick="window.print()">🖨️ PDF</button>
+    <button onclick="exportToCSV()">📤 Export CSV</button>
+  </section>
+
+  <input id="searchBox" type="text" placeholder="🔍 Search table..." oninput="filterRows()" />
+
+  <main>
+    <table id="estimateTable">
+      <thead>
+        <tr>
+          <th><input type="checkbox" id="selectAllRows"></th>
+          <th>S.No</th>
+          <th>Ref.</th>
+          <th>Description</th>
+          <th>Qty.</th>
+          <th>Unit</th>
+          <th>Rate</th>
+          <th>Amount</th>
+          <th>Edit</th>
+        </tr>
+      </thead>
+      <tbody></tbody></tbody>
+    </table>
+
+    <div id="grandTotalRow" class="total-summary">
+        <div><strong>Total:</strong> <span id="totalAmountCell">₹0.00</span></div>
+        <div><strong>GST @18%:</strong> <span id="gstAmountCell">₹0.00</span></div>
+        <div><strong>Cess @1%:</strong> <span id="cessAmountCell">₹0.00</span></div>
+        <div><strong>Subtotal (incl. GST + Cess):</strong> <span id="grandWithGSTCessCell">₹0.00</span></div>
+        <div><strong>Contingency @<span id="contingencyRate" contenteditable="true">2.5</span>%:</strong> <span id="contingencyAmountCell">₹0.00</span></div>
+        <div><strong>Final Total:</strong> <span id="finalTotalCell">₹0.00</span></div>
+      </div>      
+  </main>
+
+  <!-- Calculator Modal -->
+  <div id="calcOverlay" class="modal">
+    <div class="modal-content calc-modal">
+      <div class="calc-body">
+        <div class="calc-editor">
+          <textarea id="calcInput" placeholder="Enter expressions"></textarea>
+          <div class="calc-buttons">
+            <button id="calcSave">Save</button>
+            <button id="calcClear">Clear</button>
+            <button id="calcClose">Close</button>
+          </div>
+        </div>
+        <div class="calc-results">
+          <h4>Live Results</h4>
+          <pre id="calcLiveResults"></pre>
+          <footer style="font-size: 0.75em; opacity: 0.45; margin-top: 6px; user-select: none;">
+            Use:<br>
+            !!hidden expressions!!, #comments# or //hidden comments//
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Schedule Modal -->
+  <div id="scheduleModal" class="modal">
+    <div class="modal-content schedule-modal">
+      <div class="modal-header"><h4>Select Items</h4>
+        <input type="text" id="scheduleSearch" placeholder="🔍 Search items..." style="width: 100%; padding: 6px; margin-bottom: 10px;" oninput="filterScheduleModal()" />
+      </div>
+      <div class="modal-body">
+        <div id="scheduleList"></div>
+      </div>      
+      <div class="modal-footer">
+        <button onclick="addSelectedItems()">Add Selected</button>
+        <button onclick="closeScheduleModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Archive Modal -->
+  <div id="archiveModal" class="modal">
+    <div class="modal-content">
+      <h4>Archived Rows</h4>
+      <div id="archiveList" class="modal-body"></div>
+      <div class="modal-footer">
+        <button onclick="closeArchive()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CSV History Panel -->
+  <div id="historyPanel" class="history-panel">
+      <button onclick="openScheduleModal()">🧙 Load CSV</button>
+      <button onclick="downloadSample()">📥 Sample</button>
+    <div class="history-header">
+      <h2>Schedule History</h2>
+      <ul id="historyList"></ul>
+    </div>
+    <div class="row-controls">
+      <div class="side-tab" onclick="toggleHistoryPanel()">📜 History</div>
+      <div class="side-tab" onclick="addRow()">➕ Row</div>
+      <div class="side-tab" onclick="addManualSubtotal()">➕ Subtotal</div>
+      <div class="side-tab" onclick="moveActiveUp()">▼ Up</div>
+      <div class="side-tab" onclick="moveActiveDown()">Down ▲</div>
+      <div class="side-tab" onclick="archiveSelectedRows()">📦 Archive Selected</div>
+      <div class="side-tab" onclick="toggleArchiveModal()">📦 Open Archived Rows</div>
+    </div>
+  </div>
+
+  <!-- Annexures for Print -->
+  <div id="printAnnexures"></div>
+
+  <!-- External Libraries -->
+  <script src="estimate-app/lib/math.js"></script>
+  <script src="estimate-app/script.js"></script>
+</body>
+</html>
