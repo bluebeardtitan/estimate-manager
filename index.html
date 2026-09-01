@@ -484,6 +484,7 @@ var archivedItems = [];
 ═══════════════════════════════════════════════════════ */
 function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 function fmtN(n) { return Number(n||0).toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function normKey(s) { return String(s||'').toLowerCase().replace(/[^a-z0-9]/g,''); }
 function showNotif(msg) {
   var el = document.getElementById('notif');
   el.textContent = msg; el.classList.add('show');
@@ -675,13 +676,16 @@ function renderSingleTable() {
   var items = ctxGetItems();
   var tbody = document.getElementById('single-tbody');
   var sl = 0;
-  var lastGroup = null;
+  var lastGroupKey = null;
   var rows = [];
   items.forEach(function(row, i) {
     if (!row.blank) sl++;
-    if (!row.blank && row.group && row.group !== lastGroup) {
-      rows.push('<tr class="group-hdr" draggable="false"><td colspan="8">'+esc(row.group)+'</td></tr>');
-      lastGroup = row.group;
+    if (!row.blank && row.group) {
+      var gk = normKey(row.group);
+      if (gk !== lastGroupKey) {
+        rows.push('<tr class="group-hdr" draggable="false"><td colspan="8">'+esc(row.group)+'</td></tr>');
+        lastGroupKey = gk;
+      }
     }
     var slDisp = row.blank ? '' : sl;
     var amt = rowAmt(row);
@@ -1293,9 +1297,9 @@ function autoArrangeRows() {
   var blanks = items.filter(function(r){ return r.blank; });
   var data   = items.filter(function(r){ return !r.blank; });
   data.sort(function(a, b) {
-    var ga = (a.group||'').toLowerCase(), gb = (b.group||'').toLowerCase();
+    var ga = normKey(a.group), gb = normKey(b.group);
     if (ga < gb) return -1; if (ga > gb) return 1;
-    var sa = (a.shortDesc||'').toLowerCase(), sb = (b.shortDesc||'').toLowerCase();
+    var sa = normKey(a.shortDesc), sb = normKey(b.shortDesc);
     if (sa < sb) return -1; if (sa > sb) return 1;
     return 0;
   });
@@ -1336,14 +1340,14 @@ function getMultiCols(est) {
     (site.items||[]).forEach(function(row) {
       if (row.blank) return;
       if (!row.group && !row.shortDesc) return;
-      var k = row.group+'|||'+row.shortDesc;
+      var k = normKey(row.group)+'|||'+normKey(row.shortDesc);
       if (!seen[k]) { seen[k]=1; map.push({group:row.group, shortDesc:row.shortDesc}); }
     });
   });
   map.sort(function(a, b) {
-    var ga = (a.group||'').toLowerCase(), gb = (b.group||'').toLowerCase();
+    var ga = normKey(a.group), gb = normKey(b.group);
     if (ga < gb) return -1; if (ga > gb) return 1;
-    var sa = (a.shortDesc||'').toLowerCase(), sb = (b.shortDesc||'').toLowerCase();
+    var sa = normKey(a.shortDesc), sb = normKey(b.shortDesc);
     if (sa < sb) return -1; if (sa > sb) return 1;
     return 0;
   });
@@ -1359,7 +1363,8 @@ function renderMultiTable() {
   var groups = [];
   cols.forEach(function(col) {
     var g = col.group || '—';
-    if (groups.length && groups[groups.length-1].name === g) { groups[groups.length-1].count++; }
+    var gk = normKey(g);
+    if (groups.length && normKey(groups[groups.length-1].name) === gk) { groups[groups.length-1].count++; }
     else { groups.push({name: g, count: 1}); }
   });
 
@@ -1375,7 +1380,7 @@ function renderMultiTable() {
 
   var row2 = '<tr>';
   cols.forEach(function(col, ci) {
-    var isFirst = (ci === 0) || (col.group !== cols[ci-1].group);
+    var isFirst = (ci === 0) || (normKey(col.group) !== normKey(cols[ci-1].group));
     var bs = isFirst ? 'border-left:2px solid rgba(255,255,255,.25)' : '';
     row2 += '<th class="th-q" style="'+bs+'font-size:10px;font-weight:500;opacity:.85">'+esc(col.shortDesc||'—')+'</th>';
   });
@@ -1391,15 +1396,15 @@ function renderMultiTable() {
       var sTotal = sumItems(site.items||[]);
       var qmap = {};
       (site.items||[]).forEach(function(row) {
-        if (!row.blank && (row.group || row.shortDesc)) { var k=row.group+'|||'+row.shortDesc; qmap[k]=(qmap[k]||0)+(parseFloat(row.qty)||0); }
+        if (!row.blank && (row.group || row.shortDesc)) { var k=normKey(row.group)+'|||'+normKey(row.shortDesc); qmap[k]=(qmap[k]||0)+(parseFloat(row.qty)||0); }
       });
       var td = '<tr>';
       td += '<td><span class="site-lnk" onclick="openSiteInSingle(\''+est.id+'\','+si+')">'+esc(site.name||'Unnamed Site')+' <span class="site-arr">›</span></span></td>';
       td += '<td class="td-tc">₹ '+fmtN(sTotal)+'</td>';
       cols.forEach(function(col, ci) {
-        var isFirst = (ci === 0) || (col.group !== cols[ci-1].group);
+        var isFirst = (ci === 0) || (normKey(col.group) !== normKey(cols[ci-1].group));
         var bs = isFirst ? 'border-left:2px solid var(--border-strong)' : '';
-        var k=col.group+'|||'+col.shortDesc;
+        var k=normKey(col.group)+'|||'+normKey(col.shortDesc);
         td += '<td class="td-qc" style="'+bs+'">'+(qmap[k]!==undefined ? fmtN(qmap[k]) : '')+'</td>';
       });
       td += '<td class="tda"><button class="rdel" onclick="deleteSite('+si+')" title="Delete site">✕</button></td>';
