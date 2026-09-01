@@ -118,11 +118,23 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
 input[type=number]{-moz-appearance:textfield;appearance:textfield}
 .td-amt{padding:0 10px;font-family:var(--mono);font-size:13px;text-align:right;white-space:nowrap;color:var(--primary);font-weight:500;min-width:96px}
 .td-sl{padding:0 8px;font-family:var(--mono);font-size:12px;text-align:center;color:var(--text-muted);user-select:none;min-width:42px}
-.drag-h{cursor:grab;color:var(--text-muted);padding:0 8px;font-size:16px;user-select:none;display:inline-block;line-height:36px}
-.drag-h:active{cursor:grabbing}
-.rdel{width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;background:transparent;border:none;cursor:pointer;color:var(--text-muted);font-size:14px;border-radius:4px;transition:all .15s}
+.rdel{width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;background:transparent;border:none;cursor:pointer;color:var(--text-muted);font-size:13px;border-radius:4px;transition:all .15s}
 .rdel:hover{background:var(--danger-light);color:var(--danger)}
-.tda{padding:0 4px;width:52px;text-align:center}
+.calc-btn{width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;background:transparent;border:none;cursor:pointer;color:var(--text-muted);font-size:13px;border-radius:4px;transition:all .15s}
+.calc-btn:hover{background:var(--surface2);color:var(--accent)}
+.tda{padding:0 4px;width:92px;text-align:center;white-space:nowrap}
+.td-meta{padding:0 8px;min-width:210px;vertical-align:middle}
+.td-meta .badge{display:inline-block;font-size:11px;line-height:1;padding:5px 9px;border-radius:5px;cursor:text;transition:all .15s;max-width:94px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;vertical-align:middle}
+.td-meta .badge:hover{filter:brightness(.97)}
+.td-meta .badge-group{background:var(--badge-bg,#eef1f5);color:var(--badge-ink,#55707f);border:1px dashed var(--border-strong,#b8c4cf);margin-right:5px;font-weight:500}
+.td-meta .badge-short{background:var(--badge-bg,#eef1f5);color:var(--badge-ink,#55707f);border:1px dashed var(--border-strong,#b8c4cf)}
+.td-meta .badge-group.badge-set{background:var(--primary);color:#fff;border:1px solid var(--primary);font-weight:600}
+.td-meta .badge-short.badge-set{background:var(--badge-bg,#eef1f5);color:var(--ink,#1b3d52);border:1px solid var(--accent);font-weight:600}
+.td-meta .ref-note{margin-top:4px;font-size:10px;color:var(--text-muted);font-family:var(--mono);line-height:1.2}
+.td-meta .ref-note::before{content:'ref ';color:var(--text-muted);opacity:.6}
+.td-meta .badge-input{width:92px;height:22px;padding:0 7px;border:1.5px solid var(--accent);border-radius:5px;font-family:var(--font);font-size:11px;color:var(--ink,#16283a);background:#fff;outline:none;transition:all .15s;vertical-align:middle}
+.td-meta .badge-input.badge-input-short{width:94px}
+.td-meta .badge-input:focus{box-shadow:0 0 0 3px rgba(217,135,15,.15)}
 .tbl-foot{padding:12px 16px;border-top:1.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--surface);flex-wrap:wrap;gap:8px}
 .foot-l{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .foot-r{font-size:13px;color:var(--text-soft)}
@@ -164,10 +176,6 @@ table.mt td.col-group-first,table.mt th.col-group-first{border-left:2px solid rg
 .gst-summary .gs-item .gs-label{font-size:11px;color:var(--text-soft);font-weight:500;text-transform:uppercase;letter-spacing:.3px}
 .gst-summary .gs-item .gs-val{font-family:var(--mono);font-size:14px;font-weight:600;color:var(--primary)}
 .gst-summary .gs-item.gs-final .gs-val{color:var(--accent);font-size:16px}
-.row-checkbox{width:16px;height:16px;cursor:pointer;margin:0;display:block}
-td.td-cb{padding:0 6px;width:30px;text-align:center}
-.calc-btn{width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;background:transparent;border:none;cursor:pointer;color:var(--text-muted);font-size:15px;border-radius:4px;transition:all .15s;line-height:1}
-.calc-btn:hover{background:var(--badge-s-bg);color:var(--badge-s-text)}
 .calc-modal-body{display:flex;gap:20px;min-height:260px}
 .calc-editor{flex:2;display:flex;flex-direction:column;gap:8px}
 .calc-editor textarea{width:100%;min-height:180px;padding:10px;border:1.5px solid var(--border);border-radius:var(--radius);font-family:var(--mono);font-size:13px;resize:vertical;background:var(--white);color:var(--text)}
@@ -208,7 +216,7 @@ td.td-cb{padding:0 6px;width:30px;text-align:center}
 .annex-step{margin-left:15px;margin-bottom:2px;font-family:monospace;color:#333}
 @media print{
   #topbar,.side-tabs,.history-panel,.search-bar,.btn,.paste-hint,.notif,.modal-overlay,
-  .rdel,.calc-btn,.drag-h,.card-del,.row-checkbox,.tbl-foot .foot-l,
+  .rdel,.calc-btn,.card-del,.tbl-foot .foot-l,.badge-input,
   #btn-add-row,#btn-blank-row,#btn-auto-arrange,#btn-clear-all{display:none!important}
   body{background:#fff;color:#000;font-size:12px}
   .tbl-wrap{border:none;box-shadow:none}
@@ -217,6 +225,9 @@ td.td-cb{padding:0 6px;width:30px;text-align:center}
   table.et tbody tr{border-bottom:1px solid #ccc}
   table.et td input{background:#fff!important;box-shadow:none!important;border:none!important;padding:4px 8px;height:auto}
   td.td-amt{padding:4px 10px}
+  .td-meta .badge{border:1px solid #999!important;background:#fff!important;color:#000!important;padding:2px 7px!important}
+  .td-meta .badge-set{border-color:#000!important;font-weight:700}
+  .td-meta .ref-note{color:#666!important}
   .gst-summary{border-top:2px solid #333;padding:10px 16px}
   #printAnnexures{display:block;margin-top:30px}
   #printAnnexures>div{page-break-before:always;margin-bottom:20px}
@@ -274,24 +285,21 @@ td.td-cb{padding:0 6px;width:30px;text-align:center}
     <div class="tbl-scroll">
       <table class="et" id="single-table">
         <colgroup>
-          <col style="width:30px"><col style="width:36px"><col style="width:44px">
-          <col style="width:120px"><col style="width:140px">
-          <col style="width:110px"><col style="min-width:200px">
-          <col style="width:80px"><col style="width:88px">
-          <col style="width:68px"><col style="width:100px">
-          <col style="width:36px"><col style="width:52px">
+          <col style="width:44px"><col style="width:210px"><col style="min-width:220px">
+          <col style="width:76px"><col style="width:86px">
+          <col style="width:64px"><col style="width:100px">
+          <col style="width:96px">
         </colgroup>
         <thead>
           <tr>
-            <th><input type="checkbox" id="selectAllRows" onchange="toggleSelectAll(this)"></th>
-            <th></th><th>Sl.</th><th>Group</th><th>Short Desc.</th>
-            <th>Ref. <span style="font-weight:400;opacity:.6;font-size:10px">(optional)</span></th>
+            <th>Sl.</th>
+            <th>Group / Short Desc.</th>
             <th>Description of Items</th>
             <th style="text-align:right">Qty</th>
             <th style="text-align:right">Rate</th>
             <th>Unit</th>
             <th style="text-align:right">Amount</th>
-            <th></th><th></th>
+            <th></th>
           </tr>
         </thead>
         <tbody id="single-tbody"></tbody>
@@ -302,7 +310,6 @@ td.td-cb{padding:0 6px;width:30px;text-align:center}
         <button class="btn btn-secondary btn-sm" id="btn-add-row">＋ Add Row</button>
         <button class="btn btn-ghost btn-sm" id="btn-blank-row">＋ Blank Row</button>
         <button class="btn btn-ghost btn-sm" id="btn-auto-arrange">⇅ Auto-Arrange</button>
-        <button class="btn btn-ghost btn-sm" id="btn-archive-selected" title="Archive selected rows">📦 Archive</button>
         <button class="btn btn-ghost btn-sm" id="btn-open-archived" title="View archived rows">📂 Archived</button>
         <button class="btn btn-ghost btn-sm btn-danger-ghost" id="btn-clear-all">🗑 Clear All</button>
         <span class="paste-hint">💡 Paste from Excel</span>
@@ -655,7 +662,6 @@ function wireSingleButtons() {
   wireBtn('btn-blank-row', function(){ addBlankRow(); });
   wireBtn('btn-auto-arrange', function(){ autoArrangeRows(); });
   wireBtn('btn-clear-all', function(){ clearAllRows(); });
-  wireBtn('btn-archive-selected', function(){ archiveSelectedRows(); });
   wireBtn('btn-open-archived', function(){ openArchiveModal(); });
 }
 
@@ -671,27 +677,32 @@ function renderSingleTable() {
   items.forEach(function(row, i) {
     if (!row.blank) sl++;
     if (!row.blank && row.group && row.group !== lastGroup) {
-      rows.push('<tr class="group-hdr" draggable="false"><td colspan="13">'+esc(row.group)+'</td></tr>');
+      rows.push('<tr class="group-hdr" draggable="false"><td colspan="8">'+esc(row.group)+'</td></tr>');
       lastGroup = row.group;
     }
     var slDisp = row.blank ? '' : sl;
     var amt = rowAmt(row);
     var amtDisp = amt !== null ? '₹ '+fmtN(amt) : '';
     var hasCalc = row.calc ? ' style="color:var(--accent)"' : '';
+    var gBadge = row.group ? esc(row.group) : 'Group';
+    var sBadge = row.shortDesc ? esc(row.shortDesc) : 'Short Desc';
+    var gClass = row.group ? ' badge-set' : '';
+    var sClass = row.shortDesc ? ' badge-set' : '';
+    var refNote = row.ref ? '<div class="ref-note">'+esc(row.ref)+'</div>' : '';
     rows.push('<tr draggable="true" data-idx="'+i+'">'+
-      '<td class="td-cb"><input type="checkbox" class="row-checkbox" data-idx="'+i+'" onchange="updateRowCheckbox()"></td>'+
-      '<td class="tda"><span class="drag-h" draggable="false">⠿</span></td>'+
       '<td class="td-sl">'+slDisp+'</td>'+
-      '<td><input value="'+esc(row.group)+'" placeholder="Group" onchange="updateCell('+i+',\'group\',this.value)"></td>'+
-      '<td><input value="'+esc(row.shortDesc)+'" placeholder="Short Desc" onchange="updateCell('+i+',\'shortDesc\',this.value)"></td>'+
-      '<td><input value="'+esc(row.ref||'')+'" placeholder="Ref." style="color:var(--text-soft)" onchange="updateCell('+i+',\'ref\',this.value)"></td>'+
-      '<td><input value="'+esc(row.desc)+'" placeholder="Description of item" onchange="updateCell('+i+',\'desc\',this.value)"></td>'+
-      '<td><input type="number" value="'+(row.qty!==''?row.qty:'')+'" placeholder="0" min="0" style="text-align:right" onchange="updateCell('+i+',\'qty\',this.value)"></td>'+
-      '<td><input type="number" value="'+(row.rate!==''?row.rate:'')+'" placeholder="0.00" min="0" step="0.01" style="text-align:right" onchange="updateCell('+i+',\'rate\',this.value)"></td>'+
-      '<td><input value="'+esc(row.unit)+'" placeholder="Unit" onchange="updateCell('+i+',\'unit\',this.value)"></td>'+
+      '<td class="td-meta">'+
+        '<span class="badge badge-group'+gClass+'" onclick="editBadge('+i+',\'group\',this)">'+gBadge+'</span>'+
+        '<span class="badge badge-short'+sClass+'" onclick="editBadge('+i+',\'shortDesc\',this)">'+sBadge+'</span>'+
+        refNote+
+      '</td>'+
+      '<td><input data-field="desc" value="'+esc(row.desc)+'" placeholder="Description of item" onchange="updateCell('+i+',\'desc\',this.value)"></td>'+
+      '<td><input data-field="qty" type="number" value="'+(row.qty!==''?row.qty:'')+'" placeholder="0" min="0" style="text-align:right" onchange="updateCell('+i+',\'qty\',this.value)"></td>'+
+      '<td><input data-field="rate" type="number" value="'+(row.rate!==''?row.rate:'')+'" placeholder="0.00" min="0" step="0.01" style="text-align:right" onchange="updateCell('+i+',\'rate\',this.value)"></td>'+
+      '<td><input data-field="unit" value="'+esc(row.unit)+'" placeholder="Unit" onchange="updateCell('+i+',\'unit\',this.value)"></td>'+
       '<td class="td-amt" id="amt-'+i+'">'+amtDisp+'</td>'+
-      '<td class="tda"><button class="calc-btn" onclick="openCalculator('+i+')" title="Calculator"'+hasCalc+'>🔢</button></td>'+
-      '<td class="tda"><button class="rdel" onclick="deleteRow('+i+')" title="Delete">✕</button></td>'+
+      '<td class="tda"><button class="calc-btn" onclick="openCalculator('+i+')" title="Calculator"'+hasCalc+'>🔢</button>'+
+        '<button class="rdel" onclick="deleteRow('+i+')" title="Send to archive">🗑</button></td>'+
       '</tr>');
   });
   tbody.innerHTML = rows.join('');
@@ -709,6 +720,37 @@ function updateCell(idx, field, value) {
   var el = document.getElementById('amt-'+idx);
   if (el) el.textContent = amt!==null ? '₹ '+fmtN(amt) : '';
   updateTotals();
+}
+
+function editBadge(idx, field, spanEl) {
+  var items = ctxGetItems();
+  if (!items[idx]) return;
+  var input = document.createElement('input');
+  input.type = 'text';
+  input.className = 'badge-input badge-input-' + field;
+  input.value = items[idx][field] || '';
+  input.placeholder = field === 'group' ? 'Group' : 'Short Desc';
+  input.spellcheck = false;
+  spanEl.replaceWith(input);
+  input.focus();
+  input.select();
+  var done = false;
+  function commit() {
+    if (done) return;
+    done = true;
+    updateCell(idx, field, input.value);
+    renderSingleTable();
+  }
+  function cancel() {
+    if (done) return;
+    done = true;
+    renderSingleTable();
+  }
+  input.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') { e.preventDefault(); commit(); }
+    else if (e.key === 'Escape') { e.preventDefault(); cancel(); }
+  });
+  input.addEventListener('blur', commit);
 }
 
 function updateTotals() {
@@ -769,10 +811,14 @@ function clearAllRows() {
 
 function deleteRow(idx) {
   var items = ctxGetItems();
+  if (!items[idx] || items[idx].blank) return;
+  archivedItems.push(JSON.parse(JSON.stringify(items[idx])));
   items.splice(idx, 1);
   if (!items.length) items.push(makeRow());
   ctxSetItems(items);
+  saveArchived();
   renderSingleTable();
+  showNotif('🗑 Row moved to archive');
 }
 
 /* ── DRAG & DROP ─────────────────── */
@@ -822,16 +868,6 @@ function filterSingleRows() {
     var text = (row.group+' '+row.shortDesc+' '+row.ref+' '+row.desc+' '+row.unit).toLowerCase();
     tr.style.display = text.includes(q) ? '' : 'none';
   });
-}
-
-/* ── CHECKBOXES ──────────────────── */
-function toggleSelectAll(cb) {
-  document.querySelectorAll('.row-checkbox').forEach(function(c){ c.checked = cb.checked; });
-}
-function updateRowCheckbox() {
-  var all = document.querySelectorAll('.row-checkbox');
-  var checked = document.querySelectorAll('.row-checkbox:checked');
-  document.getElementById('selectAllRows').checked = all.length > 0 && all.length === checked.length;
 }
 
 /* ── CALCULATOR ──────────────────── */
@@ -1077,8 +1113,11 @@ function parseTSV(raw) {
 }
 
 function focusedColIndex(inputEl, tr) {
-  var inputs = tr.querySelectorAll('input');
-  for (var i = 0; i < inputs.length; i++) if (inputs[i] === inputEl) return i;
+  var field = inputEl.getAttribute('data-field');
+  if (field) {
+    var fi = COL_FIELDS.indexOf(field);
+    if (fi !== -1) return fi;
+  }
   return 0;
 }
 
@@ -1118,27 +1157,6 @@ function handlePaste(e) {
 }
 
 /* ── ARCHIVE ─────────────────────── */
-function archiveSelectedRows() {
-  var items = ctxGetItems();
-  var checked = document.querySelectorAll('.row-checkbox:checked');
-  if (!checked.length) { showNotif('⚠ Select rows to archive'); return; }
-  var indices = [];
-  checked.forEach(function(cb) {
-    var idx = parseInt(cb.dataset.idx);
-    if (!isNaN(idx) && items[idx] && !items[idx].blank) indices.push(idx);
-  });
-  indices.sort(function(a,b){ return b-a; });
-  indices.forEach(function(idx) {
-    archivedItems.push(JSON.parse(JSON.stringify(items[idx])));
-    items.splice(idx, 1);
-  });
-  if (!items.length) items.push(makeRow());
-  ctxSetItems(items);
-  saveArchived();
-  renderSingleTable();
-  showNotif('📦 ' + indices.length + ' item(s) archived');
-}
-
 function saveArchived() {
   var e;
   if (ctx.multiId !== undefined) {
