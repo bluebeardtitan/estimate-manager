@@ -180,6 +180,10 @@ td.td-cb{padding:0 6px;width:30px;text-align:center}
 .schedule-table tbody tr:hover{background:var(--row-hover)}
 .schedule-table input[type=checkbox]{cursor:pointer}
 .modal-search{margin-bottom:10px}
+.schedule-match{background:var(--accent-light) !important;animation:fadeIn .2s ease}
+.schedule-match:hover{background:var(--accent-light) !important}
+.current-match{outline:2px solid var(--accent);outline-offset:-2px}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
 .modal-search input{width:100%;padding:8px 12px;border:1.5px solid var(--border);border-radius:var(--radius);font-family:var(--font);font-size:13px;background:var(--white);color:var(--text)}
 .modal-search input:focus{outline:none;border-color:var(--accent)}
 .archive-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius);margin-bottom:6px;background:var(--surface)}
@@ -373,7 +377,7 @@ td.td-cb{padding:0 6px;width:30px;text-align:center}
 <div class="modal-overlay" id="schedule-modal">
   <div class="modal modal-full" style="display:flex;flex-direction:column;max-height:90vh">
     <h2>📋 Load Schedule from CSV</h2>
-    <div class="modal-search"><input type="text" id="scheduleSearch" placeholder="🔍 Search items..." oninput="filterScheduleModal()"></div>
+    <div class="modal-search"><input type="text" id="scheduleSearch" placeholder="🔍 Search & scroll (Enter to navigate)..." oninput="filterScheduleModal()"></div>
     <div style="flex:1;overflow-y:auto;margin-bottom:12px"><div id="scheduleList"></div></div>
     <div class="modal-actions" style="margin-top:0">
       <span style="font-size:11px;color:var(--text-soft);margin-right:auto">Reference, Description, Unit, Rate</span>
@@ -954,13 +958,42 @@ function populateModal() {
   c.appendChild(table);
 }
 
+var matchedRows = [];
+var matchIndex = -1;
+
 function filterScheduleModal() {
   var q = document.getElementById('scheduleSearch').value.toLowerCase().trim();
+  matchedRows.forEach(function(row) { row.classList.remove('schedule-match'); });
+  matchedRows.forEach(function(row) { row.classList.remove('current-match'); });
+  matchedRows = [];
+  matchIndex = -1;
+
+  if (!q) return;
+
   var rows = document.querySelectorAll('#scheduleList table tbody tr');
-  rows.forEach(function(r){
-    r.style.display = (!q || r.textContent.toLowerCase().includes(q)) ? '' : 'none';
+  rows.forEach(function(row) {
+    if (row.textContent.toLowerCase().includes(q)) {
+      row.classList.add('schedule-match');
+      matchedRows.push(row);
+    }
   });
+
+  if (matchedRows.length > 0) {
+    matchIndex = 0;
+    matchedRows[0].classList.add('current-match');
+    matchedRows[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
 }
+
+document.getElementById('scheduleSearch').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && matchedRows.length > 0) {
+    e.preventDefault();
+    matchedRows[matchIndex].classList.remove('current-match');
+    matchIndex = (matchIndex + 1) % matchedRows.length;
+    matchedRows[matchIndex].classList.add('current-match');
+    matchedRows[matchIndex].scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+});
 
 function addSelectedItems() {
   var items = ctxGetItems();
@@ -970,7 +1003,7 @@ function addSelectedItems() {
     var idx = parseInt(chk.dataset.idx);
     var si = scheduleItems[idx];
     if (!si) return;
-    items.push(makeRow({ group:'', shortDesc:si.description||'', ref:si.reference||'', desc:'', qty:'', rate:si.rate||'', unit:si.unit||'' }));
+    items.push(makeRow({ group:'', shortDesc:'', ref:si.reference||'', desc:si.description||'', qty:'', rate:si.rate||'', unit:si.unit||'' }));
   });
   ctxSetItems(items);
   renderSingleTable();
