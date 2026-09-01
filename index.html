@@ -209,58 +209,66 @@ tr.group-hdr:hover{background:var(--group-hdr-bg) !important}
 .side-tab:hover{width:38px}
 .side-tab.st-blue{background:#5b7db5}.side-tab.st-pink{background:#d4808a}.side-tab.st-teal{background:#5ba89e}.side-tab.st-orange{background:#d4a050}
 /* ── PRINT DOCUMENT ─────────────────────────────────────
-   A dedicated, beautifully ruled estimate document is built
-   into #print-doc on beforeprint; the live UI is hidden.  */
+   Formal "Abstract of Estimate" tender form.
+   Ink-and-paper: warm-neutral ink on white, hairline rules,
+   monospaced figures, double-rule close under the final
+   total, and an approvals block for signing.  */
 #print-doc{display:none}
 #print-doc, #print-doc *{box-sizing:border-box}
-.pl-hero{font-family:'IBM Plex Serif',serif;color:#11161b}
-.pl-eyebrow{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2.5px;color:#5a6672;text-transform:uppercase;margin-bottom:9px}
-.pl-eyebrow .dot{color:#1b3d52}
-.pl-rule{height:3px;background:#1b3d52;width:100%;margin-bottom:14px}
-.pl-rule::after{content:'';display:block;height:1px;background:#9aa4ad;margin-top:2px}
-.pl-title{font-size:26px;font-weight:600;line-height:1.15;letter-spacing:-.2px;margin:0 0 4px}
-.pl-sub{font-size:13px;color:#5a6672;font-family:'IBM Plex Sans',sans-serif;margin-bottom:16px}
-.pl-meta{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:1px solid #1b3d52;margin-top:14px}
-.pl-meta .m-cell{padding:8px 12px 8px 0;border-right:1px solid #d8dde3}
-.pl-meta .m-cell:last-child{border-right:none}
-.pl-meta .m-k{font-size:8px;letter-spacing:1.2px;text-transform:uppercase;color:#5a6672;font-family:'IBM Plex Mono',monospace;margin-bottom:3px}
-.pl-meta .m-v{font-size:12px;color:#1a1f24;font-family:'IBM Plex Sans',sans-serif;line-height:1.3}
-.pl-lead{margin:26px 0 12px}
-.pl-lead .pl-l-title{font-family:'IBM Plex Serif',serif;font-size:15px;font-weight:600;color:#1b3d52;display:flex;align-items:baseline;gap:10px}
-.pl-lead .pl-l-title::after{content:'';flex:1;border-bottom:1px solid #1b3d52}
-.pl-lead .pl-l-k{font-family:'IBM Plex Mono',monospace;font-size:10px;color:#5a6672;letter-spacing:.4px}
-table.pl-table{width:100%;border-collapse:collapse;font-family:'IBM Plex Sans',sans-serif}
-table.pl-table thead th{background:#1b3d52;color:#fff;font-size:9px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:8px 10px;text-align:left;border:none;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.pl-doc{font-family:'IBM Plex Sans',sans-serif;color:#181715;max-width:660px;margin:0 auto}
+/* Letterhead strip — doc serial + form code */
+.pl-strip{display:flex;justify-content:space-between;align-items:baseline;font-family:'IBM Plex Mono',monospace;font-size:8.5px;letter-spacing:1.6px;text-transform:uppercase;color:#6f6c65;margin-bottom:7px}
+.pl-strip strong{font-weight:500;color:#3f3e3a}
+.pl-rule{height:2px;background:#181715;margin:5px 0 2px}
+.pl-rule-sub{height:1px;background:#c9c6bd;margin-bottom:18px}
+/* Masthead */
+.pl-title{font-family:'IBM Plex Serif',serif;font-size:23px;font-weight:600;line-height:1.18;letter-spacing:-.2px;margin:0 0 3px}
+.pl-sub{font-size:11.5px;color:#3f3e3a;font-family:'IBM Plex Mono',monospace;letter-spacing:.2px;margin-bottom:14px}
+/* Meta — ruled three-box grid like a paper form */
+.pl-meta{display:grid;grid-template-columns:repeat(3,1fr);border-top:1.5px solid #181715;border-left:1.5px solid #181715;margin-top:16px}
+.pl-meta .m-cell{padding:8px 12px;border-right:1.5px solid #181715;border-bottom:1.5px solid #181715}
+.pl-meta .m-k{font-size:8px;letter-spacing:1.4px;text-transform:uppercase;color:#6f6c65;font-family:'IBM Plex Mono',monospace;margin-bottom:4px}
+.pl-meta .m-v{font-size:12.5px;color:#181715;font-weight:500;line-height:1.3}
+/* Section lead */
+.pl-lead{margin:24px 0 9px;display:flex;justify-content:space-between;align-items:baseline}
+.pl-lead .pl-l-title{font-family:'IBM Plex Serif',serif;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:1.2px;color:#181715}
+.pl-lead .pl-l-k{font-family:'IBM Plex Mono',monospace;font-size:9px;color:#6f6c65;letter-spacing:.4px;text-transform:uppercase}
+/* Ruled table */
+table.pl-table{width:100%;border-collapse:collapse;border-top:1.5px solid #181715;border-left:1.5px solid #181715}
+table.pl-table thead th,table.pl-table tbody td{border-right:1.5px solid #181715;text-align:left;vertical-align:top}
+table.pl-table thead th{font-family:'IBM Plex Mono',monospace;font-size:8.5px;font-weight:500;letter-spacing:1.1px;text-transform:uppercase;padding:7px 10px;background:#f2f0ea;border-bottom:1.5px solid #181715;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 table.pl-table thead th.al,table.pl-table tbody td.al{text-align:right}
-table.pl-table tbody td{padding:7px 10px;font-size:11px;color:#1a1f24;border-bottom:1px solid #e3e8ed;vertical-align:top}
-table.pl-table tbody tr:nth-child(even){background:#f7f9fb}
-table.pl-table td.pl-sl{font-family:'IBM Plex Mono',monospace;color:#5a6672}
-table.pl-table td.pl-money{font-family:'IBM Plex Mono',monospace;text-align:right;white-space:nowrap;color:#1b3d52}
-table.pl-table td.pl-ref{font-family:'IBM Plex Mono',monospace;font-size:9px;color:#8a96a0;white-space:nowrap;margin-top:2px}
-table.pl-table tr.pl-group td{background:#eef2f5;color:#2c4151;font-size:9.5px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:5px 10px;border-bottom:1px solid #d8dde3}
-table.pl-table tr.pl-total td{background:#f1f3f5;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;color:#11161b;border-top:1.5px solid #1b3d52}
-table.pl-table tr.pl-total td.pl-money{color:#1b3d52}
-/* Totals ledger — the signature moment */
-.pl-ledger{margin:24px 0 6px;display:flex;justify-content:flex-end;page-break-inside:avoid}
-.pl-ledger-inner{width:300px;border:1px solid #1b3d52}
-.pl-ledger-hd{background:#1b3d52;color:#fff;padding:7px 14px;font-size:9px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;font-family:'IBM Plex Mono',monospace;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-.pl-ledger-inner .pl-lr{display:flex;justify-content:space-between;align-items:baseline;padding:6px 14px;font-size:11px;color:#2c4151;border-top:1px solid #e3e8ed}
-.pl-ledger-inner .pl-lr .l-l{color:#4a5863}
-.pl-ledger-inner .pl-lr .l-v{font-family:'IBM Plex Mono',monospace;text-align:right}
-.pl-ledger-inner .pl-lr.pl-strong .l-v{font-weight:600}
-.pl-ledger-inner .pl-final{display:flex;justify-content:space-between;align-items:baseline;background:#f6f3ea;padding:9px 14px;border-top:2px solid #1b3d52;font-family:'IBM Plex Mono',monospace;font-size:15px;font-weight:600;color:#1b3d52}
-.pl-ledger-inner .pl-final .l-l{font-family:'IBM Plex Sans',sans-serif;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:#2c4151}
-.pl-note{font-size:9px;color:#8a96a0;font-family:'IBM Plex Mono',monospace;margin-top:6px;text-transform:uppercase;letter-spacing:.5px}
-.pl-sign{margin-top:56px;display:grid;grid-template-columns:1fr auto;align-items:center;page-break-inside:avoid}
-.pl-sign .s-block{text-align:center}
-.pl-sign .s-line{width:170px;border-top:1px solid #11161b;margin:0 auto 4px;display:inline-block}
-.pl-sign .s-cap{font-size:9px;color:#5a6672;letter-spacing:1px;text-transform:uppercase;font-family:'IBM Plex Mono',monospace}
+table.pl-table tbody td{padding:7px 10px;font-size:11px;border-bottom:1px solid #c9c6bd}
+table.pl-table td.pl-sl{font-family:'IBM Plex Mono',monospace;color:#6f6c65}
+table.pl-table td.pl-money{font-family:'IBM Plex Mono',monospace;text-align:right;white-space:nowrap;color:#181715}
+table.pl-table td.pl-ref{font-family:'IBM Plex Mono',monospace;font-size:8.5px;color:#6f6c65;white-space:nowrap;margin-top:2px}
+table.pl-table tr.pl-group td{background:#f2f0ea;font-family:'IBM Plex Mono',monospace;font-size:8.5px;font-weight:500;letter-spacing:1.3px;text-transform:uppercase;padding:5px 10px;border-bottom:1.5px solid #181715;color:#3f3e3a;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+table.pl-table tr.pl-total td{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;color:#181715;border-top:1.5px solid #181715;border-bottom:1.5px solid #181715;background:#f2f0ea}
+/* Abstract of cost — the ledger box */
+.pl-ledger{margin:22px 0 0;display:flex;justify-content:flex-end;page-break-inside:avoid}
+.pl-ledger-inner{width:300px}
+.pl-ledger-hd{font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:500;letter-spacing:1.6px;text-transform:uppercase;color:#181715;padding:6px 2px 5px;border-top:1.5px solid #181715;border-bottom:1px solid #c9c6bd}
+.pl-ledger-inner .pl-lr{display:flex;justify-content:space-between;align-items:baseline;padding:5px 2px;font-size:10.5px;border-bottom:1px solid #c9c6bd}
+.pl-ledger-inner .pl-lr .l-l{color:#3f3e3a}
+.pl-ledger-inner .pl-lr .l-v{font-family:'IBM Plex Mono',monospace;text-align:right;color:#181715}
+.pl-ledger-inner .pl-lr.pl-strong{border-top:1.5px solid #181715;border-bottom:none}
+.pl-ledger-inner .pl-lr.pl-strong .l-l,.pl-ledger-inner .pl-lr.pl-strong .l-v{font-weight:600}
+/* Double-rule close under the final total — the accountancy signature */
+.pl-ledger-inner .pl-final{display:flex;justify-content:space-between;align-items:baseline;padding:7px 2px;border-top:2px solid #181715;box-shadow:0 1.5px 0 #181715;margin-top:6px;font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;color:#181715}
+.pl-ledger-inner .pl-final .l-l{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:#3f3e3a;font-weight:500}
+.pl-note{font-size:8.5px;color:#6f6c65;font-family:'IBM Plex Mono',monospace;margin-top:14px;text-transform:uppercase;letter-spacing:.6px}
+/* Approvals block — prepared by / approved by */
+.pl-sign{margin-top:42px;border-top:1px solid #c9c6bd;padding-top:26px;display:grid;grid-template-columns:1fr 1fr;gap:40px;page-break-inside:avoid}
+.pl-sign .s-block{}
+.pl-sign .s-cap{font-size:8.5px;color:#6f6c65;letter-spacing:1.3px;text-transform:uppercase;font-family:'IBM Plex Mono',monospace;margin-bottom:4px}
+.pl-sign .s-line{width:150px;border-top:1px solid #181715;margin-top:52px;margin-bottom:2px}
+.pl-sign .s-role{font-size:10px;color:#3f3e3a;font-family:'IBM Plex Mono',monospace;text-transform:uppercase;letter-spacing:.5px}
 /* Annexures (calculation sheets) */
 #printAnnexures{display:none}
-#printAnnexures h3{font-family:'IBM Plex Serif',serif;font-size:15px;font-weight:600;color:#1b3d52;margin:0 0 12px;border-bottom:1px solid #1b3d52;padding-bottom:5px}
+#printAnnexures h3{font-family:'IBM Plex Serif',serif;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:1.2px;color:#181715;margin:0 0 12px;border-bottom:1.5px solid #181715;padding-bottom:6px}
 .annex-item{margin:0 0 8px;padding:0}
-.annex-item-title{font-family:'IBM Plex Serif',serif;font-size:11.5px;font-weight:600;color:#1b3d52;margin-bottom:3px}
-.annex-step{margin-left:14px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:#333;line-height:1.5}
+.annex-item-title{font-family:'IBM Plex Serif',serif;font-size:11.5px;font-weight:600;color:#181715;margin-bottom:3px}
+.annex-step{margin-left:14px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:#3f3e3a;line-height:1.5}
 @media print{
   @page{size:A4;margin:14mm 13mm 16mm 13mm}
   html,body{background:#fff!important}
@@ -456,8 +464,6 @@ table.pl-table tr.pl-total td.pl-money{color:#1b3d52}
 <div class="side-tabs">
   <button class="side-tab st-blue" onclick="toggleHistoryPanel()">📜 History</button>
   <button class="side-tab st-pink" onclick="openScheduleModal()">📋 Schedule</button>
-  <button class="side-tab st-teal" onclick="exportCSV()">⬇ Export</button>
-  <button class="side-tab st-orange" onclick="window.print()">🖨 Print</button>
 </div>
 
 <!-- PRINT DOCUMENT -->
@@ -582,12 +588,11 @@ function renderBreadcrumb() {
 }
 function renderTopActions() {
   var ta = document.getElementById('topbar-actions');
-  if (ctx.view === 'single') {
-    ta.innerHTML = '<button class="btn btn-topbar btn-sm" onclick="exportCSV()">⬇ Export CSV</button>' +
-      '<button class="btn btn-topbar btn-sm" onclick="window.print()">🖨 Print</button>';
-  } else {
-    ta.innerHTML = '';
-  }
+  var html = (ctx.view === 'single')
+    ? '<button class="btn btn-topbar btn-sm" onclick="exportCSV()">⬇ Export</button>'
+    : '';
+  html += '<button class="btn btn-topbar btn-sm" onclick="window.print()">🖨 Print</button>';
+  ta.innerHTML = html;
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -822,16 +827,23 @@ function clearAllRows() {
   showNotif('🗑 All items cleared');
 }
 
+function isEmptyRow(r) {
+  return !r.group && !r.shortDesc && !r.desc && !r.ref && r.qty === '' && r.rate === '' && !r.calc;
+}
 function deleteRow(idx) {
   var items = ctxGetItems();
   if (!items[idx] || items[idx].blank) return;
-  archivedItems.push(JSON.parse(JSON.stringify(items[idx])));
+  var archived = false;
+  if (!isEmptyRow(items[idx])) {
+    archivedItems.push(JSON.parse(JSON.stringify(items[idx])));
+    saveArchived();
+    archived = true;
+  }
   items.splice(idx, 1);
   if (!items.length) items.push(makeRow());
   ctxSetItems(items);
-  saveArchived();
   renderSingleTable();
-  showNotif('Row moved to archive');
+  showNotif(archived ? 'Row moved to archive' : 'Empty row removed');
 }
 
 /* ── DRAG & DROP ─────────────────── */
@@ -1532,17 +1544,25 @@ function buildPrintDoc() {
 }
 
 function plHero(subject, subLine, meta, eyebrow) {
-  var html = '<header class="pl-hero">' +
-    '<div class="pl-eyebrow"><span class="dot">●</span> ' + esc(eyebrow || 'Abstract Estimate') + '</div>' +
-    '<div class="pl-rule"></div>' +
+  var html = '<div class="pl-doc">' +
+    '<div class="pl-strip"><span>EstimatePro</span><strong>' + esc(eyebrow || 'Estimate Document') + '</strong></div>' +
     '<div class="pl-title">' + esc(subject) + '</div>' +
     (subLine ? '<div class="pl-sub">' + esc(subLine) + '</div>' : '') +
+    '<div class="pl-rule"></div>' +
+    '<div class="pl-rule-sub"></div>' +
     '<div class="pl-meta">';
   meta.forEach(function(m) {
     html += '<div class="m-cell"><div class="m-k">' + esc(m.k) + '</div><div class="m-v">' + esc(m.v || '—') + '</div></div>';
   });
-  html += '</div></header>';
+  html += '</div></div>';
   return html;
+}
+
+function plApprovals(prepared, approved) {
+  return '<div class="pl-sign">' +
+    '<div class="s-block"><div class="s-cap">Prepared by</div><div class="s-line"></div><div class="s-role">' + esc(prepared || 'Engineer in Charge') + '</div></div>' +
+    '<div class="s-block"><div class="s-cap">Approved by</div><div class="s-line"></div><div class="s-role">' + esc(approved || 'Executive Engineer') + '</div></div>' +
+    '</div>';
 }
 
 function buildPrintMain() {
@@ -1582,8 +1602,8 @@ function buildPrintMain() {
     { k:'Date', v: today }
   ];
   return plHero('Estimate Register', '', meta, 'Register of Estimates') + tableHtml +
-    '<div class="pl-sign"><div class="pl-note">Generated from EstimatePro · ' + today + '</div>' +
-    '<div class="s-block"><span class="s-line"></span><div class="s-cap">Signature</div></div></div>';
+    '<div class="pl-note">Generated from EstimatePro · ' + today + '</div>' +
+    plApprovals('Engineer in Charge', 'Executive Engineer');
 }
 
 function buildPrintSingle() {
@@ -1650,10 +1670,8 @@ function buildPrintSingle() {
     '<div class="pl-final"><span class="l-l">Final Total</span><span class="l-v">' + money(t.final) + '</span></div>' +
     '</div></section>';
 
-  var signHtml = '<div class="pl-sign">' +
-    '<div class="pl-note">Generated from EstimatePro · ' + today + '</div>' +
-    '<div class="s-block"><span class="s-line"></span><div class="s-cap">' + esc(by || 'Engineer in Charge') + '</div></div>' +
-    '</div>';
+  var signHtml = '<div class="pl-note">Generated from EstimatePro · ' + today + '</div>' +
+    plApprovals(by || 'Engineer in Charge', 'Executive Engineer');
 
   var meta = [
     { k:'Name of Work', v: subject },
@@ -1701,7 +1719,10 @@ function buildPrintMulti() {
     { k:'Prepared by', v: est.by },
     { k:'Date', v: dateStr }
   ];
-  return plHero(est.name, '', meta, 'Multi-Site Abstract') + tableHtml;
+  var today = todayStr();
+  return plHero(est.name, '', meta, 'Multi-Site Abstract') + tableHtml +
+    '<div class="pl-note">Generated from EstimatePro · ' + today + '</div>' +
+    plApprovals(est.by || 'Engineer in Charge', 'Executive Engineer');
 }
 
 window.addEventListener('beforeprint', function() {
