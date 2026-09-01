@@ -129,12 +129,13 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
 .td-meta .badge-group{background:var(--badge-bg,#eef1f5);color:var(--badge-ink,#55707f);border:1px dashed var(--border-strong,#b8c4cf);margin-right:5px;font-weight:500}
 .td-meta .badge-short{background:var(--badge-bg,#eef1f5);color:var(--badge-ink,#55707f);border:1px dashed var(--border-strong,#b8c4cf)}
 .td-meta .badge-group.badge-set{background:var(--primary);color:#fff;border:1px solid var(--primary);font-weight:600}
-.td-meta .badge-short.badge-set{background:var(--badge-bg,#eef1f5);color:var(--ink,#1b3d52);border:1px solid var(--accent);font-weight:600}
+.td-meta .badge-short.badge-set{background:#e6f3ee;color:#1d6b54;border:1px solid #2f8a6d;font-weight:600}
 .td-meta .ref-note{margin-top:4px;font-size:10px;color:var(--text-muted);font-family:var(--mono);line-height:1.2}
 .td-meta .ref-note::before{content:'ref ';color:var(--text-muted);opacity:.6}
 .td-meta .badge-input{width:92px;height:22px;padding:0 7px;border:1.5px solid var(--accent);border-radius:5px;font-family:var(--font);font-size:11px;color:var(--ink,#16283a);background:#fff;outline:none;transition:all .15s;vertical-align:middle}
-.td-meta .badge-input.badge-input-short{width:94px}
+.td-meta .badge-input.badge-input-short{width:94px;border-color:#2f8a6d}
 .td-meta .badge-input:focus{box-shadow:0 0 0 3px rgba(217,135,15,.15)}
+.td-meta .badge-input.badge-input-short:focus{box-shadow:0 0 0 3px rgba(47,138,109,.15)}
 .tbl-foot{padding:12px 16px;border-top:1.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--surface);flex-wrap:wrap;gap:8px}
 .foot-l{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .foot-r{font-size:13px;color:var(--text-soft)}
@@ -217,7 +218,7 @@ table.mt td.col-group-first,table.mt th.col-group-first{border-left:2px solid rg
 @media print{
   #topbar,.side-tabs,.history-panel,.search-bar,.btn,.paste-hint,.notif,.modal-overlay,
   .rdel,.calc-btn,.card-del,.tbl-foot .foot-l,.badge-input,
-  #btn-add-row,#btn-blank-row,#btn-auto-arrange,#btn-clear-all{display:none!important}
+  #btn-add-row,#btn-blank-row,#btn-auto-arrange,#btn-toggle-drag,#btn-clear-all{display:none!important}
   body{background:#fff;color:#000;font-size:12px}
   .tbl-wrap{border:none;box-shadow:none}
   table.et thead{background:#333!important;color:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
@@ -310,6 +311,7 @@ table.mt td.col-group-first,table.mt th.col-group-first{border-left:2px solid rg
         <button class="btn btn-secondary btn-sm" id="btn-add-row">＋ Add Row</button>
         <button class="btn btn-ghost btn-sm" id="btn-blank-row">＋ Blank Row</button>
         <button class="btn btn-ghost btn-sm" id="btn-auto-arrange">⇅ Auto-Arrange</button>
+        <button class="btn btn-ghost btn-sm" id="btn-toggle-drag" title="Turn on drag-and-drop row ordering">⇵ Order</button>
         <button class="btn btn-ghost btn-sm" id="btn-open-archived" title="View archived rows">📂 Archived</button>
         <button class="btn btn-ghost btn-sm btn-danger-ghost" id="btn-clear-all">🗑 Clear All</button>
         <span class="paste-hint">💡 Paste from Excel</span>
@@ -661,6 +663,7 @@ function wireSingleButtons() {
   wireBtn('btn-add-row', function(){ addRow(); });
   wireBtn('btn-blank-row', function(){ addBlankRow(); });
   wireBtn('btn-auto-arrange', function(){ autoArrangeRows(); });
+  wireBtn('btn-toggle-drag', function(){ toggleDragMode(); });
   wireBtn('btn-clear-all', function(){ clearAllRows(); });
   wireBtn('btn-open-archived', function(){ openArchiveModal(); });
 }
@@ -689,7 +692,8 @@ function renderSingleTable() {
     var gClass = row.group ? ' badge-set' : '';
     var sClass = row.shortDesc ? ' badge-set' : '';
     var refNote = row.ref ? '<div class="ref-note">'+esc(row.ref)+'</div>' : '';
-    rows.push('<tr draggable="true" data-idx="'+i+'">'+
+    var dragAttr = dragMode ? 'draggable="true"' : 'draggable="false"';
+    rows.push('<tr '+dragAttr+' data-idx="'+i+'">'+
       '<td class="td-sl">'+slDisp+'</td>'+
       '<td class="td-meta">'+
         '<span class="badge badge-group'+gClass+'" onclick="editBadge('+i+',\'group\',this)">'+gBadge+'</span>'+
@@ -702,7 +706,7 @@ function renderSingleTable() {
       '<td><input data-field="unit" value="'+esc(row.unit)+'" placeholder="Unit" onchange="updateCell('+i+',\'unit\',this.value)"></td>'+
       '<td class="td-amt" id="amt-'+i+'">'+amtDisp+'</td>'+
       '<td class="tda"><button class="calc-btn" onclick="openCalculator('+i+')" title="Calculator"'+hasCalc+'>🔢</button>'+
-        '<button class="rdel" onclick="deleteRow('+i+')" title="Send to archive">🗑</button></td>'+
+        '<button class="rdel" onclick="deleteRow('+i+')" title="Send to archive">×</button></td>'+
       '</tr>');
   });
   tbody.innerHTML = rows.join('');
@@ -818,13 +822,21 @@ function deleteRow(idx) {
   ctxSetItems(items);
   saveArchived();
   renderSingleTable();
-  showNotif('🗑 Row moved to archive');
+  showNotif('Row moved to archive');
 }
 
 /* ── DRAG & DROP ─────────────────── */
 var dragSrc = null;
+var dragMode = false;
 function setupRowDrag(tbody) {
   tbody.querySelectorAll('tr').forEach(function(tr) {
+    if (!dragMode) {
+      tr.setAttribute('draggable', 'false');
+      tr.classList.remove('dragging','drag-over');
+      return;
+    }
+    if (tr.getAttribute('data-idx') === null) { tr.setAttribute('draggable', 'false'); return; }
+    tr.setAttribute('draggable', 'true');
     tr.addEventListener('dragstart', function(e) {
       dragSrc = tr; tr.classList.add('dragging');
       e.dataTransfer.effectAllowed = 'move';
@@ -844,6 +856,7 @@ function setupRowDrag(tbody) {
       if (!dragSrc || dragSrc === tr) return;
       var from = parseInt(dragSrc.dataset.idx);
       var to = parseInt(tr.dataset.idx);
+      if (isNaN(from) || isNaN(to)) return;
       var items = ctxGetItems();
       var moved = items.splice(from, 1)[0];
       items.splice(to, 0, moved);
@@ -851,6 +864,27 @@ function setupRowDrag(tbody) {
       renderSingleTable();
     });
   });
+}
+function toggleDragMode() {
+  dragMode = !dragMode;
+  var btn = document.getElementById('btn-toggle-drag');
+  var tbody = document.getElementById('single-tbody');
+  if (dragMode) {
+    btn.textContent = '👆 Ordering ON';
+    btn.classList.add('btn-primary');
+    btn.title = 'Reorder rows by dragging (click to turn off)';
+    tbody.querySelectorAll('tr').forEach(function(tr){
+      if (tr.getAttribute('data-idx') !== null) tr.setAttribute('draggable','true');
+    });
+    setupRowDrag(tbody);
+    showNotif('↕ Ordering activated — drag rows to reorder');
+  } else {
+    btn.textContent = '⇵ Order';
+    btn.classList.remove('btn-primary');
+    btn.title = 'Turn on drag-and-drop row ordering';
+    tbody.querySelectorAll('tr').forEach(function(tr){ tr.setAttribute('draggable','false'); tr.classList.remove('dragging','drag-over'); });
+    showNotif('↕ Ordering deactivated');
+  }
 }
 
 /* ── SEARCH ──────────────────────── */
