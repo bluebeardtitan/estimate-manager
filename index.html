@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Estimate Manager</title>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Serif:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -200,7 +200,7 @@ table.mt td.col-group-first,table.mt th.col-group-first{border-left:2px solid rg
 .archive-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius);margin-bottom:6px;background:var(--surface)}
 .archive-item .arch-preview{flex:1;font-size:12px;color:var(--text-soft);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .archive-item button{flex-shrink:0}
-.history-panel{position:fixed;left:-300px;top:54px;width:300px;height:calc(100% - 54px);background:var(--white);border-right:1.5px solid var(--border);box-shadow:var(--shadow-lg);transition:left .3s ease;z-index:150;padding:16px;overflow-y:auto}
+.history-panel{position:fixed;left:-300px;top:54px;width:300px;height:calc(100% - 54px);background:var(--white);border-right:1.5px solid var(--border);box-shadow:var(--shadow-lg);transition:left .3s ease;z-index:150;padding:16px 16px 16px 52px;overflow-y:auto}
 .history-panel.open{left:0}
 .history-panel h3{font-size:14px;font-weight:600;color:var(--primary);margin-bottom:12px}
 .history-panel ul{list-style:none;padding:0}
@@ -210,31 +210,69 @@ table.mt td.col-group-first,table.mt th.col-group-first{border-left:2px solid rg
 .side-tab{display:flex;align-items:center;justify-content:center;width:32px;min-height:80px;writing-mode:vertical-rl;transform:rotate(180deg);cursor:pointer;font-size:11px;font-weight:500;letter-spacing:.3px;color:#fff;border:none;padding:8px 4px;border-radius:8px 0 0 8px;transition:all .2s;margin-bottom:2px}
 .side-tab:hover{width:38px}
 .side-tab.st-blue{background:#5b7db5}.side-tab.st-pink{background:#d4808a}.side-tab.st-teal{background:#5ba89e}.side-tab.st-orange{background:#d4a050}
+/* ── PRINT DOCUMENT ─────────────────────────────────────
+   A dedicated, beautifully ruled estimate document is built
+   into #print-doc on beforeprint; the live UI is hidden.  */
+#print-doc{display:none}
+#print-doc, #print-doc *{box-sizing:border-box}
+.pl-hero{font-family:'IBM Plex Serif',serif;color:#11161b}
+.pl-eyebrow{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2.5px;color:#5a6672;text-transform:uppercase;margin-bottom:9px}
+.pl-eyebrow .dot{color:#1b3d52}
+.pl-rule{height:3px;background:#1b3d52;width:100%;margin-bottom:14px}
+.pl-rule::after{content:'';display:block;height:1px;background:#9aa4ad;margin-top:2px}
+.pl-title{font-size:26px;font-weight:600;line-height:1.15;letter-spacing:-.2px;margin:0 0 4px}
+.pl-sub{font-size:13px;color:#5a6672;font-family:'IBM Plex Sans',sans-serif;margin-bottom:16px}
+.pl-meta{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:1px solid #1b3d52;margin-top:14px}
+.pl-meta .m-cell{padding:8px 12px 8px 0;border-right:1px solid #d8dde3}
+.pl-meta .m-cell:last-child{border-right:none}
+.pl-meta .m-k{font-size:8px;letter-spacing:1.2px;text-transform:uppercase;color:#5a6672;font-family:'IBM Plex Mono',monospace;margin-bottom:3px}
+.pl-meta .m-v{font-size:12px;color:#1a1f24;font-family:'IBM Plex Sans',sans-serif;line-height:1.3}
+.pl-lead{margin:26px 0 12px}
+.pl-lead .pl-l-title{font-family:'IBM Plex Serif',serif;font-size:15px;font-weight:600;color:#1b3d52;display:flex;align-items:baseline;gap:10px}
+.pl-lead .pl-l-title::after{content:'';flex:1;border-bottom:1px solid #1b3d52}
+.pl-lead .pl-l-k{font-family:'IBM Plex Mono',monospace;font-size:10px;color:#5a6672;letter-spacing:.4px}
+table.pl-table{width:100%;border-collapse:collapse;font-family:'IBM Plex Sans',sans-serif}
+table.pl-table thead th{background:#1b3d52;color:#fff;font-size:9px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:8px 10px;text-align:left;border:none;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+table.pl-table thead th.al,table.pl-table tbody td.al{text-align:right}
+table.pl-table tbody td{padding:7px 10px;font-size:11px;color:#1a1f24;border-bottom:1px solid #e3e8ed;vertical-align:top}
+table.pl-table tbody tr:nth-child(even){background:#f7f9fb}
+table.pl-table td.pl-sl{font-family:'IBM Plex Mono',monospace;color:#5a6672}
+table.pl-table td.pl-money{font-family:'IBM Plex Mono',monospace;text-align:right;white-space:nowrap;color:#1b3d52}
+table.pl-table td.pl-ref{font-family:'IBM Plex Mono',monospace;font-size:9px;color:#8a96a0;white-space:nowrap;margin-top:2px}
+table.pl-table tr.pl-group td{background:#eef2f5;color:#2c4151;font-size:9.5px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:5px 10px;border-bottom:1px solid #d8dde3}
+table.pl-table tr.pl-total td{background:#f1f3f5;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;color:#11161b;border-top:1.5px solid #1b3d52}
+table.pl-table tr.pl-total td.pl-money{color:#1b3d52}
+/* Totals ledger — the signature moment */
+.pl-ledger{margin:24px 0 6px;display:flex;justify-content:flex-end;page-break-inside:avoid}
+.pl-ledger-inner{width:300px;border:1px solid #1b3d52}
+.pl-ledger-hd{background:#1b3d52;color:#fff;padding:7px 14px;font-size:9px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;font-family:'IBM Plex Mono',monospace;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.pl-ledger-inner .pl-lr{display:flex;justify-content:space-between;align-items:baseline;padding:6px 14px;font-size:11px;color:#2c4151;border-top:1px solid #e3e8ed}
+.pl-ledger-inner .pl-lr .l-l{color:#4a5863}
+.pl-ledger-inner .pl-lr .l-v{font-family:'IBM Plex Mono',monospace;text-align:right}
+.pl-ledger-inner .pl-lr.pl-strong .l-v{font-weight:600}
+.pl-ledger-inner .pl-final{display:flex;justify-content:space-between;align-items:baseline;background:#f6f3ea;padding:9px 14px;border-top:2px solid #1b3d52;font-family:'IBM Plex Mono',monospace;font-size:15px;font-weight:600;color:#1b3d52}
+.pl-ledger-inner .pl-final .l-l{font-family:'IBM Plex Sans',sans-serif;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:#2c4151}
+.pl-note{font-size:9px;color:#8a96a0;font-family:'IBM Plex Mono',monospace;margin-top:6px;text-transform:uppercase;letter-spacing:.5px}
+.pl-sign{margin-top:56px;display:grid;grid-template-columns:1fr auto;align-items:center;page-break-inside:avoid}
+.pl-sign .s-block{text-align:center}
+.pl-sign .s-line{width:170px;border-top:1px solid #11161b;margin:0 auto 4px;display:inline-block}
+.pl-sign .s-cap{font-size:9px;color:#5a6672;letter-spacing:1px;text-transform:uppercase;font-family:'IBM Plex Mono',monospace}
+/* Annexures (calculation sheets) */
 #printAnnexures{display:none}
-#printAnnexures h3{font-size:1.3em;text-transform:uppercase;margin-top:0;border-bottom:2px solid #000;padding-bottom:4px;color:#000}
-.annex-item{margin-top:10px;margin-bottom:15px;padding:6px 10px;border:1px solid #888;border-radius:4px;background:#f4f4f4}
-.annex-item-title{font-weight:bold;margin-bottom:4px}
-.annex-step{margin-left:15px;margin-bottom:2px;font-family:monospace;color:#333}
+#printAnnexures h3{font-family:'IBM Plex Serif',serif;font-size:15px;font-weight:600;color:#1b3d52;margin:0 0 12px;border-bottom:1px solid #1b3d52;padding-bottom:5px}
+.annex-item{margin:0 0 8px;padding:0}
+.annex-item-title{font-family:'IBM Plex Serif',serif;font-size:11.5px;font-weight:600;color:#1b3d52;margin-bottom:3px}
+.annex-step{margin-left:14px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:#333;line-height:1.5}
 @media print{
+  @page{size:A4;margin:14mm 13mm 16mm 13mm}
+  html,body{background:#fff!important}
   #topbar,.side-tabs,.history-panel,.search-bar,.btn,.paste-hint,.notif,.modal-overlay,
-  .rdel,.calc-btn,.card-del,.tbl-foot .foot-l,.badge-input,
-  #btn-add-row,#btn-blank-row,#btn-auto-arrange,#btn-toggle-drag,#btn-clear-all{display:none!important}
-  body{background:#fff;color:#000;font-size:12px}
-  .tbl-wrap{border:none;box-shadow:none}
-  table.et thead{background:#333!important;color:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  table.et thead th{color:#fff!important}
-  table.et tbody tr{border-bottom:1px solid #ccc}
-  table.et td input{background:#fff!important;box-shadow:none!important;border:none!important;padding:4px 8px;height:auto}
-  td.td-amt{padding:4px 10px}
-  .td-meta .badge{border:1px solid #999!important;background:#fff!important;color:#000!important;padding:2px 7px!important}
-  .td-meta .badge-set{border-color:#000!important;font-weight:700}
-  .td-meta .ref-note{color:#666!important}
-  .gst-summary{border-top:2px solid #333;padding:10px 16px}
-  #printAnnexures{display:block;margin-top:30px}
-  #printAnnexures>div{page-break-before:always;margin-bottom:20px}
-  .est-hbar{border:1px solid #ccc;box-shadow:none}
-  .multi-wrap{border:1px solid #ccc;box-shadow:none}
-  table.mt thead{background:#333!important;color:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .rdel,.calc-btn,.card-del,.tbl-foot,.badge-input,.est-hbar,.gst-summary,.view,.multi-wrap{display:none!important}
+  #print-doc{display:block!important}
+  #printAnnexures{display:block;margin-top:22px}
+  #printAnnexures>div{page-break-before:always}
+  thead{display:table-header-group}
+  tr{page-break-inside:avoid}
 }
 </style>
 </head>
@@ -309,7 +347,6 @@ table.mt td.col-group-first,table.mt th.col-group-first{border-left:2px solid rg
     <div class="tbl-foot">
       <div class="foot-l">
         <button class="btn btn-secondary btn-sm" id="btn-add-row">＋ Add Row</button>
-        <button class="btn btn-ghost btn-sm" id="btn-blank-row">＋ Blank Row</button>
         <button class="btn btn-ghost btn-sm" id="btn-auto-arrange">⇅ Auto-Arrange</button>
         <button class="btn btn-ghost btn-sm" id="btn-toggle-drag" title="Turn on drag-and-drop row ordering">⇵ Order</button>
         <button class="btn btn-ghost btn-sm" id="btn-open-archived" title="View archived rows">📂 Archived</button>
@@ -424,6 +461,9 @@ table.mt td.col-group-first,table.mt th.col-group-first{border-left:2px solid rg
   <button class="side-tab st-teal" onclick="exportCSV()">⬇ Export</button>
   <button class="side-tab st-orange" onclick="window.print()">🖨 Print</button>
 </div>
+
+<!-- PRINT DOCUMENT -->
+<div id="print-doc"></div>
 
 <!-- PRINT ANNEXURES -->
 <div id="printAnnexures"></div>
@@ -662,7 +702,6 @@ function wireSingleButtons() {
     n.addEventListener('click', fn);
   }
   wireBtn('btn-add-row', function(){ addRow(); });
-  wireBtn('btn-blank-row', function(){ addBlankRow(); });
   wireBtn('btn-auto-arrange', function(){ autoArrangeRows(); });
   wireBtn('btn-toggle-drag', function(){ toggleDragMode(); });
   wireBtn('btn-clear-all', function(){ clearAllRows(); });
@@ -798,13 +837,6 @@ function addRow(data) {
   var tbody = document.getElementById('single-tbody');
   var last = tbody.lastElementChild;
   if (last) { var inp = last.querySelector('input'); if (inp) inp.focus(); }
-}
-
-function addBlankRow() {
-  var items = ctxGetItems();
-  items.push(makeRow({blank:true}));
-  ctxSetItems(items);
-  renderSingleTable();
 }
 
 function clearAllRows() {
@@ -1539,10 +1571,211 @@ document.addEventListener('keydown', function(e) {
 });
 
 /* ═══════════════════════════════════════════════════════
-   PRINT — ANNEXURES
+   PRINT — builds a dedicated, ruled estimate document into
+   #print-doc, then annexures into #printAnnexures
 ═══════════════════════════════════════════════════════ */
+function money(n){ return '₹ ' + fmtN(n); }
+
+function buildPrintDoc() {
+  var doc = document.getElementById('print-doc');
+  doc.innerHTML = '';
+
+  if (ctx.view === 'main') { doc.innerHTML = buildPrintMain(); return; }
+
+  if (ctx.view === 'multi') {
+    doc.innerHTML = buildPrintMulti();
+  } else {
+    doc.innerHTML = buildPrintSingle();
+  }
+}
+
+function plHero(subject, subLine, meta, eyebrow) {
+  var html = '<header class="pl-hero">' +
+    '<div class="pl-eyebrow"><span class="dot">●</span> ' + esc(eyebrow || 'Abstract Estimate') + '</div>' +
+    '<div class="pl-rule"></div>' +
+    '<div class="pl-title">' + esc(subject) + '</div>' +
+    (subLine ? '<div class="pl-sub">' + esc(subLine) + '</div>' : '') +
+    '<div class="pl-meta">';
+  meta.forEach(function(m) {
+    html += '<div class="m-cell"><div class="m-k">' + esc(m.k) + '</div><div class="m-v">' + esc(m.v || '—') + '</div></div>';
+  });
+  html += '</div></header>';
+  return html;
+}
+
+function buildPrintMain() {
+  var todayStr = new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+  if (!DB.length) {
+    return plHero('Estimate Register', '', [
+      { k:'Prepared by', v:'' },
+      { k:'Date', v: todayStr },
+      { k:'Records', v:'None' }
+    ]);
+  }
+  var rows = DB.map(function(est, i) {
+    var total = est.type==='single' ? sumItems(est.items) : (est.sites||[]).reduce(function(s,site){ return s+sumItems(site.items); },0);
+    var dateStr = formatDate(est.date);
+    var cnt = est.type==='multi' ? (est.sites||[]).length+' site(s)' : (est.items||[]).filter(function(r){ return !r.blank; }).length+' item(s)';
+    return '<tr>' +
+      '<td class="pl-sl">' + (i+1) + '</td>' +
+      '<td>' + esc(est.name) + '</td>' +
+      '<td>' + (est.type==='single'?'Single Site':'Multi-Site') + '</td>' +
+      '<td>' + esc(dateStr) + '</td>' +
+      '<td>' + esc(est.by || '') + '</td>' +
+      '<td class="pl-money">' + money(total) + '</td>' +
+      '</tr>';
+  }).join('');
+  var tableHtml = '<div class="pl-lead"><div class="pl-l-title">Estimate Register <span class="pl-l-k">' + DB.length + ' record' + (DB.length!==1?'s':'') + '</span></div></div>' +
+    '<table class="pl-table"><thead><tr>' +
+    '<th style="width:34px">Sl.</th>' +
+    '<th>Name of Work</th>' +
+    '<th style="width:90px">Type</th>' +
+    '<th style="width:90px">Date</th>' +
+    '<th>Prepared by</th>' +
+    '<th style="width:96px" class="al">Amount</th>' +
+    '</tr></thead><tbody>' + rows + '</tbody></table>';
+  var meta = [
+    { k:'Document', v:'Estimate Register' },
+    { k:'Prepared by', v:'' },
+    { k:'Date', v: todayStr }
+  ];
+  return plHero('Estimate Register', '', meta, 'Register of Estimates') + tableHtml +
+    '<div class="pl-sign"><div class="pl-note">Generated from EstimatePro · ' + todayStr + '</div>' +
+    '<div class="s-block"><span class="s-line"></span><div class="s-cap">Signature</div></div></div>';
+}
+
+function buildPrintSingle() {
+  var items = ctxGetItems();
+  var subject, subLine = '', dateStr = '', by = '', parentName = '';
+  if (ctx.multiId !== undefined) {
+    var me = findEst(ctx.multiId);
+    var site = me && me.sites[ctx.siteIdx];
+    subject = site ? site.name : 'Estimate';
+    parentName = me ? me.name : '';
+    dateStr = me ? formatDate(me.date) : '';
+    by = me ? me.by : '';
+    if (parentName) subLine = parentName + (dateStr ? ' · ' + dateStr : '');
+  } else {
+    var e = findEst(ctx.estId);
+    subject = e ? e.name : 'Estimate';
+    dateStr = formatDate(e ? e.date : '');
+    by = e ? e.by : '';
+    subLine = '';
+  }
+  var dateObj = new Date();
+  var todayStr = dateObj.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+
+  // ── Table ──
+  var sl = 0, lastGroup = null;
+  var rowsHtml = '';
+  items.forEach(function(row) {
+    if (!row.blank) sl++;
+    if (!row.blank && row.group && row.group !== lastGroup) {
+      rowsHtml += '<tr class="pl-group"><td colspan="7">' + esc(row.group) + '</td></tr>';
+      lastGroup = row.group;
+    }
+    if (row.blank) return;
+    var amt = rowAmt(row);
+    var amtHtml = amt !== null ? money(amt) : '';
+    var ref = row.ref ? '<div class="pl-ref">' + esc(row.ref) + '</div>' : '';
+    rowsHtml += '<tr>' +
+      '<td class="pl-sl">' + sl + '</td>' +
+      '<td>' + esc(row.shortDesc || '') + ref + '</td>' +
+      '<td>' + esc(row.desc || '') + '</td>' +
+      '<td class="al">' + esc(row.qty || '') + '</td>' +
+      '<td>' + esc(row.unit || '') + '</td>' +
+      '<td class="al">' + esc(row.rate || '') + '</td>' +
+      '<td class="pl-money">' + amtHtml + '</td>' +
+      '</tr>';
+  });
+  var tableHtml = '<div class="pl-lead"><div class="pl-l-title">Bill of Quantities <span class="pl-l-k">' + sl + ' item' + (sl!==1?'s':'') + '</span></div></div>' +
+    '<table class="pl-table"><thead><tr>' +
+    '<th style="width:34px">Sl.</th>' +
+    '<th style="width:22%">Item</th>' +
+    '<th>Description of Items</th>' +
+    '<th style="width:52px" class="al">Qty</th>' +
+    '<th style="width:52px">Unit</th>' +
+    '<th style="width:70px" class="al">Rate</th>' +
+    '<th style="width:88px" class="al">Amount</th>' +
+    '</tr></thead><tbody>' + rowsHtml + '</tbody></table>';
+
+  // ── Totals ledger ──
+  var total = sumItems(items);
+  var gst = total * 0.18;
+  var subt = total + gst;
+  var cess = subt * 0.01;
+  var subt2 = subt + cess;
+  var contRate = parseFloat((document.getElementById('gs-contingency-rate') || {}).textContent || '2.5') / 100;
+  var cont = subt2 * contRate;
+  var final = subt2 + cont;
+
+  var ledgerHtml = '<section class="pl-ledger"><div class="pl-ledger-inner">' +
+    '<div class="pl-ledger-hd">Abstract of Cost</div>' +
+    '<div class="pl-lr"><span class="l-l">Base Total</span><span class="l-v">' + money(total) + '</span></div>' +
+    '<div class="pl-lr"><span class="l-l">GST @ 18%</span><span class="l-v">' + money(gst) + '</span></div>' +
+    '<div class="pl-lr"><span class="l-l">Cess @ 1%</span><span class="l-v">' + money(cess) + '</span></div>' +
+    '<div class="pl-lr pl-strong"><span class="l-l">Subtotal</span><span class="l-v">' + money(subt2) + '</span></div>' +
+    '<div class="pl-lr"><span class="l-l">Contingency @ ' + (contRate*100) + '%</span><span class="l-v">' + money(cont) + '</span></div>' +
+    '<div class="pl-final"><span class="l-l">Final Total</span><span class="l-v">' + money(final) + '</span></div>' +
+    '</div></section>';
+
+  var signHtml = '<div class="pl-sign">' +
+    '<div class="pl-note">Generated from EstimatePro · ' + todayStr + '</div>' +
+    '<div class="s-block"><span class="s-line"></span><div class="s-cap">' + esc(by || 'Engineer in Charge') + '</div></div>' +
+    '</div>';
+
+  var meta = [
+    { k:'Name of Work', v: subject },
+    { k:'Prepared by', v: by },
+    { k:'Date', v: dateStr || todayStr }
+  ];
+  return plHero(subject, subLine, meta, 'Abstract Estimate') + tableHtml + ledgerHtml + signHtml;
+}
+
+function formatDate(d) {
+  if (!d) return '';
+  try { return new Date(d).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}); }
+  catch(e){ return d; }
+}
+
+function buildPrintMulti() {
+  var est = findEst(ctx.estId);
+  if (!est) return '';
+  var dateStr = est ? formatDate(est.date) : '';
+  var cols = getMultiCols(est), sites = est.sites || [];
+
+  var head = '<tr><th style="width:40%">Site Name</th><th class="al">Total (₹)</th>';
+  cols.forEach(function(c){ head += '<th class="al">' + esc(c.shortDesc||'—') + '</th>'; });
+  head += '</tr>';
+
+  var body = '';
+  sites.forEach(function(site) {
+    var sTotal = sumItems(site.items||[]);
+    var qmap = {};
+    (site.items||[]).forEach(function(row){ if(!row.blank&&(row.group||row.shortDesc)){var k=row.group+'|||'+row.shortDesc; qmap[k]=(qmap[k]||0)+(parseFloat(row.qty)||0);} });
+    body += '<tr><td>' + esc(site.name||'Unnamed Site') + '</td><td class="pl-money">' + money(sTotal) + '</td>';
+    cols.forEach(function(c){ var k=c.group+'|||'+c.shortDesc; body += '<td class="al">' + (qmap[k]!==undefined?fmtN(qmap[k]):'') + '</td>'; });
+    body += '</tr>';
+  });
+
+  var grand = sites.reduce(function(s,site){ return s+sumItems(site.items||[]); },0);
+  var tableHtml = '<div class="pl-lead"><div class="pl-l-title">Multi-Site Summary <span class="pl-l-k">' + sites.length + ' site' + (sites.length!==1?'s':'') + '</span></div></div>' +
+    '<table class="pl-table"><thead>' + head + '</thead><tbody>' + body +
+    '<tr class="pl-total"><td>Total</td><td class="pl-money">' + money(grand) + '</td>' +
+    cols.map(function(){ return '<td></td>'; }).join('') + '</tr></tbody></table>';
+
+  var meta = [
+    { k:'Name of Work', v: est.name },
+    { k:'Prepared by', v: est.by },
+    { k:'Date', v: dateStr }
+  ];
+  return plHero(est.name, '', meta, 'Multi-Site Abstract') + tableHtml;
+}
+
 window.addEventListener('beforeprint', function() {
   mathScope = {};
+  buildPrintDoc();
+
   var items = ctxGetItems();
   var container = document.getElementById('printAnnexures');
   container.innerHTML = '';
@@ -1591,6 +1824,12 @@ window.addEventListener('beforeprint', function() {
 /* ═══════════════════════════════════════════════════════
    INIT
 ═══════════════════════════════════════════════════════ */
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+    var el = e.target;
+    if (el && el.tagName === 'INPUT' && el.type === 'number') e.preventDefault();
+  }
+});
 renderMain();
 renderBreadcrumb();
 renderTopActions();
