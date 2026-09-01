@@ -150,7 +150,6 @@ table.mt thead{background:var(--primary);color:#fff}
 table.mt thead th{padding:10px 12px;text-align:left;font-size:11px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;white-space:nowrap;border-right:1px solid rgba(255,255,255,.1)}
 table.mt thead th:last-child{border-right:none}
 table.mt thead th.th-q{text-align:right;min-width:85px}
-table.mt thead .th-s{font-size:9px;opacity:.7;display:block;font-weight:400;letter-spacing:0;text-transform:none}
 table.mt tbody tr{border-bottom:1px solid var(--border)}
 table.mt tbody tr:last-child{border-bottom:none}
 table.mt tbody tr:hover{background:var(--row-hover)}
@@ -166,7 +165,6 @@ table.mt tbody td:last-child{border-right:none}
 .notif.show{transform:translateY(0);opacity:1}
 tr.group-hdr td{background:var(--group-hdr-bg);padding:5px 10px;font-size:11px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--group-hdr-text);border-bottom:1.5px solid var(--border-strong);border-top:1.5px solid var(--border-strong);cursor:default}
 tr.group-hdr:hover{background:var(--group-hdr-bg) !important}
-table.mt td.col-group-first,table.mt th.col-group-first{border-left:2px solid rgba(255,255,255,.3)}
 
 /* Integrated features: search, GST summary, calculator, schedule, archive, history, print annexures */
 .search-bar{margin-bottom:12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
@@ -485,32 +483,28 @@ function genId() { return Date.now().toString(36) + Math.random().toString(36).s
 ═══════════════════════════════════════════════════════ */
 var ctx = { view: 'main' };
 
-function ctxGetItems() {
-  if (ctx.view !== 'single') return [];
+function ctxTarget() {
   if (ctx.multiId !== undefined) {
     var me = findEst(ctx.multiId);
-    return (me && me.sites[ctx.siteIdx]) ? me.sites[ctx.siteIdx].items : [];
+    return (me && me.sites[ctx.siteIdx]) ? me.sites[ctx.siteIdx] : null;
   }
-  var e = findEst(ctx.estId);
-  return e ? e.items : [];
+  return findEst(ctx.estId);
+}
+function ctxGetItems() {
+  if (ctx.view !== 'single') return [];
+  var t = ctxTarget();
+  return t ? t.items : [];
 }
 function ctxSetItems(items) {
   if (ctx.view !== 'single') return;
-  if (ctx.multiId !== undefined) {
-    var me = findEst(ctx.multiId);
-    if (me && me.sites[ctx.siteIdx]) me.sites[ctx.siteIdx].items = items;
-  } else {
-    var e = findEst(ctx.estId);
-    if (e) e.items = items;
-  }
+  var t = ctxTarget();
+  if (t) t.items = items;
   saveDB();
 }
 
 /* ═══════════════════════════════════════════════════════
    CALCULATOR STATE
 ═══════════════════════════════════════════════════════ */
-var calcHistoryMap = {};
-var calcInputMap = {};
 var activeCalcCell = null;
 var mathScope = {};
 
@@ -541,6 +535,22 @@ function rowAmt(r) {
 }
 function sumItems(items) {
   return (items||[]).reduce(function(s,r){ var a=rowAmt(r); return s+(a!==null?a:0); }, 0);
+}
+function estTotal(est) {
+  if (!est) return 0;
+  return est.type==='single' ? sumItems(est.items) : (est.sites||[]).reduce(function(s,site){ return s+sumItems(site.items); }, 0);
+}
+function colKey(group, shortDesc) { return normKey(group)+'|||'+normKey(shortDesc); }
+function computeTotals(items) {
+  var total = sumItems(items);
+  var gst = total * 0.18;
+  var subt = total + gst;
+  var cess = subt * 0.01;
+  var subt2 = subt + cess;
+  var cr = document.getElementById('gs-contingency-rate');
+  var contRate = (parseFloat(cr ? cr.textContent : '2.5') || 0) / 100;
+  var cont = subt2 * contRate;
+  return { total: total, gst: gst, cess: cess, subtotal: subt2, contRate: contRate, contingency: cont, final: subt2 + cont };
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -596,8 +606,8 @@ function renderMain() {
   grid.innerHTML = DB.map(function(est) {
     var typeLabel = est.type==='single'?'Single Site':'Multi-Site';
     var typeClass = est.type==='single'?'card-type-s':'card-type-m';
-    var total = est.type==='single' ? sumItems(est.items) : (est.sites||[]).reduce(function(s,site){ return s+sumItems(site.items); },0);
-    var dateStr = est.date ? new Date(est.date).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}) : '';
+    var total = estTotal(est);
+    var dateStr = formatDate(est.date);
     var cnt = est.type==='multi' ? (est.sites||[]).length+' site(s)' : (est.items||[]).filter(function(r){ return !r.blank; }).length+' item(s)';
     return '<div class="estimate-card" onclick="openEst(\''+est.id+'\')">'+
       '<button class="card-del" onclick="event.stopPropagation();delEst(\''+est.id+'\')" title="Delete">✕</button>'+
@@ -655,11 +665,10 @@ function openSingle(estId) {
   if (!e.items || !e.items.length) e.items = [makeRow()];
   ctx = { view:'single', estId:estId };
   archivedItems = e._archived || [];
-  var dateStr = e.date ? new Date(e.date).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}) : '';
+  var dateStr = formatDate(e.date);
   document.getElementById('s-title').textContent = e.name;
   document.getElementById('s-sub').textContent = [dateStr, e.by].filter(Boolean).join(' · ');
   showView('single');
-  wireSingleButtons();
   renderSingleTable();
   renderBreadcrumb();
   renderTopActions();
@@ -672,40 +681,13 @@ function openSiteInSingle(multiEstId, siteIdx) {
   if (!site.items || !site.items.length) site.items = [makeRow()];
   ctx = { view:'single', multiId:multiEstId, siteIdx:siteIdx };
   archivedItems = site._archived || [];
-  var dateStr = me.date ? new Date(me.date).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}) : '';
+  var dateStr = formatDate(me.date);
   document.getElementById('s-title').textContent = site.name;
   document.getElementById('s-sub').textContent = [me.name, dateStr, me.by].filter(Boolean).join(' · ');
   showView('single');
-  wireSingleButtons();
   renderSingleTable();
   renderBreadcrumb();
   renderTopActions();
-}
-
-function wireSingleButtons() {
-  var tbl = document.getElementById('single-table');
-  var newTbl = tbl.cloneNode(true);
-  tbl.parentNode.replaceChild(newTbl, tbl);
-  newTbl.addEventListener('paste', handlePaste);
-  newTbl.addEventListener('focusin', function(e){
-    var td = e.target.closest('td');
-    if (td) {
-      var ci = Array.from(td.parentNode.children).indexOf(td);
-      if (ci === 7 || ci === 8) activeCalcCell = td;
-    }
-  });
-
-  function wireBtn(id, fn) {
-    var el = document.getElementById(id);
-    var n = el.cloneNode(true);
-    el.parentNode.replaceChild(n, el);
-    n.addEventListener('click', fn);
-  }
-  wireBtn('btn-add-row', function(){ addRow(); });
-  wireBtn('btn-auto-arrange', function(){ autoArrangeRows(); });
-  wireBtn('btn-toggle-drag', function(){ toggleDragMode(); });
-  wireBtn('btn-clear-all', function(){ clearAllRows(); });
-  wireBtn('btn-open-archived', function(){ openArchiveModal(); });
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -801,26 +783,17 @@ function editBadge(idx, field, spanEl) {
 }
 
 function updateTotals() {
-  var items = ctxGetItems();
-  var total = sumItems(items);
-  var disp = '₹ '+fmtN(total);
+  var t = computeTotals(ctxGetItems());
+  var disp = '₹ '+fmtN(t.total);
   document.getElementById('s-total-h').textContent = disp;
   document.getElementById('s-total-f').textContent = disp;
 
-  // GST summary
-  var gst = total * 0.18;
-  var subt = total + gst;
-  var cess = subt * 0.01;
-  var subt2 = subt + cess;
-  var contRate = parseFloat(document.getElementById('gs-contingency-rate').textContent) / 100;
-  var cont = subt2 * contRate;
-  var final = subt2 + cont;
-  document.getElementById('gs-base').textContent = '₹ '+fmtN(total);
-  document.getElementById('gs-gst').textContent = '₹ '+fmtN(gst);
-  document.getElementById('gs-cess').textContent = '₹ '+fmtN(cess);
-  document.getElementById('gs-subtotal').textContent = '₹ '+fmtN(subt2);
-  document.getElementById('gs-contingency').textContent = '₹ '+fmtN(cont);
-  document.getElementById('gs-final').textContent = '₹ '+fmtN(final);
+  document.getElementById('gs-base').textContent = '₹ '+fmtN(t.total);
+  document.getElementById('gs-gst').textContent = '₹ '+fmtN(t.gst);
+  document.getElementById('gs-cess').textContent = '₹ '+fmtN(t.cess);
+  document.getElementById('gs-subtotal').textContent = '₹ '+fmtN(t.subtotal);
+  document.getElementById('gs-contingency').textContent = '₹ '+fmtN(t.contingency);
+  document.getElementById('gs-final').textContent = '₹ '+fmtN(t.final);
 }
 
 function updateRowCount() {
@@ -1228,14 +1201,8 @@ function handlePaste(e) {
 
 /* ── ARCHIVE ─────────────────────── */
 function saveArchived() {
-  var e;
-  if (ctx.multiId !== undefined) {
-    var me = findEst(ctx.multiId);
-    if (me && me.sites[ctx.siteIdx]) me.sites[ctx.siteIdx]._archived = archivedItems;
-  } else {
-    e = findEst(ctx.estId);
-    if (e) e._archived = archivedItems;
-  }
+  var t = ctxTarget();
+  if (t) t._archived = archivedItems;
   saveDB();
 }
 
@@ -1296,24 +1263,19 @@ document.getElementById('archive-modal').addEventListener('click', function(e) {
 /* ── EXPORT CSV ──────────────────── */
 function exportCSV() {
   var items = ctxGetItems();
-  var name = '';
-  if (ctx.multiId !== undefined) {
-    var me = findEst(ctx.multiId);
-    name = me && me.sites[ctx.siteIdx] ? me.sites[ctx.siteIdx].name : 'site';
-  } else {
-    var es = findEst(ctx.estId);
-    name = es ? es.name : 'estimate';
-  }
+  var t = ctxTarget();
+  var name = t ? t.name : (ctx.multiId !== undefined ? 'site' : 'estimate');
   var headers = ['Sl.No.','Group','Short Description','Ref.','Description of Items','Quantity','Rate','Unit','Amount'];
   var sl = 0;
+  var q = function(v){ return '"'+String(v).replace(/"/g,'""')+'"'; };
   var rows = items.map(function(row) {
     if (!row.blank) sl++;
     var amt = rowAmt(row);
     return [row.blank?'':sl, row.group, row.shortDesc, row.ref||'', row.desc, row.qty===''?'':row.qty, row.rate===''?'':row.rate, row.unit, amt!==null?fmtN(amt):'']
-      .map(function(v){ return '"'+String(v).replace(/"/g,'""')+'"'; }).join(',');
+      .map(q).join(',');
   });
-  rows.push(['','','','','','','','TOTAL','"'+fmtN(sumItems(items))+'"'].join(','));
-  var csv = [headers.map(function(h){ return '"'+h+'"'; }).join(',')].concat(rows).join('\r\n');
+  rows.push(['','','','','','','','TOTAL',fmtN(sumItems(items))].map(q).join(','));
+  var csv = [headers.map(q).join(',')].concat(rows).join('\r\n');
   var a = document.createElement('a');
   a.href = 'data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);
   a.download = name.replace(/[^a-z0-9]/gi,'_')+'_estimate.csv';
@@ -1347,20 +1309,10 @@ function openMulti(estId) {
   var e = findEst(estId);
   if (!e) return;
   ctx = { view:'multi', estId:estId };
-  var dateStr = e.date ? new Date(e.date).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}) : '';
+  var dateStr = formatDate(e.date);
   document.getElementById('m-title').textContent = e.name;
   document.getElementById('m-sub').textContent = [dateStr, e.by].filter(Boolean).join(' · ');
   showView('multi');
-
-  function wireMultiBtns() {
-    var b1 = document.getElementById('btn-add-site');
-    var n1 = b1.cloneNode(true); b1.parentNode.replaceChild(n1, b1);
-    n1.addEventListener('click', addSite);
-    var b2 = document.getElementById('btn-add-site-2');
-    var n2 = b2.cloneNode(true); b2.parentNode.replaceChild(n2, b2);
-    n2.addEventListener('click', addSite);
-  }
-  wireMultiBtns();
   renderMultiTable();
   renderBreadcrumb();
   renderTopActions();
@@ -1372,7 +1324,7 @@ function getMultiCols(est) {
     (site.items||[]).forEach(function(row) {
       if (row.blank) return;
       if (!row.group && !row.shortDesc) return;
-      var k = normKey(row.group)+'|||'+normKey(row.shortDesc);
+      var k = colKey(row.group, row.shortDesc);
       if (!seen[k]) { seen[k]=1; map.push({group:row.group, shortDesc:row.shortDesc}); }
     });
   });
@@ -1428,7 +1380,7 @@ function renderMultiTable() {
       var sTotal = sumItems(site.items||[]);
       var qmap = {};
       (site.items||[]).forEach(function(row) {
-        if (!row.blank && (row.group || row.shortDesc)) { var k=normKey(row.group)+'|||'+normKey(row.shortDesc); qmap[k]=(qmap[k]||0)+(parseFloat(row.qty)||0); }
+        if (!row.blank && (row.group || row.shortDesc)) { var k=colKey(row.group,row.shortDesc); qmap[k]=(qmap[k]||0)+(parseFloat(row.qty)||0); }
       });
       var td = '<tr>';
       td += '<td><span class="site-lnk" onclick="openSiteInSingle(\''+est.id+'\','+si+')">'+esc(site.name||'Unnamed Site')+' <span class="site-arr">›</span></span></td>';
@@ -1436,7 +1388,7 @@ function renderMultiTable() {
       cols.forEach(function(col, ci) {
         var isFirst = (ci === 0) || (normKey(col.group) !== normKey(cols[ci-1].group));
         var bs = isFirst ? 'border-left:2px solid var(--border-strong)' : '';
-        var k=normKey(col.group)+'|||'+normKey(col.shortDesc);
+        var k=colKey(col.group,col.shortDesc);
         td += '<td class="td-qc" style="'+bs+'">'+(qmap[k]!==undefined ? fmtN(qmap[k]) : '')+'</td>';
       });
       td += '<td class="tda"><button class="rdel" onclick="deleteSite('+si+')" title="Delete site">✕</button></td>';
@@ -1444,16 +1396,14 @@ function renderMultiTable() {
       return td;
     }).join('');
   }
-  wireMultiPaste(est);
 }
 
-var _mPasteEl = null;
-var _mPasteHandler = null;
-function wireMultiPaste(est) {
+function wireMultiPaste() {
   var tbody = document.getElementById('multi-tbody');
-  if (_mPasteEl && _mPasteHandler) _mPasteEl.removeEventListener('paste', _mPasteHandler);
-  _mPasteEl = tbody;
-  _mPasteHandler = function(e) {
+  tbody.addEventListener('paste', function(e) {
+    if (ctx.view !== 'multi') return;
+    var est = findEst(ctx.estId);
+    if (!est) return;
     var text = (e.clipboardData||window.clipboardData).getData('text');
     if (!text.trim()) return;
     e.preventDefault();
@@ -1464,8 +1414,7 @@ function wireMultiPaste(est) {
     });
     saveDB(); renderMultiTable();
     showNotif('✓ Added '+lines.length+' site(s)');
-  };
-  tbody.addEventListener('paste', _mPasteHandler);
+  });
 }
 
 function addSite() {
@@ -1552,23 +1501,16 @@ function initTheme() {
 }
 
 /* ── CONTINGENCY RATE LIVE UPDATE ─── */
-document.addEventListener('DOMContentLoaded', function() {
-  var cr = document.getElementById('gs-contingency-rate');
-  if (cr) {
-    cr.addEventListener('input', function() {
-      if (ctx.view === 'single') updateTotals();
-    });
-  }
-});
+var crEl = document.getElementById('gs-contingency-rate');
+if (crEl) {
+  crEl.addEventListener('input', function() {
+    if (ctx.view === 'single') updateTotals();
+  });
+}
 
 /* ═══════════════════════════════════════════════════════
    KEYBOARD NAV
 ═══════════════════════════════════════════════════════ */
-document.addEventListener('keydown', function(e) {
-  if (e.key !== 'Escape') return;
-  if (ctx.view === 'single' && ctx.multiId !== undefined) openMulti(ctx.multiId);
-  else if (ctx.view !== 'main') goMain();
-});
 
 /* ═══════════════════════════════════════════════════════
    PRINT — builds a dedicated, ruled estimate document into
@@ -1604,16 +1546,16 @@ function plHero(subject, subLine, meta, eyebrow) {
 }
 
 function buildPrintMain() {
-  var todayStr = new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+  var today = todayStr();
   if (!DB.length) {
     return plHero('Estimate Register', '', [
       { k:'Prepared by', v:'' },
-      { k:'Date', v: todayStr },
+      { k:'Date', v: today },
       { k:'Records', v:'None' }
     ]);
   }
   var rows = DB.map(function(est, i) {
-    var total = est.type==='single' ? sumItems(est.items) : (est.sites||[]).reduce(function(s,site){ return s+sumItems(site.items); },0);
+    var total = estTotal(est);
     var dateStr = formatDate(est.date);
     var cnt = est.type==='multi' ? (est.sites||[]).length+' site(s)' : (est.items||[]).filter(function(r){ return !r.blank; }).length+' item(s)';
     return '<tr>' +
@@ -1637,33 +1579,29 @@ function buildPrintMain() {
   var meta = [
     { k:'Document', v:'Estimate Register' },
     { k:'Prepared by', v:'' },
-    { k:'Date', v: todayStr }
+    { k:'Date', v: today }
   ];
   return plHero('Estimate Register', '', meta, 'Register of Estimates') + tableHtml +
-    '<div class="pl-sign"><div class="pl-note">Generated from EstimatePro · ' + todayStr + '</div>' +
+    '<div class="pl-sign"><div class="pl-note">Generated from EstimatePro · ' + today + '</div>' +
     '<div class="s-block"><span class="s-line"></span><div class="s-cap">Signature</div></div></div>';
 }
 
 function buildPrintSingle() {
   var items = ctxGetItems();
-  var subject, subLine = '', dateStr = '', by = '', parentName = '';
+  var subject = '', subLine = '', dateStr = '', by = '';
   if (ctx.multiId !== undefined) {
     var me = findEst(ctx.multiId);
     var site = me && me.sites[ctx.siteIdx];
     subject = site ? site.name : 'Estimate';
-    parentName = me ? me.name : '';
-    dateStr = me ? formatDate(me.date) : '';
-    by = me ? me.by : '';
-    if (parentName) subLine = parentName + (dateStr ? ' · ' + dateStr : '');
+    if (me) { dateStr = formatDate(me.date); by = me.by || ''; }
+    if (me && me.name) subLine = me.name + (dateStr ? ' · ' + dateStr : '');
   } else {
     var e = findEst(ctx.estId);
     subject = e ? e.name : 'Estimate';
     dateStr = formatDate(e ? e.date : '');
     by = e ? e.by : '';
-    subLine = '';
   }
-  var dateObj = new Date();
-  var todayStr = dateObj.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+  var today = todayStr();
 
   // ── Table ──
   var sl = 0, lastGroup = null;
@@ -1700,34 +1638,27 @@ function buildPrintSingle() {
     '</tr></thead><tbody>' + rowsHtml + '</tbody></table>';
 
   // ── Totals ledger ──
-  var total = sumItems(items);
-  var gst = total * 0.18;
-  var subt = total + gst;
-  var cess = subt * 0.01;
-  var subt2 = subt + cess;
-  var contRate = parseFloat((document.getElementById('gs-contingency-rate') || {}).textContent || '2.5') / 100;
-  var cont = subt2 * contRate;
-  var final = subt2 + cont;
+  var t = computeTotals(items);
 
   var ledgerHtml = '<section class="pl-ledger"><div class="pl-ledger-inner">' +
     '<div class="pl-ledger-hd">Abstract of Cost</div>' +
-    '<div class="pl-lr"><span class="l-l">Base Total</span><span class="l-v">' + money(total) + '</span></div>' +
-    '<div class="pl-lr"><span class="l-l">GST @ 18%</span><span class="l-v">' + money(gst) + '</span></div>' +
-    '<div class="pl-lr"><span class="l-l">Cess @ 1%</span><span class="l-v">' + money(cess) + '</span></div>' +
-    '<div class="pl-lr pl-strong"><span class="l-l">Subtotal</span><span class="l-v">' + money(subt2) + '</span></div>' +
-    '<div class="pl-lr"><span class="l-l">Contingency @ ' + (contRate*100) + '%</span><span class="l-v">' + money(cont) + '</span></div>' +
-    '<div class="pl-final"><span class="l-l">Final Total</span><span class="l-v">' + money(final) + '</span></div>' +
+    '<div class="pl-lr"><span class="l-l">Base Total</span><span class="l-v">' + money(t.total) + '</span></div>' +
+    '<div class="pl-lr"><span class="l-l">GST @ 18%</span><span class="l-v">' + money(t.gst) + '</span></div>' +
+    '<div class="pl-lr"><span class="l-l">Cess @ 1%</span><span class="l-v">' + money(t.cess) + '</span></div>' +
+    '<div class="pl-lr pl-strong"><span class="l-l">Subtotal</span><span class="l-v">' + money(t.subtotal) + '</span></div>' +
+    '<div class="pl-lr"><span class="l-l">Contingency @ ' + (t.contRate*100) + '%</span><span class="l-v">' + money(t.contingency) + '</span></div>' +
+    '<div class="pl-final"><span class="l-l">Final Total</span><span class="l-v">' + money(t.final) + '</span></div>' +
     '</div></section>';
 
   var signHtml = '<div class="pl-sign">' +
-    '<div class="pl-note">Generated from EstimatePro · ' + todayStr + '</div>' +
+    '<div class="pl-note">Generated from EstimatePro · ' + today + '</div>' +
     '<div class="s-block"><span class="s-line"></span><div class="s-cap">' + esc(by || 'Engineer in Charge') + '</div></div>' +
     '</div>';
 
   var meta = [
     { k:'Name of Work', v: subject },
     { k:'Prepared by', v: by },
-    { k:'Date', v: dateStr || todayStr }
+    { k:'Date', v: dateStr || today }
   ];
   return plHero(subject, subLine, meta, 'Abstract Estimate') + tableHtml + ledgerHtml + signHtml;
 }
@@ -1737,6 +1668,7 @@ function formatDate(d) {
   try { return new Date(d).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}); }
   catch(e){ return d; }
 }
+function todayStr() { return new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}); }
 
 function buildPrintMulti() {
   var est = findEst(ctx.estId);
@@ -1752,13 +1684,13 @@ function buildPrintMulti() {
   sites.forEach(function(site) {
     var sTotal = sumItems(site.items||[]);
     var qmap = {};
-    (site.items||[]).forEach(function(row){ if(!row.blank&&(row.group||row.shortDesc)){var k=row.group+'|||'+row.shortDesc; qmap[k]=(qmap[k]||0)+(parseFloat(row.qty)||0);} });
+    (site.items||[]).forEach(function(row){ if(!row.blank&&(row.group||row.shortDesc)){var k=colKey(row.group,row.shortDesc); qmap[k]=(qmap[k]||0)+(parseFloat(row.qty)||0);} });
     body += '<tr><td>' + esc(site.name||'Unnamed Site') + '</td><td class="pl-money">' + money(sTotal) + '</td>';
-    cols.forEach(function(c){ var k=c.group+'|||'+c.shortDesc; body += '<td class="al">' + (qmap[k]!==undefined?fmtN(qmap[k]):'') + '</td>'; });
+    cols.forEach(function(c){ var k=colKey(c.group,c.shortDesc); body += '<td class="al">' + (qmap[k]!==undefined?fmtN(qmap[k]):'') + '</td>'; });
     body += '</tr>';
   });
 
-  var grand = sites.reduce(function(s,site){ return s+sumItems(site.items||[]); },0);
+  var grand = estTotal(est);
   var tableHtml = '<div class="pl-lead"><div class="pl-l-title">Multi-Site Summary <span class="pl-l-k">' + sites.length + ' site' + (sites.length!==1?'s':'') + '</span></div></div>' +
     '<table class="pl-table"><thead>' + head + '</thead><tbody>' + body +
     '<tr class="pl-total"><td>Total</td><td class="pl-money">' + money(grand) + '</td>' +
@@ -1825,11 +1757,23 @@ window.addEventListener('beforeprint', function() {
    INIT
 ═══════════════════════════════════════════════════════ */
 document.addEventListener('keydown', function(e) {
-  if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
-    var el = e.target;
-    if (el && el.tagName === 'INPUT' && el.type === 'number') e.preventDefault();
+  if (e.key === 'Escape') {
+    if (ctx.view === 'single' && ctx.multiId !== undefined) openMulti(ctx.multiId);
+    else if (ctx.view !== 'main') goMain();
+  } else if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+    if (e.target && e.target.tagName === 'INPUT' && e.target.type === 'number') e.preventDefault();
   }
 });
+function bindBtn(id, fn) { document.getElementById(id).addEventListener('click', fn); }
+bindBtn('btn-add-row', addRow);
+bindBtn('btn-auto-arrange', autoArrangeRows);
+bindBtn('btn-toggle-drag', toggleDragMode);
+bindBtn('btn-clear-all', clearAllRows);
+bindBtn('btn-open-archived', openArchiveModal);
+bindBtn('btn-add-site', addSite);
+bindBtn('btn-add-site-2', addSite);
+document.getElementById('single-table').addEventListener('paste', handlePaste);
+wireMultiPaste();
 renderMain();
 renderBreadcrumb();
 renderTopActions();
