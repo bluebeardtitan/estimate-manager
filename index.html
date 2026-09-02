@@ -93,6 +93,8 @@ body{font-family:var(--font);background:var(--surface);color:var(--text);min-hei
 .fg input{width:100%;padding:8px 12px;border:1.5px solid var(--border);border-radius:var(--radius);font-family:var(--font);font-size:13px;color:var(--text);background:var(--white)}
 .fg input:focus{outline:none;border-color:var(--accent)}
 .fg input:disabled{opacity:.45;cursor:not-allowed}
+.fg textarea{width:100%;padding:8px 12px;border:1.5px solid var(--border);border-radius:var(--radius);font-family:var(--font);font-size:13px;color:var(--text);background:var(--white);resize:vertical;line-height:1.45}
+.fg textarea:focus{outline:none;border-color:var(--accent)}
 .settings-section{margin-bottom:22px}
 .settings-section h3{font-size:12px;font-weight:600;color:var(--primary);text-transform:uppercase;letter-spacing:.6px;margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
 .settings-hint{font-size:12px;color:var(--text-muted);margin-bottom:14px}
@@ -102,7 +104,7 @@ body{font-family:var(--font);background:var(--surface);color:var(--text);min-hei
 .sign-row{display:grid;grid-template-columns:1fr 1fr 34px;gap:10px;align-items:end;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:12px;margin-bottom:8px}
 .sign-row .fg{margin-bottom:0}
 .sign-row .sr-del{align-self:end;height:34px;width:34px;display:flex;align-items:center;justify-content:center;padding:0}
-.sign-hint{font-size:11px;color:var(--text-muted);margin:2px 0 10px;line-height:1.5}
+.sign-hint{font-size:12px;color:var(--text-muted);margin:2px 0 10px;line-height:1.5}
 .modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:22px}
 .est-hbar{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius-lg);padding:18px 22px;margin-bottom:20px;display:flex;align-items:flex-start;justify-content:space-between;gap:20px;box-shadow:var(--shadow);flex-wrap:wrap}
 .eh-title{font-size:18px;font-weight:600;color:var(--primary)}
@@ -218,7 +220,7 @@ tr.group-hdr:hover{background:var(--group-hdr-bg) !important}
 .side-tabs{position:fixed;left:0;top:54px;z-index:151;display:flex;flex-direction:column;gap:0}
 .side-tab{display:flex;align-items:center;justify-content:center;width:32px;min-height:80px;writing-mode:vertical-rl;transform:rotate(180deg);cursor:pointer;font-size:11px;font-weight:500;letter-spacing:.3px;color:#fff;border:none;padding:8px 4px;border-radius:8px 0 0 8px;transition:all .2s;margin-bottom:2px}
 .side-tab:hover{width:38px}
-.side-tab.st-blue{background:#5b7db5}.side-tab.st-pink{background:#d4808a}.side-tab.st-teal{background:#5ba89e}.side-tab.st-orange{background:#d4a050}.side-tab.st-purple{background:#7a6fb0}
+.side-tab.st-blue{background:#5b7db5}.side-tab.st-pink{background:#d4808a}.side-tab.st-purple{background:#7a6fb0}
 /* ── PRINT DOCUMENT ─────────────────────────────────────
    Formal "Abstract of Estimate" tender form.
    Ink-and-paper: warm-neutral ink on white, hairline rules,
@@ -433,9 +435,9 @@ table.pl-table tr.pl-total td{font-family:'IBM Plex Mono',monospace;font-size:11
     </div>
     <div class="settings-section">
       <h3>Signature blocks</h3>
-      <p class="sign-hint">Printed two per line. Caption sits above the signing line, role or name below it.</p>
+      <p class="sign-hint">Printed two per line. Caption above the line, role or name below (use a new line for name + designation).</p>
       <div id="sign-list"></div>
-      <button class="btn btn-secondary btn-sm" onclick="addSignatureRow()">＋ Add signature</button>
+      <button class="btn btn-secondary btn-sm" onclick="addSignatureRow()">+ Add signature</button>
     </div>
     <div class="modal-actions">
       <button class="btn btn-ghost" onclick="closeSettingsModal()">Cancel</button>
@@ -735,8 +737,8 @@ function addSignatureRow(cap, role) {
   var list = document.getElementById('sign-list');
   var row = document.createElement('div');
   row.className = 'sign-row';
-  row.innerHTML = '<div class="fg sr-cap"><label>CAPTION</label><input type="text" data-f="cap" placeholder="e.g. Prepared by"></div>' +
-    '<div class="fg sr-role"><label>ROLE / NAME</label><input type="text" data-f="role" placeholder="e.g. Engineer in Charge"></div>' +
+  row.innerHTML = '<div class="fg"><label>CAPTION</label><input type="text" data-f="cap" placeholder="e.g. Prepared by"></div>' +
+    '<div class="fg"><label>ROLE / NAME</label><textarea data-f="role" rows="2" placeholder="e.g. Engineer in Charge\nAssistant Engineer"></textarea></div>' +
     '<button type="button" class="btn btn-danger-ghost btn-sm sr-del" title="Remove signature">✕</button>';
   row.querySelector('[data-f="cap"]').value = cap || '';
   row.querySelector('[data-f="role"]').value = role || '';
@@ -797,7 +799,10 @@ function saveSettings() {
     var role = r.querySelector('[data-f="role"]').value.trim();
     if (cap || role) signList.push({ cap: cap, role: role });
   });
-  try { localStorage.setItem('ep3-signatures', JSON.stringify(signList)); } catch(e) {}
+  try {
+    if (signList.length) localStorage.setItem('ep3-signatures', JSON.stringify(signList));
+    else localStorage.removeItem('ep3-signatures');
+  } catch(e) {}
   closeSettingsModal();
   showNotif('Settings saved');
 }
@@ -1693,33 +1698,36 @@ function buildPrintDoc() {
   }
 }
 
-function plHero(subject, ref) {
+function plHero(subject, ref, mast) {
   var html = '<div class="pl-doc">' +
-    '<div class="pl-masthead">Estimate</div>' +
+    (mast !== false ? '<div class="pl-masthead">Estimate</div>' : '') +
     '<div class="pl-title">' + esc(subject) + '</div>' +
     (ref !== null && ref !== undefined
-      ? '<div class="pl-refno"><span class="pl-refno-k">Ref. No.</span><span class="pl-refno-v">' + esc(ref) + '</span></div>'
+      ? '<div class="pl-refno"><span class="pl-refno-k">Ref.</span><span class="pl-refno-v">' + esc(ref) + '</span></div>'
       : '') +
     '<div class="pl-rule"></div>' +
     '<div class="pl-rule-sub"></div>';
   return html;
 }
 
-function plApprovals() {
+function plApprovals(preparedName) {
+  var used = false;
   var blocks = getSignatures().map(function(s) {
-    return '<div class="s-block"><div class="s-cap">' + esc(s.cap) + '</div><div class="s-line"></div><div class="s-role">' + esc(s.role) + '</div></div>';
+    var role = s.role;
+    if (!role && preparedName && !used) { role = preparedName; used = true; }
+    return '<div class="s-block"><div class="s-cap">' + esc(s.cap) + '</div><div class="s-line"></div><div class="s-role">' + esc(role) + '</div></div>';
   }).join('');
   return blocks ? '<div class="pl-sign">' + blocks + '</div>' : '';
 }
 
-function plFoot() {
+function plFoot(preparedName) {
   return '<div class="pl-note">Generated on ' + todayStr() + '</div>' +
-    (printSignEnabled() ? plApprovals() : '');
+    (printSignEnabled() ? plApprovals(preparedName) : '');
 }
 
 function buildPrintMain() {
   if (!DB.length) {
-    return plHero('Estimate Register', null) + '</div>';
+    return plHero('Estimate Register', null, false) + '</div>';
   }
   var rows = DB.map(function(est, i) {
     var total = estTotal(est);
@@ -1742,22 +1750,23 @@ function buildPrintMain() {
     '<th>Prepared by</th>' +
     '<th style="width:96px" class="al">Amount</th>' +
     '</tr></thead><tbody>' + rows + '</tbody></table>';
-  return plHero('Estimate Register', null) + tableHtml +
+  return plHero('Estimate Register', null, false) + tableHtml +
     plFoot() + '</div>';
 }
 
 function buildPrintSingle() {
   var items = ctxGetItems();
-  var subject = '', ref = null;
+  var subject = '', ref = null, by = '';
   if (ctx.multiId !== undefined) {
     var me = findEst(ctx.multiId);
     var site = me && me.sites[ctx.siteIdx];
     subject = site ? site.name : 'Estimate';
-    if (me) ref = me.ref || '';
+    if (me) { ref = me.ref || ''; by = me.by || ''; }
   } else {
     var e = findEst(ctx.estId);
     subject = e ? e.name : 'Estimate';
     ref = e ? (e.ref || '') : '';
+    by = e ? e.by : '';
   }
 
   // ── Table ──
@@ -1807,7 +1816,7 @@ function buildPrintSingle() {
     '<div class="pl-final"><span class="l-l">Final Total</span><span class="l-v">' + money(t.final) + '</span></div>' +
     '</div></section>';
 
-  var signHtml = plFoot();
+  var signHtml = plFoot(by);
 
   return plHero(subject, ref) + tableHtml + ledgerHtml + signHtml + '</div>';
 }
@@ -1845,7 +1854,7 @@ function buildPrintMulti() {
     cols.map(function(){ return '<td></td>'; }).join('') + '</tr></tbody></table>';
 
   return plHero(est.name, est.ref || '') + tableHtml +
-    plFoot() + '</div>';
+    plFoot(est.by) + '</div>';
 }
 
 window.addEventListener('beforeprint', function() {
