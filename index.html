@@ -92,6 +92,17 @@ body{font-family:var(--font);background:var(--surface);color:var(--text);min-hei
 .fg label{display:block;font-size:12px;font-weight:500;color:var(--text-soft);margin-bottom:5px}
 .fg input{width:100%;padding:8px 12px;border:1.5px solid var(--border);border-radius:var(--radius);font-family:var(--font);font-size:13px;color:var(--text);background:var(--white)}
 .fg input:focus{outline:none;border-color:var(--accent)}
+.fg input:disabled{opacity:.45;cursor:not-allowed}
+.settings-section{margin-bottom:22px}
+.settings-section h3{font-size:12px;font-weight:600;color:var(--primary);text-transform:uppercase;letter-spacing:.6px;margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.settings-hint{font-size:12px;color:var(--text-muted);margin-bottom:14px}
+.chk{display:flex;align-items:flex-start;gap:9px;font-size:13px;color:var(--text);cursor:pointer;line-height:1.45}
+.chk input{margin-top:2px;accent-color:var(--accent)}
+/* Signature block editor */
+.sign-row{display:grid;grid-template-columns:1fr 1fr 34px;gap:10px;align-items:end;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:12px;margin-bottom:8px}
+.sign-row .fg{margin-bottom:0}
+.sign-row .sr-del{align-self:end;height:34px;width:34px;display:flex;align-items:center;justify-content:center;padding:0}
+.sign-hint{font-size:11px;color:var(--text-muted);margin:2px 0 10px;line-height:1.5}
 .modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:22px}
 .est-hbar{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius-lg);padding:18px 22px;margin-bottom:20px;display:flex;align-items:flex-start;justify-content:space-between;gap:20px;box-shadow:var(--shadow);flex-wrap:wrap}
 .eh-title{font-size:18px;font-weight:600;color:var(--primary)}
@@ -207,28 +218,24 @@ tr.group-hdr:hover{background:var(--group-hdr-bg) !important}
 .side-tabs{position:fixed;left:0;top:54px;z-index:151;display:flex;flex-direction:column;gap:0}
 .side-tab{display:flex;align-items:center;justify-content:center;width:32px;min-height:80px;writing-mode:vertical-rl;transform:rotate(180deg);cursor:pointer;font-size:11px;font-weight:500;letter-spacing:.3px;color:#fff;border:none;padding:8px 4px;border-radius:8px 0 0 8px;transition:all .2s;margin-bottom:2px}
 .side-tab:hover{width:38px}
-.side-tab.st-blue{background:#5b7db5}.side-tab.st-pink{background:#d4808a}.side-tab.st-teal{background:#5ba89e}.side-tab.st-orange{background:#d4a050}
+.side-tab.st-blue{background:#5b7db5}.side-tab.st-pink{background:#d4808a}.side-tab.st-teal{background:#5ba89e}.side-tab.st-orange{background:#d4a050}.side-tab.st-purple{background:#7a6fb0}
 /* ── PRINT DOCUMENT ─────────────────────────────────────
    Formal "Abstract of Estimate" tender form.
    Ink-and-paper: warm-neutral ink on white, hairline rules,
    monospaced figures, double-rule close under the final
-   total, and an approvals block for signing.  */
-#print-doc{display:none}
+   total, and an approvals block for signing.
+   Theme-proof: the document pins its own light colors and
+   color-scheme so dark mode / OS dark theme can't leak in.  */
+#print-doc{display:none;background:#fff;color:#181715;color-scheme:light;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 #print-doc, #print-doc *{box-sizing:border-box}
-.pl-doc{font-family:'IBM Plex Sans',sans-serif;color:#181715;max-width:660px;margin:0 auto}
-/* Letterhead strip — doc serial + form code */
-.pl-strip{display:flex;justify-content:space-between;align-items:baseline;font-family:'IBM Plex Mono',monospace;font-size:8.5px;letter-spacing:1.6px;text-transform:uppercase;color:#6f6c65;margin-bottom:7px}
-.pl-strip strong{font-weight:500;color:#3f3e3a}
+.pl-doc{font-family:'IBM Plex Sans',sans-serif;color:#181715}
+/* Masthead — "ESTIMATE", name of work, reference */
+.pl-masthead{font-family:'IBM Plex Serif',serif;font-size:30px;font-weight:600;letter-spacing:5px;text-align:center;text-transform:uppercase;color:#181715;margin-bottom:8px}
+.pl-title{font-family:'IBM Plex Serif',serif;font-size:17px;font-weight:600;line-height:1.25;text-align:center;margin:0 0 6px}
+.pl-refno{display:flex;align-items:baseline;justify-content:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1.6px;text-transform:uppercase;color:#6f6c65;margin-bottom:10px}
+.pl-refno .pl-refno-v{color:#181715;font-weight:500;letter-spacing:.3px}
 .pl-rule{height:2px;background:#181715;margin:5px 0 2px}
 .pl-rule-sub{height:1px;background:#c9c6bd;margin-bottom:18px}
-/* Masthead */
-.pl-title{font-family:'IBM Plex Serif',serif;font-size:23px;font-weight:600;line-height:1.18;letter-spacing:-.2px;margin:0 0 3px}
-.pl-sub{font-size:11.5px;color:#3f3e3a;font-family:'IBM Plex Mono',monospace;letter-spacing:.2px;margin-bottom:14px}
-/* Meta — ruled three-box grid like a paper form */
-.pl-meta{display:grid;grid-template-columns:repeat(3,1fr);border-top:1.5px solid #181715;border-left:1.5px solid #181715;margin-top:16px}
-.pl-meta .m-cell{padding:8px 12px;border-right:1.5px solid #181715;border-bottom:1.5px solid #181715}
-.pl-meta .m-k{font-size:8px;letter-spacing:1.4px;text-transform:uppercase;color:#6f6c65;font-family:'IBM Plex Mono',monospace;margin-bottom:4px}
-.pl-meta .m-v{font-size:12.5px;color:#181715;font-weight:500;line-height:1.3}
 /* Section lead */
 .pl-lead{margin:24px 0 9px;display:flex;justify-content:space-between;align-items:baseline}
 .pl-lead .pl-l-title{font-family:'IBM Plex Serif',serif;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:1.2px;color:#181715}
@@ -257,12 +264,12 @@ table.pl-table tr.pl-total td{font-family:'IBM Plex Mono',monospace;font-size:11
 .pl-ledger-inner .pl-final{display:flex;justify-content:space-between;align-items:baseline;padding:7px 2px;border-top:2px solid #181715;box-shadow:0 1.5px 0 #181715;margin-top:6px;font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;color:#181715}
 .pl-ledger-inner .pl-final .l-l{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:#3f3e3a;font-weight:500}
 .pl-note{font-size:8.5px;color:#6f6c65;font-family:'IBM Plex Mono',monospace;margin-top:14px;text-transform:uppercase;letter-spacing:.6px}
-/* Approvals block — prepared by / approved by */
-.pl-sign{margin-top:42px;border-top:1px solid #c9c6bd;padding-top:26px;display:grid;grid-template-columns:1fr 1fr;gap:40px;page-break-inside:avoid}
-.pl-sign .s-block{}
-.pl-sign .s-cap{font-size:8.5px;color:#6f6c65;letter-spacing:1.3px;text-transform:uppercase;font-family:'IBM Plex Mono',monospace;margin-bottom:4px}
-.pl-sign .s-line{width:150px;border-top:1px solid #181715;margin-top:52px;margin-bottom:2px}
-.pl-sign .s-role{font-size:10px;color:#3f3e3a;font-family:'IBM Plex Mono',monospace;text-transform:uppercase;letter-spacing:.5px}
+/* Approvals block — user-defined signature rows, two per line */
+.pl-sign{margin-top:42px;border-top:1px solid #c9c6bd;padding-top:26px;display:grid;grid-template-columns:repeat(2,1fr);gap:30px 44px;page-break-inside:avoid}
+.pl-sign .s-block{min-width:0;overflow-wrap:anywhere}
+.pl-sign .s-cap{font-size:8.5px;color:#6f6c65;letter-spacing:1.3px;text-transform:uppercase;font-family:'IBM Plex Mono',monospace;margin-bottom:4px;line-height:1.5}
+.pl-sign .s-line{width:150px;border-top:1px solid #181715;margin-top:40px;margin-bottom:3px}
+.pl-sign .s-role{font-size:10px;color:#3f3e3a;font-family:'IBM Plex Mono',monospace;text-transform:uppercase;letter-spacing:.5px;line-height:1.5;white-space:normal}
 /* Annexures (calculation sheets) */
 #printAnnexures{display:none}
 #printAnnexures h3{font-family:'IBM Plex Serif',serif;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:1.2px;color:#181715;margin:0 0 12px;border-bottom:1.5px solid #181715;padding-bottom:6px}
@@ -271,10 +278,11 @@ table.pl-table tr.pl-total td{font-family:'IBM Plex Mono',monospace;font-size:11
 .annex-step{margin-left:14px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:#3f3e3a;line-height:1.5}
 @media print{
   @page{size:A4;margin:14mm 13mm 16mm 13mm}
-  html,body{background:#fff!important}
+  html,body{background:#fff!important;color:#181715!important}
+  html,body,#print-doc{color-scheme:light}
   #topbar,.side-tabs,.history-panel,.search-bar,.btn,.paste-hint,.notif,.modal-overlay,
   .rdel,.calc-btn,.card-del,.tbl-foot,.badge-input,.est-hbar,.gst-summary,.view,.multi-wrap{display:none!important}
-  #print-doc{display:block!important}
+  #print-doc{display:block!important;background:#fff!important;color:#181715!important}
   #printAnnexures{display:block;margin-top:22px}
   #printAnnexures>div{page-break-before:always}
   thead{display:table-header-group}
@@ -397,11 +405,41 @@ table.pl-table tr.pl-total td{font-family:'IBM Plex Mono',monospace;font-size:11
   <div class="modal">
     <h2 id="modal-title">New Estimate</h2>
     <div class="fg"><label>ESTIMATE NAME</label><input type="text" id="modal-name" placeholder="e.g. Road Repair Phase 1"></div>
+    <div class="fg"><label>REFERENCE NO. (OPTIONAL)</label><input type="text" id="modal-ref" placeholder="e.g. WO/CE/2026/118"></div>
     <div class="fg"><label>DATE</label><input type="date" id="modal-date"></div>
     <div class="fg"><label>PREPARED BY</label><input type="text" id="modal-by" placeholder="Engineer / Officer name"></div>
     <div class="modal-actions">
       <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
       <button class="btn btn-primary" onclick="createEstimate()">Create</button>
+    </div>
+  </div>
+</div>
+
+<!-- SETTINGS MODAL -->
+<div class="modal-overlay" id="settings-modal">
+  <div class="modal modal-wide">
+    <h2>⚙ Settings</h2>
+    <div class="settings-section">
+      <h3>Project details</h3>
+      <p class="settings-hint" id="set-est-ctx">Open an estimate to edit its project details</p>
+      <div class="fg"><label>NAME OF WORK</label><input type="text" id="set-name" placeholder="e.g. Construction of Community Hall"></div>
+      <div class="fg"><label>REFERENCE NO.</label><input type="text" id="set-ref" placeholder="e.g. WO/CE/2026/118"></div>
+      <div class="fg"><label>PREPARED BY</label><input type="text" id="set-by" placeholder="Engineer / Officer name"></div>
+      <div class="fg"><label>DATE</label><input type="date" id="set-date"></div>
+    </div>
+    <div class="settings-section">
+      <h3>Print output</h3>
+      <label class="chk"><input type="checkbox" id="set-print-sign"> Include signature blocks on printed documents</label>
+    </div>
+    <div class="settings-section">
+      <h3>Signature blocks</h3>
+      <p class="sign-hint">Printed two per line. Caption sits above the signing line, role or name below it.</p>
+      <div id="sign-list"></div>
+      <button class="btn btn-secondary btn-sm" onclick="addSignatureRow()">＋ Add signature</button>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeSettingsModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveSettings()">Save settings</button>
     </div>
   </div>
 </div>
@@ -464,6 +502,7 @@ table.pl-table tr.pl-total td{font-family:'IBM Plex Mono',monospace;font-size:11
 <div class="side-tabs">
   <button class="side-tab st-blue" onclick="toggleHistoryPanel()">📜 History</button>
   <button class="side-tab st-pink" onclick="openScheduleModal()">📋 Schedule</button>
+  <button class="side-tab st-purple" onclick="openSettingsModal()">⚙ Settings</button>
 </div>
 
 <!-- PRINT DOCUMENT -->
@@ -642,6 +681,7 @@ function openNewModal(type) {
   _newType = type;
   document.getElementById('modal-title').textContent = type==='single'?'New Single Site Estimate':'New Multi-Site Estimate';
   document.getElementById('modal-name').value = '';
+  document.getElementById('modal-ref').value = '';
   document.getElementById('modal-date').value = new Date().toISOString().slice(0,10);
   document.getElementById('modal-by').value = '';
   document.getElementById('new-modal').classList.add('open');
@@ -653,12 +693,113 @@ document.getElementById('modal-name').addEventListener('keydown', function(e){ i
 function createEstimate() {
   var name = document.getElementById('modal-name').value.trim();
   if (!name) { document.getElementById('modal-name').focus(); return; }
-  var est = { id:genId(), type:_newType, name:name, date:document.getElementById('modal-date').value, by:document.getElementById('modal-by').value.trim() };
+  var est = { id:genId(), type:_newType, name:name, ref:document.getElementById('modal-ref').value.trim(), date:document.getElementById('modal-date').value, by:document.getElementById('modal-by').value.trim() };
   if (_newType==='single') est.items = [makeRow()];
   else est.sites = [];
   DB.unshift(est); saveDB(); closeModal(); renderMain();
   if (_newType==='single') openSingle(est.id);
   else openMulti(est.id);
+}
+
+/* ═══════════════════════════════════════════════════════
+   SETTINGS — project details + print output
+═══════════════════════════════════════════════════════ */
+function currentProject() {
+  if (ctx.view === 'single') {
+    if (ctx.multiId !== undefined) return findEst(ctx.multiId);
+    return findEst(ctx.estId);
+  }
+  if (ctx.view === 'multi') return findEst(ctx.estId);
+  return null;
+}
+function printSignEnabled() {
+  var v = '1';
+  try { v = localStorage.getItem('ep3-print-sign') || '1'; } catch(e) {}
+  return v !== '0';
+}
+var DEFAULT_SIGNATURES = [
+  { cap:'Prepared by', role:'Engineer in Charge' },
+  { cap:'Approved by', role:'Executive Engineer' }
+];
+function getSignatures() {
+  try {
+    var raw = localStorage.getItem('ep3-signatures');
+    if (raw !== null) {
+      var list = JSON.parse(raw);
+      if (Array.isArray(list)) return list;
+    }
+  } catch(e) {}
+  return DEFAULT_SIGNATURES.slice();
+}
+function addSignatureRow(cap, role) {
+  var list = document.getElementById('sign-list');
+  var row = document.createElement('div');
+  row.className = 'sign-row';
+  row.innerHTML = '<div class="fg sr-cap"><label>CAPTION</label><input type="text" data-f="cap" placeholder="e.g. Prepared by"></div>' +
+    '<div class="fg sr-role"><label>ROLE / NAME</label><input type="text" data-f="role" placeholder="e.g. Engineer in Charge"></div>' +
+    '<button type="button" class="btn btn-danger-ghost btn-sm sr-del" title="Remove signature">✕</button>';
+  row.querySelector('[data-f="cap"]').value = cap || '';
+  row.querySelector('[data-f="role"]').value = role || '';
+  row.querySelector('.sr-del').addEventListener('click', function(){ if (row.parentNode) row.parentNode.removeChild(row); });
+  list.appendChild(row);
+  return row;
+}
+function openSettingsModal() {
+  var est = currentProject();
+  var hasProj = !!est;
+  document.getElementById('set-est-ctx').textContent = hasProj
+    ? 'Editing: ' + est.name
+    : 'Open an estimate to edit its project details';
+  ['set-name','set-ref','set-by','set-date'].forEach(function(id) {
+    document.getElementById(id).disabled = !hasProj;
+    document.getElementById(id).value = hasProj ? (est[id.slice(4)] || '') : '';
+  });
+  document.getElementById('set-print-sign').checked = printSignEnabled();
+  var signList = document.getElementById('sign-list');
+  signList.innerHTML = '';
+  getSignatures().forEach(function(s) { addSignatureRow(s.cap, s.role); });
+  document.getElementById('settings-modal').classList.add('open');
+  var first = hasProj ? document.getElementById('set-name') : document.getElementById('set-print-sign');
+  setTimeout(function(){ first.focus(); }, 60);
+}
+function closeSettingsModal() { document.getElementById('settings-modal').classList.remove('open'); }
+document.getElementById('settings-modal').addEventListener('click', function(e){ if (e.target === this) closeSettingsModal(); });
+function saveSettings() {
+  var est = currentProject();
+  if (est) {
+    var name = document.getElementById('set-name').value.trim();
+    if (name) est.name = name;
+    est.ref = document.getElementById('set-ref').value.trim();
+    est.by = document.getElementById('set-by').value.trim();
+    est.date = document.getElementById('set-date').value;
+    saveDB();
+    renderMain();
+    if (ctx.view === 'single') {
+      if (ctx.multiId === undefined) document.getElementById('s-title').textContent = est.name;
+      var d = formatDate(est.date), parts = [];
+      if (ctx.multiId !== undefined) parts.push(est.name);
+      if (est.ref) parts.push('Ref. ' + est.ref);
+      parts.push(d, est.by);
+      document.getElementById('s-sub').textContent = parts.filter(Boolean).join(' · ');
+    } else if (ctx.view === 'multi') {
+      document.getElementById('m-title').textContent = est.name;
+      var dd = formatDate(est.date), partsm = [];
+      if (est.ref) partsm.push('Ref. ' + est.ref);
+      partsm.push(dd, est.by);
+      document.getElementById('m-sub').textContent = partsm.filter(Boolean).join(' · ');
+    }
+    renderBreadcrumb();
+  }
+  try { localStorage.setItem('ep3-print-sign', document.getElementById('set-print-sign').checked ? '1' : '0'); } catch(e) {}
+  var signList = [];
+  Array.prototype.forEach.call(document.querySelectorAll('#sign-list .sign-row'), function(r) {
+    var cap = r.querySelector('[data-f="cap"]').value.trim();
+    var role = r.querySelector('[data-f="role"]').value.trim();
+    if (cap || role) signList.push({ cap: cap, role: role });
+  });
+  try { localStorage.setItem('ep3-signatures', JSON.stringify(signList)); } catch(e) {}
+  closeSettingsModal();
+  showNotif('Settings saved');
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -672,7 +813,10 @@ function openSingle(estId) {
   archivedItems = e._archived || [];
   var dateStr = formatDate(e.date);
   document.getElementById('s-title').textContent = e.name;
-  document.getElementById('s-sub').textContent = [dateStr, e.by].filter(Boolean).join(' · ');
+  var parts = [];
+  if (e.ref) parts.push('Ref. ' + e.ref);
+  parts.push(dateStr, e.by);
+  document.getElementById('s-sub').textContent = parts.filter(Boolean).join(' · ');
   showView('single');
   renderSingleTable();
   renderBreadcrumb();
@@ -688,7 +832,10 @@ function openSiteInSingle(multiEstId, siteIdx) {
   archivedItems = site._archived || [];
   var dateStr = formatDate(me.date);
   document.getElementById('s-title').textContent = site.name;
-  document.getElementById('s-sub').textContent = [me.name, dateStr, me.by].filter(Boolean).join(' · ');
+  var parts = [me.name];
+  if (me.ref) parts.push('Ref. ' + me.ref);
+  parts.push(dateStr, me.by);
+  document.getElementById('s-sub').textContent = parts.filter(Boolean).join(' · ');
   showView('single');
   renderSingleTable();
   renderBreadcrumb();
@@ -1323,7 +1470,10 @@ function openMulti(estId) {
   ctx = { view:'multi', estId:estId };
   var dateStr = formatDate(e.date);
   document.getElementById('m-title').textContent = e.name;
-  document.getElementById('m-sub').textContent = [dateStr, e.by].filter(Boolean).join(' · ');
+  var parts = [];
+  if (e.ref) parts.push('Ref. ' + e.ref);
+  parts.push(dateStr, e.by);
+  document.getElementById('m-sub').textContent = parts.filter(Boolean).join(' · ');
   showView('multi');
   renderMultiTable();
   renderBreadcrumb();
@@ -1543,41 +1693,37 @@ function buildPrintDoc() {
   }
 }
 
-function plHero(subject, subLine, meta, eyebrow) {
+function plHero(subject, ref) {
   var html = '<div class="pl-doc">' +
-    '<div class="pl-strip"><span>EstimatePro</span><strong>' + esc(eyebrow || 'Estimate Document') + '</strong></div>' +
+    '<div class="pl-masthead">Estimate</div>' +
     '<div class="pl-title">' + esc(subject) + '</div>' +
-    (subLine ? '<div class="pl-sub">' + esc(subLine) + '</div>' : '') +
+    (ref !== null && ref !== undefined
+      ? '<div class="pl-refno"><span class="pl-refno-k">Ref. No.</span><span class="pl-refno-v">' + esc(ref) + '</span></div>'
+      : '') +
     '<div class="pl-rule"></div>' +
-    '<div class="pl-rule-sub"></div>' +
-    '<div class="pl-meta">';
-  meta.forEach(function(m) {
-    html += '<div class="m-cell"><div class="m-k">' + esc(m.k) + '</div><div class="m-v">' + esc(m.v || '—') + '</div></div>';
-  });
-  html += '</div></div>';
+    '<div class="pl-rule-sub"></div>';
   return html;
 }
 
-function plApprovals(prepared, approved) {
-  return '<div class="pl-sign">' +
-    '<div class="s-block"><div class="s-cap">Prepared by</div><div class="s-line"></div><div class="s-role">' + esc(prepared || 'Engineer in Charge') + '</div></div>' +
-    '<div class="s-block"><div class="s-cap">Approved by</div><div class="s-line"></div><div class="s-role">' + esc(approved || 'Executive Engineer') + '</div></div>' +
-    '</div>';
+function plApprovals() {
+  var blocks = getSignatures().map(function(s) {
+    return '<div class="s-block"><div class="s-cap">' + esc(s.cap) + '</div><div class="s-line"></div><div class="s-role">' + esc(s.role) + '</div></div>';
+  }).join('');
+  return blocks ? '<div class="pl-sign">' + blocks + '</div>' : '';
+}
+
+function plFoot() {
+  return '<div class="pl-note">Generated on ' + todayStr() + '</div>' +
+    (printSignEnabled() ? plApprovals() : '');
 }
 
 function buildPrintMain() {
-  var today = todayStr();
   if (!DB.length) {
-    return plHero('Estimate Register', '', [
-      { k:'Prepared by', v:'' },
-      { k:'Date', v: today },
-      { k:'Records', v:'None' }
-    ]);
+    return plHero('Estimate Register', null) + '</div>';
   }
   var rows = DB.map(function(est, i) {
     var total = estTotal(est);
     var dateStr = formatDate(est.date);
-    var cnt = est.type==='multi' ? (est.sites||[]).length+' site(s)' : (est.items||[]).filter(function(r){ return !r.blank; }).length+' item(s)';
     return '<tr>' +
       '<td class="pl-sl">' + (i+1) + '</td>' +
       '<td>' + esc(est.name) + '</td>' +
@@ -1596,32 +1742,23 @@ function buildPrintMain() {
     '<th>Prepared by</th>' +
     '<th style="width:96px" class="al">Amount</th>' +
     '</tr></thead><tbody>' + rows + '</tbody></table>';
-  var meta = [
-    { k:'Document', v:'Estimate Register' },
-    { k:'Prepared by', v:'' },
-    { k:'Date', v: today }
-  ];
-  return plHero('Estimate Register', '', meta, 'Register of Estimates') + tableHtml +
-    '<div class="pl-note">Generated from EstimatePro · ' + today + '</div>' +
-    plApprovals('Engineer in Charge', 'Executive Engineer');
+  return plHero('Estimate Register', null) + tableHtml +
+    plFoot() + '</div>';
 }
 
 function buildPrintSingle() {
   var items = ctxGetItems();
-  var subject = '', subLine = '', dateStr = '', by = '';
+  var subject = '', ref = null;
   if (ctx.multiId !== undefined) {
     var me = findEst(ctx.multiId);
     var site = me && me.sites[ctx.siteIdx];
     subject = site ? site.name : 'Estimate';
-    if (me) { dateStr = formatDate(me.date); by = me.by || ''; }
-    if (me && me.name) subLine = me.name + (dateStr ? ' · ' + dateStr : '');
+    if (me) ref = me.ref || '';
   } else {
     var e = findEst(ctx.estId);
     subject = e ? e.name : 'Estimate';
-    dateStr = formatDate(e ? e.date : '');
-    by = e ? e.by : '';
+    ref = e ? (e.ref || '') : '';
   }
-  var today = todayStr();
 
   // ── Table ──
   var sl = 0, lastGroup = null;
@@ -1670,15 +1807,9 @@ function buildPrintSingle() {
     '<div class="pl-final"><span class="l-l">Final Total</span><span class="l-v">' + money(t.final) + '</span></div>' +
     '</div></section>';
 
-  var signHtml = '<div class="pl-note">Generated from EstimatePro · ' + today + '</div>' +
-    plApprovals(by || 'Engineer in Charge', 'Executive Engineer');
+  var signHtml = plFoot();
 
-  var meta = [
-    { k:'Name of Work', v: subject },
-    { k:'Prepared by', v: by },
-    { k:'Date', v: dateStr || today }
-  ];
-  return plHero(subject, subLine, meta, 'Abstract Estimate') + tableHtml + ledgerHtml + signHtml;
+  return plHero(subject, ref) + tableHtml + ledgerHtml + signHtml + '</div>';
 }
 
 function formatDate(d) {
@@ -1691,7 +1822,6 @@ function todayStr() { return new Date().toLocaleDateString('en-IN',{day:'2-digit
 function buildPrintMulti() {
   var est = findEst(ctx.estId);
   if (!est) return '';
-  var dateStr = est ? formatDate(est.date) : '';
   var cols = getMultiCols(est), sites = est.sites || [];
 
   var head = '<tr><th style="width:40%">Site Name</th><th class="al">Total (₹)</th>';
@@ -1714,15 +1844,8 @@ function buildPrintMulti() {
     '<tr class="pl-total"><td>Total</td><td class="pl-money">' + money(grand) + '</td>' +
     cols.map(function(){ return '<td></td>'; }).join('') + '</tr></tbody></table>';
 
-  var meta = [
-    { k:'Name of Work', v: est.name },
-    { k:'Prepared by', v: est.by },
-    { k:'Date', v: dateStr }
-  ];
-  var today = todayStr();
-  return plHero(est.name, '', meta, 'Multi-Site Abstract') + tableHtml +
-    '<div class="pl-note">Generated from EstimatePro · ' + today + '</div>' +
-    plApprovals(est.by || 'Engineer in Charge', 'Executive Engineer');
+  return plHero(est.name, est.ref || '') + tableHtml +
+    plFoot() + '</div>';
 }
 
 window.addEventListener('beforeprint', function() {
@@ -1779,6 +1902,8 @@ window.addEventListener('beforeprint', function() {
 ═══════════════════════════════════════════════════════ */
 document.addEventListener('keydown', function(e) {
   if (e.key === 'Escape') {
+    var sm = document.getElementById('settings-modal');
+    if (sm && sm.classList.contains('open')) { closeSettingsModal(); return; }
     if (ctx.view === 'single' && ctx.multiId !== undefined) openMulti(ctx.multiId);
     else if (ctx.view !== 'main') goMain();
   } else if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
