@@ -258,11 +258,11 @@ tr.group-hdr:hover{background:var(--group-hdr-bg) !important}
 .pl-work-heading span{position:relative;display:inline-block;padding:9px 28px 9px 36px;font-family:'IBM Plex Serif',serif;font-size:13px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#fff;z-index:1}
 
 /* ── Title (work name) ── */
-.pl-title{font-family:'IBM Plex Serif',serif;font-size:17px;font-weight:600;line-height:1.3;text-align:center;margin:0 0 6px;padding:0 0 10px;border-bottom:2px solid #181715;position:relative}
+.pl-title{font-family:'IBM Plex Serif',serif;font-size:17px;font-weight:600;line-height:1.3;text-align:left;margin:0 0 6px;padding:0 0 10px;border-bottom:2px solid #181715;position:relative}
 .pl-title::after{content:'';position:absolute;bottom:-5px;left:0;right:0;height:1px;background:#181715}
 
 /* ── Reference number ── */
-.pl-refno{display:flex;align-items:baseline;justify-content:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1.6px;text-transform:uppercase;color:#6f6c65;margin-bottom:10px}
+.pl-refno{display:flex;align-items:baseline;justify-content:flex-start;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1.6px;text-transform:uppercase;color:#6f6c65;margin-bottom:10px}
 .pl-refno .pl-refno-v{color:#181715;font-weight:500;letter-spacing:.3px}
 
 /* ── Decorative rules ── */
@@ -307,7 +307,7 @@ table.pl-table tr.pl-total td{font-family:'IBM Plex Mono',monospace;font-size:11
 .pl-note{font-size:8.5px;color:#6f6c65;font-family:'IBM Plex Mono',monospace;margin-top:14px;text-transform:uppercase;letter-spacing:.6px;border-top:1px solid #d0cdc7;padding-top:8px}
 
 /* ── Approvals / sign-off — geometric bracket blocks ── */
-.pl-sign{margin-top:50px;border-top:3px solid #181715;padding-top:30px;display:grid;grid-template-columns:repeat(2,1fr);gap:40px 55px;page-break-inside:avoid}
+.pl-sign{margin-top:50px;border-top:3px solid #181715;padding-top:30px;display:grid;grid-template-columns:repeat(2,1fr);gap:40px 55px;page-break-inside:avoid;justify-items:center}
 .pl-sign .s-block{min-width:0;overflow-wrap:anywhere;position:relative;padding:10px 14px;border:1px solid #d0cdc7}
 .pl-sign .s-block::before{content:'';position:absolute;top:-1px;left:-1px;width:10px;height:10px;border-top:2px solid #181715;border-left:2px solid #181715}
 .pl-sign .s-block::after{content:'';position:absolute;bottom:-1px;right:-1px;width:10px;height:10px;border-bottom:2px solid #181715;border-right:2px solid #181715}
@@ -334,7 +334,9 @@ table.pl-table tr.pl-total td{font-family:'IBM Plex Mono',monospace;font-size:11
   #printAnnexures{display:block;margin-top:22px}
   #printAnnexures>div{page-break-before:always}
   thead{display:table-header-group}
-  tr{page-break-inside:avoid}
+  tbody{display:table-row-group}
+  tr{page-break-inside:auto}
+  td,th{page-break-inside:avoid}
 }
 </style>
 </head>
