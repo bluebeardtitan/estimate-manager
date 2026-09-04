@@ -243,16 +243,16 @@ tr.group-hdr:hover{background:var(--group-hdr-bg) !important}
    color-scheme so dark mode / OS dark theme can't leak in.  */
 #print-doc{display:none;background:#fff;color:#181715;color-scheme:light;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 #print-doc, #print-doc *{box-sizing:border-box}
-.pl-doc{font-family:'IBM Plex Sans',sans-serif;color:#181715}
+.pl-doc{font-family:'IBM Plex Sans',sans-serif;color:#181715;padding-bottom:20px}
 /* Masthead — "ESTIMATE", name of work, reference */
-.pl-masthead{font-family:'IBM Plex Serif',serif;font-size:30px;font-weight:600;letter-spacing:5px;text-align:center;text-transform:uppercase;color:#181715;margin-bottom:8px}
+.pl-masthead{font-family:'IBM Plex Serif',serif;font-size:30px;font-weight:600;letter-spacing:5px;text-align:center;text-transform:uppercase;color:#181715;margin-bottom:8px;padding-top:4px}
 .pl-work-heading{position:relative;width:100%;margin-bottom:10px;overflow:hidden}
 .pl-work-heading::before{content:'';position:absolute;inset:0;background:#181715;transform:skewX(-4deg);transform-origin:top left}
 .pl-work-heading span{position:relative;display:inline-block;padding:8px 20px 8px 28px;font-family:'IBM Plex Serif',serif;font-size:12px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#fff}
-.pl-title{font-family:'IBM Plex Serif',serif;font-size:17px;font-weight:600;line-height:1.25;text-align:center;margin:0 0 6px}
+.pl-title{font-family:'IBM Plex Serif',serif;font-size:17px;font-weight:600;line-height:1.3;text-align:center;margin:0 0 6px;border-bottom:1px solid #c9c6bd;padding-bottom:8px}
 .pl-refno{display:flex;align-items:baseline;justify-content:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1.6px;text-transform:uppercase;color:#6f6c65;margin-bottom:10px}
 .pl-refno .pl-refno-v{color:#181715;font-weight:500;letter-spacing:.3px}
-.pl-rule{height:2px;background:#181715;margin:5px 0 2px}
+.pl-rule{height:2.5px;background:#181715;margin:5px 0 2px}
 .pl-rule-sub{height:1px;background:#c9c6bd;margin-bottom:18px}
 /* Section lead */
 .pl-lead{margin:24px 0 9px;display:flex;justify-content:space-between;align-items:baseline}
@@ -270,23 +270,23 @@ table.pl-table td.pl-ref{font-family:'IBM Plex Mono',monospace;font-size:8.5px;c
 table.pl-table tr.pl-group td{background:#f2f0ea;font-family:'IBM Plex Mono',monospace;font-size:8.5px;font-weight:500;letter-spacing:1.3px;text-transform:uppercase;padding:5px 10px;border-bottom:1.5px solid #181715;color:#3f3e3a;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 table.pl-table tr.pl-total td{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;color:#181715;border-top:1.5px solid #181715;border-bottom:1.5px solid #181715;background:#f2f0ea}
 /* Abstract of cost — the ledger box */
-.pl-ledger{margin:22px 0 0;display:flex;justify-content:flex-end;page-break-inside:avoid}
-.pl-ledger-inner{width:300px}
-.pl-ledger-hd{font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:500;letter-spacing:1.6px;text-transform:uppercase;color:#181715;padding:6px 2px 5px;border-top:1.5px solid #181715;border-bottom:1px solid #c9c6bd}
-.pl-ledger-inner .pl-lr{display:flex;justify-content:space-between;align-items:baseline;padding:5px 2px;font-size:10.5px;border-bottom:1px solid #c9c6bd}
+.pl-ledger{margin:28px 0 0;display:flex;justify-content:flex-end;page-break-inside:avoid}
+.pl-ledger-inner{width:320px;border:1.5px solid #181715;border-radius:2px;overflow:hidden}
+.pl-ledger-hd{font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;letter-spacing:1.8px;text-transform:uppercase;color:#fff;background:#181715;padding:7px 12px;text-align:center;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.pl-ledger-inner .pl-lr{display:flex;justify-content:space-between;align-items:baseline;padding:6px 12px;font-size:10.5px;border-bottom:1px solid #e0ddd7}
 .pl-ledger-inner .pl-lr .l-l{color:#3f3e3a}
 .pl-ledger-inner .pl-lr .l-v{font-family:'IBM Plex Mono',monospace;text-align:right;color:#181715}
-.pl-ledger-inner .pl-lr.pl-strong{border-top:1.5px solid #181715;border-bottom:none}
+.pl-ledger-inner .pl-lr.pl-strong{border-top:1.5px solid #181715;border-bottom:none;background:#f8f7f4}
 .pl-ledger-inner .pl-lr.pl-strong .l-l,.pl-ledger-inner .pl-lr.pl-strong .l-v{font-weight:600}
 /* Double-rule close under the final total — the accountancy signature */
-.pl-ledger-inner .pl-final{display:flex;justify-content:space-between;align-items:baseline;padding:7px 2px;border-top:2px solid #181715;box-shadow:0 1.5px 0 #181715;margin-top:6px;font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;color:#181715}
+.pl-ledger-inner .pl-final{display:flex;justify-content:space-between;align-items:baseline;padding:8px 12px;border-top:2.5px double #181715;margin-top:4px;font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;color:#181715;background:#f2f0ea;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 .pl-ledger-inner .pl-final .l-l{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:#3f3e3a;font-weight:500}
 .pl-note{font-size:8.5px;color:#6f6c65;font-family:'IBM Plex Mono',monospace;margin-top:14px;text-transform:uppercase;letter-spacing:.6px}
 /* Approvals block — user-defined signature rows, two per line */
-.pl-sign{margin-top:42px;border-top:1px solid #c9c6bd;padding-top:26px;display:grid;grid-template-columns:repeat(2,1fr);gap:30px 44px;page-break-inside:avoid}
+.pl-sign{margin-top:48px;border-top:1px solid #c9c6bd;padding-top:28px;display:grid;grid-template-columns:repeat(2,1fr);gap:36px 50px;page-break-inside:avoid}
 .pl-sign .s-block{min-width:0;overflow-wrap:anywhere}
 .pl-sign .s-cap{font-size:8.5px;color:#6f6c65;letter-spacing:1.3px;text-transform:uppercase;font-family:'IBM Plex Mono',monospace;margin-bottom:4px;line-height:1.5}
-.pl-sign .s-line{width:150px;border-top:1px solid #181715;margin-top:40px;margin-bottom:3px}
+.pl-sign .s-line{width:160px;border-top:1px solid #181715;margin-top:44px;margin-bottom:4px}
 .pl-sign .s-role{font-size:10px;color:#3f3e3a;font-family:'IBM Plex Mono',monospace;text-transform:uppercase;letter-spacing:.5px;line-height:1.5;white-space:normal}
 /* Annexures (calculation sheets) */
 #printAnnexures{display:none}
@@ -295,8 +295,8 @@ table.pl-table tr.pl-total td{font-family:'IBM Plex Mono',monospace;font-size:11
 .annex-item-title{font-family:'IBM Plex Serif',serif;font-size:11.5px;font-weight:600;color:#181715;margin-bottom:3px}
 .annex-step{margin-left:14px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:#3f3e3a;line-height:1.5}
 @media print{
-  @page{size:A4;margin:14mm 13mm 16mm 13mm;margin-top:0;margin-bottom:0}
-  @page{@bottom-center{content:counter(page) " / "counter(pages);font-family:var(--mono);font-size:9px;color:#555}}
+  @page{size:A4;margin:18mm 14mm 22mm 14mm}
+  @page{@bottom-center{content:counter(page) " / "counter(pages);font-family:'IBM Plex Mono',monospace;font-size:9px;color:#6f6c65;letter-spacing:.5px}}
   html,body{background:#fff!important;color:#181715!important}
   html,body,#print-doc{color-scheme:light}
   #topbar,.side-tabs,.history-panel,.search-bar,.btn,.paste-hint,.notif,.modal-overlay,
