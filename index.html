@@ -145,6 +145,11 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
 .td-meta .badge-short.badge-set{background:#e6f3ee;color:#1d6b54;border:1px solid #2f8a6d;font-weight:600}
 .td-meta .ref-note{margin-top:4px;font-size:10px;color:var(--text-muted);font-family:var(--mono);line-height:1.2}
 .td-meta .ref-note::before{content:'ref ';color:var(--text-muted);opacity:.6}
+.td-meta .ref-note .ref-note-val{cursor:text;border-bottom:1px dashed var(--border-strong);transition:all .15s}
+.td-meta .ref-note .ref-note-val:hover{color:var(--text);border-bottom-color:var(--accent)}
+.td-meta .ref-note .ref-note-val.ref-empty{color:var(--text-muted);opacity:.6;border-bottom:1px dashed var(--border)}
+.td-meta .ref-note .ref-note-input{width:120px;height:20px;padding:0 6px;border:1.5px solid var(--accent);border-radius:4px;font-family:var(--mono);font-size:10px;color:var(--ink,#16283a);background:#fff;outline:none}
+.td-meta .ref-note .ref-note-input:focus{box-shadow:0 0 0 3px rgba(217,135,15,.15)}
 .td-meta .badge-input{width:92px;height:22px;padding:0 7px;border:1.5px solid var(--accent);border-radius:5px;font-family:var(--font);font-size:11px;color:var(--ink,#16283a);background:#fff;outline:none;transition:all .15s;vertical-align:middle}
 .td-meta .badge-input.badge-input-short{width:94px;border-color:#2f8a6d}
 .td-meta .badge-input:focus{box-shadow:0 0 0 3px rgba(217,135,15,.15)}
@@ -241,96 +246,109 @@ tr.group-hdr:hover{background:var(--group-hdr-bg) !important}
    total, and an approvals block for signing.
    Theme-proof: the document pins its own light colors and
    color-scheme so dark mode / OS dark theme can't leak in.  */
-#print-doc{display:none;background:#fff;color:#181715;color-scheme:light;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+#print-doc{display:none;background:#fff;color:#111;color-scheme:light;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 #print-doc, #print-doc *{box-sizing:border-box}
-.pl-doc{font-family:'IBM Plex Sans',sans-serif;color:#181715;padding-bottom:20px}
+.pl-doc{font-family:'IBM Plex Sans',sans-serif;color:#111;padding-bottom:20px}
 
-/* ── Masthead — triple-rule frame with hatched band ── */
-.pl-masthead-wrap{border-top:3px solid #181715;border-bottom:3px solid #181715;padding:12px 0;margin-bottom:4px;position:relative;background:repeating-linear-gradient(45deg,transparent,transparent 3px,rgba(0,0,0,.04) 3px,rgba(0,0,0,.04) 4px)}
-.pl-masthead-wrap::before,.pl-masthead-wrap::after{content:'';position:absolute;left:0;right:0;height:1px;background:#181715}
-.pl-masthead-wrap::before{top:3px}.pl-masthead-wrap::after{bottom:3px}
-.pl-masthead{font-family:'IBM Plex Serif',serif;font-size:32px;font-weight:600;letter-spacing:8px;text-align:center;text-transform:uppercase;color:#181715;position:relative;z-index:1}
+/* ── Masthead — drafting title frame ── */
+.pl-masthead-wrap{position:relative;text-align:center;padding:16px 10px 14px;margin:0 0 3px}
+.pl-masthead-wrap .pd-hr-t{position:absolute;left:0;right:0;top:0;height:3px;background:#111}
+.pl-masthead-wrap .pd-hr-b{position:absolute;left:0;right:0;bottom:0;height:3px;background:#111}
+.pl-masthead-wrap::before{content:'';position:absolute;left:0;right:0;top:4px;height:1px;background:#111}
+.pl-masthead-wrap::after{content:'';position:absolute;left:0;right:0;bottom:4px;height:1px;background:#111}
+.pl-masthead-dual{border-top:1px solid #111;border-bottom:1px solid #111;height:3px;background:repeating-linear-gradient(90deg,#111 0,#111 3px,transparent 3px,transparent 7px);margin-top:3px;margin-bottom:12px;opacity:.7}
+.pl-masthead-corner{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none}
+.pl-masthead-corner::before,.pl-masthead-corner::after{content:'';position:absolute;width:16px;height:16px;border-color:#111}
+.pl-masthead-corner::before{top:0;left:0;border-top:2px solid #111;border-left:2px solid #111}
+.pl-masthead-corner::after{top:0;right:0;border-top:2px solid #111;border-right:2px solid #111}
+.pl-masthead{font-family:'IBM Plex Serif',serif;font-size:30px;font-weight:600;letter-spacing:7px;text-align:center;text-transform:uppercase;color:#111;position:relative;line-height:1.1}
+.pl-masthead-rule{margin:10px auto 0;width:52%;height:2px;background:#111;opacity:.35}
+.pl-masthead-sub{text-align:center;font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:4px;text-transform:uppercase;color:#111;opacity:.55;margin-top:7px}
 
-/* ── Name of Work — parallelogram banner ── */
-.pl-work-heading{position:relative;width:100%;margin:12px 0;overflow:hidden;height:38px}
-.pl-work-heading::before{content:'';position:absolute;inset:0;background:#181715;transform:skewX(-6deg);transform-origin:bottom left}
-.pl-work-heading::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 2px,rgba(255,255,255,.08) 2px,rgba(255,255,255,.08) 3px);transform:skewX(-6deg);transform-origin:bottom left}
-.pl-work-heading span{position:relative;display:inline-block;padding:9px 28px 9px 36px;font-family:'IBM Plex Serif',serif;font-size:13px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#fff;z-index:1}
+/* ── Name of Work — hatched parallelogram banner ── */
+.pl-work-heading{position:relative;width:100%;margin:14px 0 10px;overflow:hidden;height:34px;border-top:1px solid #111;border-bottom:1px solid #111;background:#f6f4ef}
+.pl-work-heading::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 2px,#e6e1d8 2px,#e6e1d8 3px);transform:skewX(-8deg);transform-origin:bottom left}
+.pl-work-heading::after{content:'';position:absolute;top:0;bottom:0;left:0;width:6px;background:#111;transform:skewX(-8deg);transform-origin:top left}
+.pl-work-heading span{position:relative;display:inline-block;padding:8px 26px 8px 34px;font-family:'IBM Plex Serif',serif;font-size:12px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;color:#111;z-index:1;background:linear-gradient(90deg,transparent,transparent)}
 
-/* ── Title (work name) ── */
-.pl-title{font-family:'IBM Plex Serif',serif;font-size:17px;font-weight:600;line-height:1.3;text-align:left;margin:0 0 6px;padding:0 0 10px;border-bottom:2px solid #181715;position:relative}
-.pl-title::after{content:'';position:absolute;bottom:-5px;left:0;right:0;height:1px;background:#181715}
+/* ── Title (work name) — dimension-ruled ── */
+.pl-title{font-family:'IBM Plex Serif',serif;font-size:17px;font-weight:600;line-height:1.3;text-align:left;margin:0 0 8px;padding:9px 0 9px 14px;border-left:3px solid #111;position:relative;background:#f6f4ef}
+.pl-title::after{content:'';position:absolute;left:14px;right:0;bottom:-5px;height:1px;background:#111;opacity:.25}
 
 /* ── Reference number ── */
-.pl-refno{display:flex;align-items:baseline;justify-content:flex-start;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1.6px;text-transform:uppercase;color:#6f6c65;margin-bottom:10px}
-.pl-refno .pl-refno-v{color:#181715;font-weight:500;letter-spacing:.3px}
+.pl-refno{display:flex;align-items:baseline;justify-content:flex-start;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1.6px;text-transform:uppercase;color:#111;opacity:.55;margin:10px 0 6px}
+.pl-refno .pl-refno-v{color:#111;font-weight:500;letter-spacing:.3px}
 
 /* ── Decorative rules ── */
-.pl-rule{height:3px;background:#181715;margin:8px 0 3px}
-.pl-rule-sub{height:1px;background:#181715;margin-bottom:18px}
+.pl-rule{height:3px;background:#111;margin:10px 0 2px}
+.pl-rule-sub{height:1px;background:#111;opacity:.5;margin-bottom:16px;position:relative;overflow:hidden}
+.pl-rule-sub::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0,transparent 6px,#111 6px,#111 8px);opacity:.35}
 
 /* ── Section lead ── */
-.pl-lead{margin:26px 0 10px;display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid #181715;padding-bottom:6px}
-.pl-lead .pl-l-title{font-family:'IBM Plex Serif',serif;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:1.2px;color:#181715}
-.pl-lead .pl-l-k{font-family:'IBM Plex Mono',monospace;font-size:9px;color:#6f6c65;letter-spacing:.4px;text-transform:uppercase}
+.pl-lead{margin:26px 0 10px;display:flex;justify-content:space-between;align-items:baseline;border-bottom:2px solid #111;padding-bottom:7px;position:relative}
+.pl-lead::after{content:'';position:absolute;left:0;right:0;bottom:-3px;height:4px;background:repeating-linear-gradient(45deg,transparent,transparent 2px,#e6e1d8 2px,#e6e1d8 3px);border-top:1px solid #111}
+.pl-lead .pl-l-title{font-family:'IBM Plex Serif',serif;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:1.6px;color:#111;padding-left:12px;border-left:3px solid #111}
+.pl-lead .pl-l-k{font-family:'IBM Plex Mono',monospace;font-size:9px;color:#111;opacity:.55;letter-spacing:.4px;text-transform:uppercase}
 
 /* ── Ruled table — hatched header ── */
-table.pl-table{width:100%;border-collapse:collapse;border:2px solid #181715}
-table.pl-table thead th,table.pl-table tbody td{border-right:1px solid #181715;text-align:left;vertical-align:top}
+table.pl-table{width:100%;border-collapse:collapse;border:2px solid #111}
+table.pl-table thead th,table.pl-table tbody td{border-right:1px solid #111;text-align:left;vertical-align:top}
 table.pl-table thead th:last-child,table.pl-table tbody td:last-child{border-right:none}
-table.pl-table thead th{font-family:'IBM Plex Mono',monospace;font-size:8.5px;font-weight:600;letter-spacing:1.1px;text-transform:uppercase;padding:8px 10px;color:#fff;background:#181715;border-bottom:2px solid #181715;position:relative;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-table.pl-table thead th::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 2px,rgba(255,255,255,.06) 2px,rgba(255,255,255,.06) 3px);pointer-events:none}
+table.pl-table thead th{font-family:'IBM Plex Mono',monospace;font-size:8.5px;font-weight:600;letter-spacing:1.3px;text-transform:uppercase;padding:8px 10px;color:#111;background:repeating-linear-gradient(45deg,transparent,transparent 2px,#e6e1d8 2px,#e6e1d8 3px);border-bottom:2px solid #111;position:relative;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+table.pl-table thead th:first-child{border-left:none}
 table.pl-table thead th.al,table.pl-table tbody td.al{text-align:right}
-table.pl-table tbody td{padding:7px 10px;font-size:11px;border-bottom:1px solid #d0cdc7}
-table.pl-table tbody tr:nth-child(even){background:rgba(0,0,0,.015)}
-table.pl-table td.pl-sl{font-family:'IBM Plex Mono',monospace;color:#6f6c65;text-align:center;font-weight:500}
-table.pl-table td.pl-money{font-family:'IBM Plex Mono',monospace;text-align:right;white-space:nowrap;color:#181715;font-weight:500}
-table.pl-table td.pl-ref{font-family:'IBM Plex Mono',monospace;font-size:8.5px;color:#6f6c65;white-space:nowrap;margin-top:2px}
-table.pl-table tr.pl-group td{font-family:'IBM Plex Mono',monospace;font-size:8.5px;font-weight:600;letter-spacing:1.3px;text-transform:uppercase;padding:6px 10px;border-bottom:2px solid #181715;color:#181715;background:repeating-linear-gradient(45deg,transparent,transparent 3px,rgba(0,0,0,.05) 3px,rgba(0,0,0,.05) 4px);-webkit-print-color-adjust:exact;print-color-adjust:exact}
-table.pl-table tr.pl-total td{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;color:#181715;border-top:3px double #181715;border-bottom:2px solid #181715;background:#eae8e2;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+table.pl-table tbody td{padding:7px 10px;font-size:11px;border-bottom:1px solid #d8d3c8}
+table.pl-table tbody tr:nth-child(even){background:rgba(0,0,0,.025)}
+table.pl-table td.pl-sl{font-family:'IBM Plex Mono',monospace;color:#111;opacity:.78;text-align:center;font-weight:500}
+table.pl-table td.pl-money{font-family:'IBM Plex Mono',monospace;text-align:right;white-space:nowrap;color:#111;font-weight:600}
+table.pl-table td.pl-ref{font-family:'IBM Plex Mono',monospace;font-size:8.5px;color:#111;opacity:.78;white-space:nowrap;margin-top:2px}
+table.pl-table tr.pl-group td{font-family:'IBM Plex Mono',monospace;font-size:8.5px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;padding:6px 10px;border-bottom:2px solid #111;color:#111;background:repeating-linear-gradient(45deg,transparent,transparent 2.4px,#eeebe5 2.4px,#eeebe5 3.4px);-webkit-print-color-adjust:exact;print-color-adjust:exact}
+table.pl-table tr.pl-total td{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;color:#111;border-top:3px double #111;border-bottom:2px solid #111;background:repeating-linear-gradient(45deg,transparent,transparent 2px,#e6e1d8 2px,#e6e1d8 3px);-webkit-print-color-adjust:exact;print-color-adjust:exact}
 
-/* ── Abstract of cost — geometric frame ── */
-.pl-ledger{margin:30px 0 0;display:flex;justify-content:flex-end;page-break-inside:avoid}
-.pl-ledger-inner{width:330px;border:2.5px solid #181715;position:relative}
-.pl-ledger-inner::before{content:'';position:absolute;inset:3px;border:1px solid #181715;pointer-events:none}
-.pl-ledger-hd{font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#fff;padding:8px 14px;text-align:center;background:#181715;position:relative;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-.pl-ledger-hd::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 2px,rgba(255,255,255,.07) 2px,rgba(255,255,255,.07) 3px);pointer-events:none}
-.pl-ledger-inner .pl-lr{display:flex;justify-content:space-between;align-items:baseline;padding:6px 14px;font-size:10.5px;border-bottom:1px solid #d0cdc7}
-.pl-ledger-inner .pl-lr .l-l{color:#3f3e3a}
-.pl-ledger-inner .pl-lr .l-v{font-family:'IBM Plex Mono',monospace;text-align:right;color:#181715}
-.pl-ledger-inner .pl-lr.pl-strong{border-top:1.5px solid #181715;border-bottom:none;background:repeating-linear-gradient(45deg,transparent,transparent 3px,rgba(0,0,0,.03) 3px,rgba(0,0,0,.03) 4px)}
+/* ── Abstract of cost — drafting ledger frame ── */
+.pl-ledger{margin:32px 0 0;display:flex;justify-content:flex-end;page-break-inside:avoid}
+.pl-ledger-inner{width:330px;border:2.5px solid #111;position:relative;background:#fff}
+.pl-ledger-inner::before{content:'';position:absolute;inset:4px;border:1px solid #111;pointer-events:none}
+.pl-ledger-hd{font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#111;padding:8px 14px;text-align:center;background:repeating-linear-gradient(45deg,transparent,transparent 2px,#e6e1d8 2px,#e6e1d8 3px);position:relative;border-bottom:1px solid #111;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.pl-ledger-inner .pl-lr{display:flex;justify-content:space-between;align-items:baseline;padding:6px 14px;font-size:10.5px;border-bottom:1px solid #d8d3c8;background:#fff}
+.pl-ledger-inner .pl-lr .l-l{color:#111;opacity:.78}
+.pl-ledger-inner .pl-lr .l-v{font-family:'IBM Plex Mono',monospace;text-align:right;color:#111;font-weight:500}
+.pl-ledger-inner .pl-lr.pl-strong{border-top:1.5px solid #111;border-bottom:none;background:repeating-linear-gradient(45deg,transparent,transparent 2.4px,#eeebe5 2.4px,#eeebe5 3.4px)}
 .pl-ledger-inner .pl-lr.pl-strong .l-l,.pl-ledger-inner .pl-lr.pl-strong .l-v{font-weight:700}
-.pl-ledger-inner .pl-final{display:flex;justify-content:space-between;align-items:baseline;padding:9px 14px;border-top:3px double #181715;margin-top:4px;font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:700;color:#181715;background:#eae8e2;position:relative;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-.pl-ledger-inner .pl-final .l-l{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:#3f3e3a;font-weight:600}
+.pl-ledger-inner .pl-final{display:flex;justify-content:space-between;align-items:baseline;padding:9px 14px;border-top:3px double #111;margin-top:4px;font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:700;color:#111;background:repeating-linear-gradient(45deg,transparent,transparent 2px,#e6e1d8 2px,#e6e1d8 3px);position:relative;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.pl-ledger-inner .pl-final .l-l{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:#111;opacity:.78;font-weight:600}
+
+/* ── Grand total note ── */
+.pl-grand-total{display:flex;justify-content:flex-end;margin-top:10px}
+.pl-grand-total-inner{width:330px;display:flex;justify-content:space-between;align-items:baseline;padding:10px 14px;border:2px double #111;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;color:#111;background:repeating-linear-gradient(45deg,transparent,transparent 2.4px,#eeebe5 2.4px,#eeebe5 3.4px)}
 
 /* ── Footer note ── */
-.pl-note{font-size:8.5px;color:#6f6c65;font-family:'IBM Plex Mono',monospace;margin-top:14px;text-transform:uppercase;letter-spacing:.6px;border-top:1px solid #d0cdc7;padding-top:8px}
+.pl-note{font-size:8.5px;color:#111;font-family:'IBM Plex Mono',monospace;margin-top:16px;text-transform:uppercase;letter-spacing:.6px;border-top:1px solid #111;opacity:.55;padding-top:8px}
 
-/* ── Approvals / sign-off — geometric bracket blocks ── */
-.pl-sign{margin-top:50px;border-top:3px solid #181715;padding-top:30px;display:grid;grid-template-columns:repeat(2,1fr);gap:40px 55px;page-break-inside:avoid;justify-items:center}
-.pl-sign .s-block{min-width:0;overflow-wrap:anywhere;position:relative;padding:10px 14px;border:1px solid #d0cdc7}
-.pl-sign .s-block::before{content:'';position:absolute;top:-1px;left:-1px;width:10px;height:10px;border-top:2px solid #181715;border-left:2px solid #181715}
-.pl-sign .s-block::after{content:'';position:absolute;bottom:-1px;right:-1px;width:10px;height:10px;border-bottom:2px solid #181715;border-right:2px solid #181715}
-.pl-sign .s-cap{font-size:8.5px;color:#6f6c65;letter-spacing:1.3px;text-transform:uppercase;font-family:'IBM Plex Mono',monospace;margin-bottom:4px;line-height:1.5}
-.pl-sign .s-line{width:160px;border-top:1.5px solid #181715;margin-top:46px;margin-bottom:4px;position:relative}
-.pl-sign .s-line::after{content:'';position:absolute;top:-4px;left:0;width:100%;height:1px;background:repeating-linear-gradient(90deg,#181715 0,#181715 2px,transparent 2px,transparent 5px)}
-.pl-sign .s-role{font-size:10px;color:#3f3e3a;font-family:'IBM Plex Mono',monospace;text-transform:uppercase;letter-spacing:.5px;line-height:1.5;white-space:normal}
+/* ── Approvals / sign-off — drafting bracket blocks ── */
+.pl-sign{margin-top:52px;border-top:3px solid #111;padding-top:30px;display:grid;grid-template-columns:repeat(2,1fr);gap:40px 55px;page-break-inside:avoid;justify-items:center}
+.pl-sign .s-block{min-width:0;width:100%;overflow-wrap:anywhere;position:relative;padding:12px 16px;border:1px solid #d8d3c8;background:#f6f4ef}
+.pl-sign .s-block::before{content:'';position:absolute;top:-1px;left:-1px;width:12px;height:12px;border-top:2px solid #111;border-left:2px solid #111}
+.pl-sign .s-block::after{content:'';position:absolute;bottom:-1px;right:-1px;width:12px;height:12px;border-bottom:2px solid #111;border-right:2px solid #111}
+.pl-sign .s-cap{font-size:8.5px;color:#111;opacity:.55;letter-spacing:1.3px;text-transform:uppercase;font-family:'IBM Plex Mono',monospace;margin-bottom:5px;line-height:1.5}
+.pl-sign .s-line{width:170px;border-top:2px solid #111;margin-top:48px;margin-bottom:5px;position:relative}
+.pl-sign .s-line::before{content:'';position:absolute;top:-4px;left:0;width:100%;height:1px;background:repeating-linear-gradient(90deg,#111 0,#111 2px,transparent 2px,transparent 5px)}
+.pl-sign .s-role{font-size:10px;color:#111;opacity:.78;font-family:'IBM Plex Mono',monospace;text-transform:uppercase;letter-spacing:.5px;line-height:1.6;white-space:normal}
 
 /* ── Annexures (calculation sheets) ── */
 #printAnnexures{display:none}
-#printAnnexures h3{font-family:'IBM Plex Serif',serif;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:1.2px;color:#fff;margin:0 0 12px;padding:8px 14px;background:#181715;position:relative;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-#printAnnexures h3::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 2px,rgba(255,255,255,.06) 2px,rgba(255,255,255,.06) 3px);pointer-events:none}
-.annex-item{margin:0 0 10px;padding:0;border-left:3px solid #181715;padding-left:12px}
-.annex-item-title{font-family:'IBM Plex Serif',serif;font-size:11.5px;font-weight:600;color:#181715;margin-bottom:3px}
-.annex-step{margin-left:14px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:#3f3e3a;line-height:1.5}
+#printAnnexures h3{font-family:'IBM Plex Serif',serif;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:1.6px;color:#111;margin:0 0 12px;padding:9px 14px;border-left:3px solid #111;background:repeating-linear-gradient(45deg,transparent,transparent 2px,#e6e1d8 2px,#e6e1d8 3px);border-top:2px solid #111;border-bottom:2px solid #111}
+.annex-item{margin:0 0 12px;padding:0 0 0 12px;border-left:3px solid #111;position:relative}
+.annex-item-title{font-family:'IBM Plex Serif',serif;font-size:11.5px;font-weight:600;color:#111;margin-bottom:3px;background:#f6f4ef;padding:3px 8px}
+.annex-step{margin-left:14px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:#111;opacity:.78;line-height:1.5}
 @media print{
   @page{size:A4;margin:18mm 14mm 22mm 14mm}
   @page{@bottom-center{content:counter(page) " / "counter(pages);font-family:'IBM Plex Mono',monospace;font-size:9px;color:#6f6c65;letter-spacing:.5px}}
-  html,body{background:#fff!important;color:#181715!important}
+  html,body{background:#fff!important;color:#111!important}
   html,body,#print-doc{color-scheme:light}
   #topbar,.side-tabs,.history-panel,.search-bar,.btn,.paste-hint,.notif,.modal-overlay,
   .rdel,.calc-btn,.card-del,.tbl-foot,.badge-input,.est-hbar,.gst-summary,.view,.multi-wrap{display:none!important}
-  #print-doc{display:block!important;background:#fff!important;color:#181715!important}
+  #print-doc{display:block!important;background:#fff!important;color:#111!important}
   #printAnnexures{display:block;margin-top:22px}
   #printAnnexures>div{page-break-before:always}
   thead{display:table-header-group}
@@ -395,7 +413,7 @@ table.pl-table tr.pl-total td{font-family:'IBM Plex Mono',monospace;font-size:11
         <thead>
           <tr>
             <th>Sl.</th>
-            <th>Group / Short Desc.</th>
+            <th>Reference</th>
             <th>Description of Items</th>
             <th style="text-align:right">Qty</th>
             <th style="text-align:right">Rate</th>
@@ -414,7 +432,7 @@ table.pl-table tr.pl-total td{font-family:'IBM Plex Mono',monospace;font-size:11
         <button class="btn btn-ghost btn-sm" id="btn-toggle-drag" title="Turn on drag-and-drop row ordering">⇵ Order</button>
         <button class="btn btn-ghost btn-sm" id="btn-open-archived" title="View archived rows">📂 Archived</button>
         <button class="btn btn-ghost btn-sm btn-danger-ghost" id="btn-clear-all">🗑 Clear All</button>
-        <span class="paste-hint">💡 Paste from Excel</span>
+        <button class="btn btn-secondary btn-sm" id="btn-paste-excel">📋 Paste from Excel</button>
       </div>
       <div class="foot-r">Total: <strong id="s-total-f">₹ 0.00</strong></div>
     </div>
@@ -549,6 +567,22 @@ table.pl-table tr.pl-total td{font-family:'IBM Plex Mono',monospace;font-size:11
     <div class="desc-expand-actions">
       <button class="btn btn-ghost btn-sm" onclick="closeDescExpand()">Close</button>
       <button class="btn btn-primary btn-sm" onclick="saveDescExpand()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- PASTE FROM EXCEL MODAL -->
+<div class="modal-overlay" id="paste-modal">
+  <div class="modal modal-wide" style="display:flex;flex-direction:column;max-height:90vh">
+    <h2>📋 Paste from Excel</h2>
+    <p style="font-size:12px;color:var(--text-soft);margin-bottom:12px">Copy cells from Excel and paste here. Columns map to: <strong>Reference, Description, Qty, Rate, Unit</strong>.</p>
+    <textarea id="pasteInput" placeholder="Paste Excel data here (Ctrl+V)..." style="width:100%;min-height:140px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--radius);font-family:var(--mono);font-size:12px;resize:vertical;margin-bottom:12px;color:var(--text);background:var(--white)"></textarea>
+    <div style="font-size:12px;color:var(--text-soft);margin-bottom:8px">Preview (<span id="paste-count">0</span> row<span id="paste-count-plural"></span>):</div>
+    <div id="pastePreview" style="flex:1;overflow:auto;border:1px solid var(--border);border-radius:var(--radius);max-height:30vh;background:var(--white)"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closePasteModal()">Cancel</button>
+      <button class="btn btn-secondary btn-sm" id="paste-overwrite-btn" onclick="confirmPaste('overwrite')">Overwrite existing</button>
+      <button class="btn btn-primary btn-sm" id="paste-append-btn" onclick="confirmPaste('append')">Append rows</button>
     </div>
   </div>
 </div>
@@ -934,7 +968,7 @@ function renderSingleTable() {
     var sBadge = row.shortDesc ? esc(row.shortDesc) : 'Short Desc';
     var gClass = row.group ? ' badge-set' : '';
     var sClass = row.shortDesc ? ' badge-set' : '';
-    var refNote = row.ref ? '<div class="ref-note">'+esc(row.ref)+'</div>' : '';
+    var refNote = row.ref ? '<div class="ref-note"><span class="ref-note-val" onclick="editRef('+i+',this)">'+esc(row.ref)+'</span></div>' : '<div class="ref-note"><span class="ref-note-val ref-empty" onclick="editRef('+i+',this)">+ ref</span></div>';
     var dragAttr = dragMode ? 'draggable="true"' : 'draggable="false"';
     rows.push('<tr '+dragAttr+' data-idx="'+i+'">'+
       '<td class="td-sl">'+slDisp+'</td>'+
@@ -1015,6 +1049,37 @@ function editBadge(idx, field, spanEl) {
     if (done) return;
     done = true;
     updateCell(idx, field, input.value);
+    renderSingleTable();
+  }
+  function cancel() {
+    if (done) return;
+    done = true;
+    renderSingleTable();
+  }
+  input.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') { e.preventDefault(); commit(); }
+    else if (e.key === 'Escape') { e.preventDefault(); cancel(); }
+  });
+  input.addEventListener('blur', commit);
+}
+
+function editRef(idx, spanEl) {
+  var items = ctxGetItems();
+  if (!items[idx]) return;
+  var input = document.createElement('input');
+  input.type = 'text';
+  input.className = 'ref-note-input';
+  input.value = items[idx].ref || '';
+  input.placeholder = 'Ref';
+  input.spellcheck = false;
+  spanEl.replaceWith(input);
+  input.focus();
+  input.select();
+  var done = false;
+  function commit() {
+    if (done) return;
+    done = true;
+    updateCell(idx, 'ref', input.value);
     renderSingleTable();
   }
   function cancel() {
@@ -1453,7 +1518,98 @@ function handlePaste(e) {
   showNotif('✓ Pasted ' + rows.length + ' row(s)');
 }
 
-/* ── ARCHIVE ─────────────────────── */
+/* ── PASTE MODAL ─────────────────── */
+var _pasteRows = [];
+var _pasteMode = 'append';
+
+function openPasteModal() {
+  _pasteRows = [];
+  var ta = document.getElementById('pasteInput');
+  ta.value = '';
+  renderPastePreview([]);
+  document.getElementById('paste-count').textContent = '0';
+  document.getElementById('paste-count-plural').textContent = '';
+  document.getElementById('paste-modal').classList.add('open');
+}
+
+function closePasteModal() {
+  document.getElementById('paste-modal').classList.remove('open');
+}
+
+function renderPastePreview(rows) {
+  var wrap = document.getElementById('pastePreview');
+  if (!rows.length) {
+    wrap.innerHTML = '<div style="padding:14px;color:var(--text-muted);text-align:center;font-size:12px">Paste Excel data to preview</div>';
+    return;
+  }
+  var html = '<table class="mt" style="border:none;min-width:0"><thead><tr>' +
+    '<th>Ref</th><th>Description</th><th style="text-align:right">Qty</th><th style="text-align:right">Rate</th><th>Unit</th>' +
+    '</tr></thead><tbody>';
+  rows.forEach(function(cols) {
+    html += '<tr>' +
+      '<td>' + esc(cols[0]||'') + '</td>' +
+      '<td>' + esc(cols[1]||'') + '</td>' +
+      '<td style="text-align:right">' + esc(cols[2]||'') + '</td>' +
+      '<td style="text-align:right">' + esc(cols[3]||'') + '</td>' +
+      '<td>' + esc(cols[4]||'') + '</td>' +
+      '</tr>';
+  });
+  html += '</tbody></table>';
+  wrap.innerHTML = html;
+}
+
+function updatePastePreview() {
+  var raw = document.getElementById('pasteInput').value;
+  _pasteRows = parseTSV(raw).map(function(cols){
+    while (cols.length < 5) cols.push('');
+    return cols;
+  });
+  renderPastePreview(_pasteRows);
+  document.getElementById('paste-count').textContent = String(_pasteRows.length);
+  document.getElementById('paste-count-plural').textContent = _pasteRows.length === 1 ? '' : 's';
+}
+
+function confirmPaste(mode) {
+  _pasteMode = mode;
+  var n = _pasteRows.length;
+  var items = ctxGetItems();
+  var currentRows = items.length;
+
+  if (mode === 'append') {
+    if (!n) { showNotif('⚠ Nothing to paste'); return; }
+    if (currentRows > 0) {
+      if (!confirm('Append ' + n + ' row(s) after the existing ' + currentRows + ' row(s)?')) return;
+    }
+  } else {
+    if (!n) { showNotif('⚠ Nothing to paste'); return; }
+    if (currentRows > 0) {
+      if (!confirm('Overwrite the existing ' + currentRows + ' row(s) with ' + n + ' pasted row(s)?')) return;
+    }
+  }
+
+  var newItems;
+  if (mode === 'append') {
+    newItems = items.slice();
+  } else {
+    newItems = [];
+  }
+  _pasteRows.forEach(function(cols) {
+    var patch = {
+      ref: (cols[0]||'').trim(),
+      desc: (cols[1]||'').trim(),
+      qty: (cols[2]||'').trim() !== '' ? (parseFloat(cols[2])||'') : '',
+      rate: (cols[3]||'').trim() !== '' ? (parseFloat(cols[3])||'') : '',
+      unit: (cols[4]||'').trim()
+    };
+    newItems.push(makeRow(patch));
+  });
+  ctxSetItems(newItems);
+  renderSingleTable();
+  closePasteModal();
+  showNotif('✓ Pasted ' + n + ' row(s)');
+}
+
+
 function saveArchived() {
   var t = ctxTarget();
   if (t) t._archived = archivedItems;
@@ -1789,8 +1945,18 @@ function buildPrintDoc() {
 }
 
 function plHero(subject, ref, mast) {
-  var html = '<div class="pl-doc">' +
-    (mast !== false ? '<div class="pl-masthead-wrap"><div class="pl-masthead">Estimate</div></div>' : '') +
+  var html = '<div class="pl-doc">';
+  if (mast !== false) {
+    html += '<div class="pl-masthead-wrap">' +
+      '<span class="pd-hr-t"></span><span class="pd-hr-b"></span>' +
+      '<span class="pl-masthead-corner"></span>' +
+      '<div class="pl-masthead">Estimate</div>' +
+      '<div class="pl-masthead-rule"></div>' +
+      '<div class="pl-masthead-sub">Statement of Estimated Cost</div>' +
+      '</div>' +
+      '<div class="pl-masthead-dual"></div>';
+  }
+  html +=
     '<div class="pl-work-heading"><span>Name of Work:</span></div>' +
     '<div class="pl-title">' + esc(subject) + '</div>' +
     (ref !== null && ref !== undefined
@@ -1886,7 +2052,7 @@ function buildPrintSingle() {
   var tableHtml = '<div class="pl-lead"><div class="pl-l-title">Bill of Quantities <span class="pl-l-k">' + sl + ' item' + (sl!==1?'s':'') + '</span></div></div>' +
     '<table class="pl-table"><thead><tr>' +
     '<th style="width:34px">Sl.</th>' +
-    '<th style="width:22%">Item</th>' +
+    '<th style="width:22%">Ref.</th>' +
     '<th>Description of Items</th>' +
     '<th style="width:52px" class="al">Qty</th>' +
     '<th style="width:52px">Unit</th>' +
@@ -2016,6 +2182,9 @@ bindBtn('btn-auto-arrange', autoArrangeRows);
 bindBtn('btn-toggle-drag', toggleDragMode);
 bindBtn('btn-clear-all', clearAllRows);
 bindBtn('btn-open-archived', openArchiveModal);
+bindBtn('btn-paste-excel', openPasteModal);
+document.getElementById('pasteInput').addEventListener('input', updatePastePreview);
+document.getElementById('paste-modal').addEventListener('click', function(e){ if (e.target === this) closePasteModal(); });
 bindBtn('btn-add-site', addSite);
 bindBtn('btn-add-site-2', addSite);
 document.getElementById('single-table').addEventListener('paste', handlePaste);
