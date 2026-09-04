@@ -2029,18 +2029,21 @@ function buildPrintSingle() {
     else { cardsHtml += '<div class="pl-card-div"></div>'; }
     var amt = rowAmt(row);
     var amtHtml = amt !== null ? money(amt) : '';
+    var unitHtml = row.unit
+      ? '<div class="pl-card-amt">' + esc(row.unit) + '</div>'
+      : '';
     var ref = row.ref ? '<div class="pl-card-ref">' + esc(row.ref) + '</div>' : '<div class="pl-card-ref">&nbsp;</div>';
     var badge = row.shortDesc ? '<div class="pl-card-badge">' + esc(row.shortDesc) + '</div>' : '';
     cardsHtml += '<article class="pl-card"><span class="pc-rule"></span>' +
       '<div class="pl-card-head">' +
         '<div class="pl-card-sl">' + sl + '</div>' +
-        '<div class="pl-card-meta">' + ref + '<div class="pl-card-amt">' + amtHtml + '</div></div>' +
+        '<div class="pl-card-meta">' + ref + unitHtml + '</div>' +
       '</div>' +
       '<div class="pl-card-body">' + badge + '<div class="pl-card-desc">' + esc(row.desc || '—') + '</div></div>' +
       '<div class="pl-card-foot">' +
         '<div class="cf"><span class="cf-k">Qty</span><span class="cf-v">' + esc(row.qty || '—') + '</span></div>' +
-        '<div class="cf"><span class="cf-k">Unit</span><span class="cf-v">' + esc(row.unit || '—') + '</span></div>' +
         '<div class="cf"><span class="cf-k">Rate</span><span class="cf-v">' + (row.rate!=='' ? '₹ '+esc(row.rate) : '—') + '</span></div>' +
+        '<div class="cf"><span class="cf-k">Amount</span><span class="cf-v">' + amtHtml + '</span></div>' +
       '</div>' +
       '</article>';
   });
