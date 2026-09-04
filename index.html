@@ -263,7 +263,8 @@ tr.group-hdr:hover{background:var(--group-hdr-bg) !important}
 .pl-masthead-corner::after{top:0;right:0;border-top:2px solid #111;border-right:2px solid #111}
 .pl-masthead{font-family:'IBM Plex Serif',serif;font-size:30px;font-weight:600;letter-spacing:7px;text-align:center;text-transform:uppercase;color:#111;position:relative;line-height:1.1}
 .pl-masthead-rule{margin:10px auto 0;width:52%;height:2px;background:#111;opacity:.35}
-.pl-masthead-sub{text-align:center;font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:4px;text-transform:uppercase;color:#111;opacity:.55;margin-top:7px}
+.pl-masthead-off{text-align:center;font-family:'IBM Plex Serif',serif;font-size:10px;line-height:1.5;letter-spacing:.4px;text-transform:uppercase;color:#111;opacity:.75;margin-top:7px}
+.pl-masthead-off-line{text-align:center}
 
 /* ── Name of Work — hatched parallelogram banner ── */
 .pl-work-heading{position:relative;width:100%;margin:14px 0 10px;overflow:hidden;height:34px;border-top:1px solid #111;border-bottom:1px solid #111;background:#f6f4ef}
@@ -301,9 +302,29 @@ table.pl-table tbody td{padding:7px 10px;font-size:11px;border-bottom:1px solid 
 table.pl-table tbody tr:nth-child(even){background:rgba(0,0,0,.025)}
 table.pl-table td.pl-sl{font-family:'IBM Plex Mono',monospace;color:#111;opacity:.78;text-align:center;font-weight:500}
 table.pl-table td.pl-money{font-family:'IBM Plex Mono',monospace;text-align:right;white-space:nowrap;color:#111;font-weight:600}
-table.pl-table td.pl-ref{font-family:'IBM Plex Mono',monospace;font-size:8.5px;color:#111;opacity:.78;white-space:nowrap;margin-top:2px}
 table.pl-table tr.pl-group td{font-family:'IBM Plex Mono',monospace;font-size:8.5px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;padding:6px 10px;border-bottom:2px solid #111;color:#111;background:repeating-linear-gradient(45deg,transparent,transparent 2.4px,#eeebe5 2.4px,#eeebe5 3.4px);-webkit-print-color-adjust:exact;print-color-adjust:exact}
 table.pl-table tr.pl-total td{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;color:#111;border-top:3px double #111;border-bottom:2px solid #111;background:repeating-linear-gradient(45deg,transparent,transparent 2px,#e6e1d8 2px,#e6e1d8 3px);-webkit-print-color-adjust:exact;print-color-adjust:exact}
+
+/* ── Bill of quantities — item cards ── */
+.pl-cards{margin:0;page-break-inside:auto}
+.pl-card{position:relative;border:1.5px solid #111;background:#fff;margin:0 0 14px;page-break-inside:avoid}
+.pl-card .pc-rule{position:absolute;inset:5px;border:1px solid #d8d3c8;pointer-events:none}
+.pl-card-head{display:flex;align-items:stretch;border-bottom:1.5px solid #111;background:repeating-linear-gradient(45deg,transparent,transparent 2px,#e6e1d8 2px,#e6e1d8 3px)}
+.pl-card-sl{flex:0 0 38px;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:700;color:#111;border-right:1.5px solid #111;background:repeating-linear-gradient(45deg,transparent,transparent 2px,#eeebe5 2px,#eeebe5 3px)}
+.pl-card-meta{flex:1;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:7px 12px}
+.pl-card-ref{font-family:'IBM Plex Mono',monospace;font-size:8.5px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:#111;opacity:.62;white-space:nowrap}
+.pl-card-amt{font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:700;color:#111;white-space:nowrap;padding:2px 9px;border:1.5px solid #111;background:#fff}
+.pl-card-body{padding:10px 14px 9px;position:relative}
+.pl-card-desc{font-family:'IBM Plex Serif',serif;font-size:12px;line-height:1.5;color:#111;margin:0}
+.pl-card-badge{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:7.5px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#111;opacity:.78;border:1px solid #111;padding:2px 7px;margin-bottom:7px}
+.pl-card-foot{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid #d8d3c8;font-family:'IBM Plex Mono',monospace}
+.pl-card-foot .cf{display:flex;justify-content:space-between;align-items:baseline;padding:6px 12px;border-right:1px solid #d8d3c8}
+.pl-card-foot .cf:last-child{border-right:none}
+.pl-card-foot .cf-k{font-size:7.5px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#111;opacity:.55}
+.pl-card-foot .cf-v{font-size:11px;font-weight:600;color:#111;white-space:nowrap}
+.pl-card-group{margin:0 0 14px;page-break-inside:avoid;border:1.5px solid #111;background:repeating-linear-gradient(45deg,transparent,transparent 2px,#eeebe5 2px,#eeebe5 3px);padding:7px 14px;font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#111;display:flex;align-items:center;gap:10px}
+.pl-card-group::before{content:'';width:10px;height:10px;border:1.5px solid #111;transform:rotate(45deg)}
+.pl-card-div{height:2px;background:repeating-linear-gradient(90deg,#111 0,#111 4px,transparent 4px,transparent 8px);opacity:.3;margin:2px 0 16px;page-break-inside:avoid}
 
 /* ── Abstract of cost — drafting ledger frame ── */
 .pl-ledger{margin:32px 0 0;display:flex;justify-content:flex-end;page-break-inside:avoid}
@@ -474,7 +495,6 @@ table.pl-table tr.pl-total td{font-family:'IBM Plex Mono',monospace;font-size:11
     <div class="fg"><label>ESTIMATE NAME</label><input type="text" id="modal-name" placeholder="e.g. Road Repair Phase 1"></div>
     <div class="fg"><label>REFERENCE NO. (OPTIONAL)</label><input type="text" id="modal-ref" placeholder="e.g. WO/CE/2026/118"></div>
     <div class="fg"><label>DATE</label><input type="date" id="modal-date"></div>
-    <div class="fg"><label>PREPARED BY</label><input type="text" id="modal-by" placeholder="Engineer / Officer name"></div>
     <div class="modal-actions">
       <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
       <button class="btn btn-primary" onclick="createEstimate()">Create</button>
@@ -491,11 +511,11 @@ table.pl-table tr.pl-total td{font-family:'IBM Plex Mono',monospace;font-size:11
       <p class="settings-hint" id="set-est-ctx">Open an estimate to edit its project details</p>
       <div class="fg"><label>NAME OF WORK</label><input type="text" id="set-name" placeholder="e.g. Construction of Community Hall"></div>
       <div class="fg"><label>REFERENCE NO.</label><input type="text" id="set-ref" placeholder="e.g. WO/CE/2026/118"></div>
-      <div class="fg"><label>PREPARED BY</label><input type="text" id="set-by" placeholder="Engineer / Officer name"></div>
       <div class="fg"><label>DATE</label><input type="date" id="set-date"></div>
     </div>
     <div class="settings-section">
       <h3>Print output</h3>
+      <div class="fg"><label>NAME AND ADDRESS OF OFFICE</label><textarea id="set-office" rows="3" placeholder="e.g. Executive Engineer, Public Health Engineering Dept.&#10;Civil Lines, New Delhi"></textarea></div>
       <label class="chk"><input type="checkbox" id="set-print-sign"> Include signature blocks on printed documents</label>
     </div>
     <div class="settings-section">
@@ -752,7 +772,7 @@ function renderMain() {
       '<button class="card-del" onclick="event.stopPropagation();delEst(\''+est.id+'\')" title="Delete">✕</button>'+
       '<span class="card-type '+typeClass+'">◆ '+typeLabel+'</span>'+
       '<h3>'+esc(est.name)+'</h3>'+
-      '<div class="card-meta">'+dateStr+(est.by?' · '+esc(est.by):'')+(cnt?' · '+cnt:'')+'</div>'+
+      '<div class="card-meta">'+dateStr+(cnt?' · '+cnt:'')+'</div>'+
       '<div class="card-amount">₹ '+fmtN(total)+'</div></div>';
   }).join('');
 }
@@ -778,7 +798,6 @@ function openNewModal(type) {
   document.getElementById('modal-name').value = '';
   document.getElementById('modal-ref').value = '';
   document.getElementById('modal-date').value = new Date().toISOString().slice(0,10);
-  document.getElementById('modal-by').value = '';
   document.getElementById('new-modal').classList.add('open');
   setTimeout(function(){ document.getElementById('modal-name').focus(); }, 60);
 }
@@ -788,7 +807,7 @@ document.getElementById('modal-name').addEventListener('keydown', function(e){ i
 function createEstimate() {
   var name = document.getElementById('modal-name').value.trim();
   if (!name) { document.getElementById('modal-name').focus(); return; }
-  var est = { id:genId(), type:_newType, name:name, ref:document.getElementById('modal-ref').value.trim(), date:document.getElementById('modal-date').value, by:document.getElementById('modal-by').value.trim() };
+  var est = { id:genId(), type:_newType, name:name, ref:document.getElementById('modal-ref').value.trim(), date:document.getElementById('modal-date').value };
   if (_newType==='single') est.items = [makeRow()];
   else est.sites = [];
   DB.unshift(est); saveDB(); closeModal(); renderMain();
@@ -811,6 +830,12 @@ function printSignEnabled() {
   var v = '1';
   try { v = localStorage.getItem('ep3-print-sign') || '1'; } catch(e) {}
   return v !== '0';
+}
+function getOffice() {
+  try { return (localStorage.getItem('ep3-office') || '').replace(/\r\n/g, '\n'); } catch(e) { return ''; }
+}
+function setOffice(v) {
+  try { localStorage.setItem('ep3-office', v.replace(/\r\n/g, '\n')); } catch(e) {}
 }
 var DEFAULT_SIGNATURES = [
   { cap:'Prepared by', role:'Junior Engineer' },
@@ -847,10 +872,11 @@ function openSettingsModal() {
   document.getElementById('set-est-ctx').textContent = hasProj
     ? 'Editing: ' + est.name
     : 'Open an estimate to edit its project details';
-  ['set-name','set-ref','set-by','set-date'].forEach(function(id) {
+  ['set-name','set-ref','set-date'].forEach(function(id) {
     document.getElementById(id).disabled = !hasProj;
     document.getElementById(id).value = hasProj ? (est[id.slice(4)] || '') : '';
   });
+  document.getElementById('set-office').value = getOffice();
   document.getElementById('set-print-sign').checked = printSignEnabled();
   var signList = document.getElementById('sign-list');
   signList.innerHTML = '';
@@ -867,7 +893,6 @@ function saveSettings() {
     var name = document.getElementById('set-name').value.trim();
     if (name) est.name = name;
     est.ref = document.getElementById('set-ref').value.trim();
-    est.by = document.getElementById('set-by').value.trim();
     est.date = document.getElementById('set-date').value;
     saveDB();
     renderMain();
@@ -876,18 +901,19 @@ function saveSettings() {
       var d = formatDate(est.date), parts = [];
       if (ctx.multiId !== undefined) parts.push(est.name);
       if (est.ref) parts.push('Ref. ' + est.ref);
-      parts.push(d, est.by);
+      parts.push(d);
       document.getElementById('s-sub').textContent = parts.filter(Boolean).join(' · ');
     } else if (ctx.view === 'multi') {
       document.getElementById('m-title').textContent = est.name;
       var dd = formatDate(est.date), partsm = [];
       if (est.ref) partsm.push('Ref. ' + est.ref);
-      partsm.push(dd, est.by);
+      partsm.push(dd);
       document.getElementById('m-sub').textContent = partsm.filter(Boolean).join(' · ');
     }
     renderBreadcrumb();
   }
   try { localStorage.setItem('ep3-print-sign', document.getElementById('set-print-sign').checked ? '1' : '0'); } catch(e) {}
+  setOffice(document.getElementById('set-office').value);
   var signList = [];
   Array.prototype.forEach.call(document.querySelectorAll('#sign-list .sign-row'), function(r) {
     var cap = r.querySelector('[data-f="cap"]').value.trim();
@@ -915,7 +941,7 @@ function openSingle(estId) {
   document.getElementById('s-title').textContent = e.name;
   var parts = [];
   if (e.ref) parts.push('Ref. ' + e.ref);
-  parts.push(dateStr, e.by);
+  parts.push(dateStr);
   document.getElementById('s-sub').textContent = parts.filter(Boolean).join(' · ');
   showView('single');
   renderSingleTable();
@@ -934,7 +960,7 @@ function openSiteInSingle(multiEstId, siteIdx) {
   document.getElementById('s-title').textContent = site.name;
   var parts = [me.name];
   if (me.ref) parts.push('Ref. ' + me.ref);
-  parts.push(dateStr, me.by);
+  parts.push(dateStr);
   document.getElementById('s-sub').textContent = parts.filter(Boolean).join(' · ');
   showView('single');
   renderSingleTable();
@@ -945,6 +971,18 @@ function openSiteInSingle(multiEstId, siteIdx) {
 /* ═══════════════════════════════════════════════════════
    SINGLE TABLE RENDER
 ═══════════════════════════════════════════════════════ */
+function metaInput(idx, field, val) {
+  var isRef = field === 'ref';
+  var placeholder = isRef ? 'Ref' : field === 'group' ? 'Group' : 'Short Desc';
+  var label = val ? esc(val) : (isRef ? '+ ref' : placeholder);
+  var extra = !val ? (isRef ? ' ref-empty' : '') : (isRef ? '' : ' badge-set');
+  var cls = isRef ? 'ref-note-val' : 'badge ' + (field === 'group' ? 'badge-group' : 'badge-short');
+  if (isRef) {
+    return '<div class="ref-note"><span class="' + cls + extra + '" onclick="editRef(' + idx + ',this)">' + label + '</span></div>';
+  }
+  return '<span class="' + cls + extra + '" onclick="editBadge(' + idx + ',\'' + field + '\',this)">' + label + '</span>';
+}
+
 function renderSingleTable() {
   var items = ctxGetItems();
   var tbody = document.getElementById('single-tbody');
@@ -964,18 +1002,13 @@ function renderSingleTable() {
     var amt = rowAmt(row);
     var amtDisp = amt !== null ? '₹ '+fmtN(amt) : '';
     var hasCalc = row.calc ? ' style="color:var(--accent)"' : '';
-    var gBadge = row.group ? esc(row.group) : 'Group';
-    var sBadge = row.shortDesc ? esc(row.shortDesc) : 'Short Desc';
-    var gClass = row.group ? ' badge-set' : '';
-    var sClass = row.shortDesc ? ' badge-set' : '';
-    var refNote = row.ref ? '<div class="ref-note"><span class="ref-note-val" onclick="editRef('+i+',this)">'+esc(row.ref)+'</span></div>' : '<div class="ref-note"><span class="ref-note-val ref-empty" onclick="editRef('+i+',this)">+ ref</span></div>';
     var dragAttr = dragMode ? 'draggable="true"' : 'draggable="false"';
     rows.push('<tr '+dragAttr+' data-idx="'+i+'">'+
       '<td class="td-sl">'+slDisp+'</td>'+
       '<td class="td-meta">'+
-        '<span class="badge badge-group'+gClass+'" onclick="editBadge('+i+',\'group\',this)">'+gBadge+'</span>'+
-        '<span class="badge badge-short'+sClass+'" onclick="editBadge('+i+',\'shortDesc\',this)">'+sBadge+'</span>'+
-        refNote+
+        metaInput(i, 'group', row.group)+
+        metaInput(i, 'shortDesc', row.shortDesc)+
+        metaInput(i, 'ref', row.ref)+
       '</td>'+
       '<td class="td-desc-wrap"><input data-field="desc" value="'+esc(row.desc)+'" placeholder="Description of item" onchange="updateCell('+i+',\'desc\',this.value)"><button class="desc-expand-btn" onclick="openDescExpand('+i+')" title="Expand description">⧉</button></td>'+
       '<td><input data-field="qty" type="number" value="'+(row.qty!==''?row.qty:'')+'" placeholder="0" min="0" style="text-align:right" onchange="updateCell('+i+',\'qty\',this.value)"></td>'+
@@ -1032,14 +1065,14 @@ document.getElementById('descExpandOverlay').addEventListener('click', function(
   if (e.target === this) closeDescExpand();
 });
 
-function editBadge(idx, field, spanEl) {
+function inlineEdit(idx, field, spanEl, className, placeholder) {
   var items = ctxGetItems();
   if (!items[idx]) return;
   var input = document.createElement('input');
   input.type = 'text';
-  input.className = 'badge-input badge-input-' + field;
+  input.className = className;
   input.value = items[idx][field] || '';
-  input.placeholder = field === 'group' ? 'Group' : 'Short Desc';
+  input.placeholder = placeholder || field;
   input.spellcheck = false;
   spanEl.replaceWith(input);
   input.focus();
@@ -1063,35 +1096,12 @@ function editBadge(idx, field, spanEl) {
   input.addEventListener('blur', commit);
 }
 
+function editBadge(idx, field, spanEl) {
+  inlineEdit(idx, field, spanEl, 'badge-input badge-input-' + field, field === 'group' ? 'Group' : 'Short Desc');
+}
+
 function editRef(idx, spanEl) {
-  var items = ctxGetItems();
-  if (!items[idx]) return;
-  var input = document.createElement('input');
-  input.type = 'text';
-  input.className = 'ref-note-input';
-  input.value = items[idx].ref || '';
-  input.placeholder = 'Ref';
-  input.spellcheck = false;
-  spanEl.replaceWith(input);
-  input.focus();
-  input.select();
-  var done = false;
-  function commit() {
-    if (done) return;
-    done = true;
-    updateCell(idx, 'ref', input.value);
-    renderSingleTable();
-  }
-  function cancel() {
-    if (done) return;
-    done = true;
-    renderSingleTable();
-  }
-  input.addEventListener('keydown', function(e) {
-    if (e.key === 'Enter') { e.preventDefault(); commit(); }
-    else if (e.key === 'Escape') { e.preventDefault(); cancel(); }
-  });
-  input.addEventListener('blur', commit);
+  inlineEdit(idx, 'ref', spanEl, 'ref-note-input', 'Ref');
 }
 
 function updateTotals() {
@@ -1506,9 +1516,7 @@ function handlePaste(e) {
       var fieldIdx = colOffset + ci;
       var field = COL_FIELDS[fieldIdx];
       if (!field) return;
-      val = val.trim();
-      if (field === 'qty' || field === 'rate') { patch[field] = val !== '' ? (parseFloat(val) || '') : ''; }
-      else { patch[field] = val; }
+      patch[field] = pasteColToValue(val, field);
     });
     if (isNewRow) { items.push(makeRow(patch)); }
     else { Object.keys(patch).forEach(function(k){ items[targetIdx][k] = patch[k]; }); }
@@ -1519,6 +1527,7 @@ function handlePaste(e) {
 }
 
 /* ── PASTE MODAL ─────────────────── */
+var PASTE_FIELDS = [ {f:'ref', label:'Ref'}, {f:'desc', label:'Description'}, {f:'qty', label:'Qty', right:true}, {f:'rate', label:'Rate', right:true}, {f:'unit', label:'Unit'} ];
 var _pasteRows = [];
 var _pasteMode = 'append';
 
@@ -1536,6 +1545,11 @@ function closePasteModal() {
   document.getElementById('paste-modal').classList.remove('open');
 }
 
+function pasteColToValue(col, field) {
+  var val = (col || '').trim();
+  return (field === 'qty' || field === 'rate') ? (val !== '' ? (parseFloat(val) || '') : '') : val;
+}
+
 function renderPastePreview(rows) {
   var wrap = document.getElementById('pastePreview');
   if (!rows.length) {
@@ -1543,16 +1557,12 @@ function renderPastePreview(rows) {
     return;
   }
   var html = '<table class="mt" style="border:none;min-width:0"><thead><tr>' +
-    '<th>Ref</th><th>Description</th><th style="text-align:right">Qty</th><th style="text-align:right">Rate</th><th>Unit</th>' +
+    PASTE_FIELDS.map(function(c){ return '<th' + (c.right ? ' style="text-align:right"' : '') + '>' + esc(c.label) + '</th>'; }).join('') +
     '</tr></thead><tbody>';
   rows.forEach(function(cols) {
-    html += '<tr>' +
-      '<td>' + esc(cols[0]||'') + '</td>' +
-      '<td>' + esc(cols[1]||'') + '</td>' +
-      '<td style="text-align:right">' + esc(cols[2]||'') + '</td>' +
-      '<td style="text-align:right">' + esc(cols[3]||'') + '</td>' +
-      '<td>' + esc(cols[4]||'') + '</td>' +
-      '</tr>';
+    html += '<tr>' + PASTE_FIELDS.map(function(c, ci) {
+      return '<td' + (c.right ? ' style="text-align:right"' : '') + '>' + esc(cols[ci]||'') + '</td>';
+    }).join('') + '</tr>';
   });
   html += '</tbody></table>';
   wrap.innerHTML = html;
@@ -1561,7 +1571,7 @@ function renderPastePreview(rows) {
 function updatePastePreview() {
   var raw = document.getElementById('pasteInput').value;
   _pasteRows = parseTSV(raw).map(function(cols){
-    while (cols.length < 5) cols.push('');
+    while (cols.length < PASTE_FIELDS.length) cols.push('');
     return cols;
   });
   renderPastePreview(_pasteRows);
@@ -1575,32 +1585,16 @@ function confirmPaste(mode) {
   var items = ctxGetItems();
   var currentRows = items.length;
 
-  if (mode === 'append') {
-    if (!n) { showNotif('⚠ Nothing to paste'); return; }
-    if (currentRows > 0) {
-      if (!confirm('Append ' + n + ' row(s) after the existing ' + currentRows + ' row(s)?')) return;
-    }
-  } else {
-    if (!n) { showNotif('⚠ Nothing to paste'); return; }
-    if (currentRows > 0) {
-      if (!confirm('Overwrite the existing ' + currentRows + ' row(s) with ' + n + ' pasted row(s)?')) return;
-    }
-  }
+  if (!n) { showNotif('⚠ Nothing to paste'); return; }
+  var prompt = mode === 'append'
+    ? 'Append ' + n + ' row(s) after the existing ' + currentRows + ' row(s)?'
+    : 'Overwrite the existing ' + currentRows + ' row(s) with ' + n + ' pasted row(s)?';
+  if (currentRows > 0 && !confirm(prompt)) return;
 
-  var newItems;
-  if (mode === 'append') {
-    newItems = items.slice();
-  } else {
-    newItems = [];
-  }
+  var newItems = (mode === 'append') ? items.slice() : [];
   _pasteRows.forEach(function(cols) {
-    var patch = {
-      ref: (cols[0]||'').trim(),
-      desc: (cols[1]||'').trim(),
-      qty: (cols[2]||'').trim() !== '' ? (parseFloat(cols[2])||'') : '',
-      rate: (cols[3]||'').trim() !== '' ? (parseFloat(cols[3])||'') : '',
-      unit: (cols[4]||'').trim()
-    };
+    var patch = {};
+    PASTE_FIELDS.forEach(function(c, ci) { patch[c.f] = pasteColToValue(cols[ci], c.f); });
     newItems.push(makeRow(patch));
   });
   ctxSetItems(newItems);
@@ -1723,7 +1717,7 @@ function openMulti(estId) {
   document.getElementById('m-title').textContent = e.name;
   var parts = [];
   if (e.ref) parts.push('Ref. ' + e.ref);
-  parts.push(dateStr, e.by);
+  parts.push(dateStr);
   document.getElementById('m-sub').textContent = parts.filter(Boolean).join(' · ');
   showView('multi');
   renderMultiTable();
@@ -1946,13 +1940,14 @@ function buildPrintDoc() {
 
 function plHero(subject, ref, mast) {
   var html = '<div class="pl-doc">';
+  var office = getOffice();
   if (mast !== false) {
     html += '<div class="pl-masthead-wrap">' +
       '<span class="pd-hr-t"></span><span class="pd-hr-b"></span>' +
       '<span class="pl-masthead-corner"></span>' +
       '<div class="pl-masthead">Estimate</div>' +
       '<div class="pl-masthead-rule"></div>' +
-      '<div class="pl-masthead-sub">Statement of Estimated Cost</div>' +
+      (office ? '<div class="pl-masthead-off">' + office.split('\n').map(function(l){ return '<div class="pl-masthead-off-line">' + esc(l) + '</div>'; }).join('') + '</div>' : '') +
       '</div>' +
       '<div class="pl-masthead-dual"></div>';
   }
@@ -1967,19 +1962,16 @@ function plHero(subject, ref, mast) {
   return html;
 }
 
-function plApprovals(preparedName) {
-  var used = false;
+function plApprovals() {
   var blocks = getSignatures().map(function(s) {
-    var role = s.role;
-    if (!role && preparedName && !used) { role = preparedName; used = true; }
-    return '<div class="s-block"><div class="s-cap">' + esc(s.cap) + '</div><div class="s-line"></div><div class="s-role">' + esc(role) + '</div></div>';
+    return '<div class="s-block"><div class="s-cap">' + esc(s.cap) + '</div><div class="s-line"></div><div class="s-role">' + esc(s.role) + '</div></div>';
   }).join('');
   return blocks ? '<div class="pl-sign">' + blocks + '</div>' : '';
 }
 
-function plFoot(preparedName) {
+function plFoot() {
   return '<div class="pl-note">Generated on ' + todayStr() + '</div>' +
-    (printSignEnabled() ? plApprovals(preparedName) : '');
+    (printSignEnabled() ? plApprovals() : '');
 }
 
 function buildPrintMain() {
@@ -1994,7 +1986,6 @@ function buildPrintMain() {
       '<td>' + esc(est.name) + '</td>' +
       '<td>' + (est.type==='single'?'Single Site':'Multi-Site') + '</td>' +
       '<td>' + esc(dateStr) + '</td>' +
-      '<td>' + esc(est.by || '') + '</td>' +
       '<td class="pl-money">' + money(total) + '</td>' +
       '</tr>';
   }).join('');
@@ -2004,7 +1995,6 @@ function buildPrintMain() {
     '<th>Name of Work</th>' +
     '<th style="width:90px">Type</th>' +
     '<th style="width:90px">Date</th>' +
-    '<th>Prepared by</th>' +
     '<th style="width:96px" class="al">Amount</th>' +
     '</tr></thead><tbody>' + rows + '</tbody></table>';
   return plHero('Estimate Register', null, false) + tableHtml +
@@ -2013,52 +2003,49 @@ function buildPrintMain() {
 
 function buildPrintSingle() {
   var items = ctxGetItems();
-  var subject = '', ref = null, by = '';
+  var subject = '', ref = null;
   if (ctx.multiId !== undefined) {
     var me = findEst(ctx.multiId);
     var site = me && me.sites[ctx.siteIdx];
     subject = site ? site.name : 'Estimate';
-    if (me) { ref = me.ref || ''; by = me.by || ''; }
+    if (me) { ref = me.ref || ''; }
   } else {
     var e = findEst(ctx.estId);
     subject = e ? e.name : 'Estimate';
     ref = e ? (e.ref || '') : '';
-    by = e ? e.by : '';
   }
 
-  // ── Table ──
-  var sl = 0, lastGroup = null;
-  var rowsHtml = '';
+  // ── Bill of quantities — item cards ──
+  var sl = 0, lastGroup = null, firstCard = true;
+  var cardsHtml = '';
   items.forEach(function(row) {
     if (!row.blank) sl++;
     if (!row.blank && row.group && row.group !== lastGroup) {
-      rowsHtml += '<tr class="pl-group"><td colspan="7">' + esc(row.group) + '</td></tr>';
+      cardsHtml += '<div class="pl-card-group">' + esc(row.group) + '</div>';
       lastGroup = row.group;
     }
     if (row.blank) return;
+    if (firstCard) { firstCard = false; }
+    else { cardsHtml += '<div class="pl-card-div"></div>'; }
     var amt = rowAmt(row);
     var amtHtml = amt !== null ? money(amt) : '';
-    var ref = row.ref ? '<div class="pl-ref">' + esc(row.ref) + '</div>' : '';
-    rowsHtml += '<tr>' +
-      '<td class="pl-sl">' + sl + '</td>' +
-      '<td>' + esc(row.shortDesc || '') + ref + '</td>' +
-      '<td>' + esc(row.desc || '') + '</td>' +
-      '<td class="al">' + esc(row.qty || '') + '</td>' +
-      '<td>' + esc(row.unit || '') + '</td>' +
-      '<td class="al">' + esc(row.rate || '') + '</td>' +
-      '<td class="pl-money">' + amtHtml + '</td>' +
-      '</tr>';
+    var ref = row.ref ? '<div class="pl-card-ref">' + esc(row.ref) + '</div>' : '<div class="pl-card-ref">&nbsp;</div>';
+    var badge = row.shortDesc ? '<div class="pl-card-badge">' + esc(row.shortDesc) + '</div>' : '';
+    cardsHtml += '<article class="pl-card"><span class="pc-rule"></span>' +
+      '<div class="pl-card-head">' +
+        '<div class="pl-card-sl">' + sl + '</div>' +
+        '<div class="pl-card-meta">' + ref + '<div class="pl-card-amt">' + amtHtml + '</div></div>' +
+      '</div>' +
+      '<div class="pl-card-body">' + badge + '<div class="pl-card-desc">' + esc(row.desc || '—') + '</div></div>' +
+      '<div class="pl-card-foot">' +
+        '<div class="cf"><span class="cf-k">Qty</span><span class="cf-v">' + esc(row.qty || '—') + '</span></div>' +
+        '<div class="cf"><span class="cf-k">Unit</span><span class="cf-v">' + esc(row.unit || '—') + '</span></div>' +
+        '<div class="cf"><span class="cf-k">Rate</span><span class="cf-v">' + (row.rate!=='' ? '₹ '+esc(row.rate) : '—') + '</span></div>' +
+      '</div>' +
+      '</article>';
   });
-  var tableHtml = '<div class="pl-lead"><div class="pl-l-title">Bill of Quantities <span class="pl-l-k">' + sl + ' item' + (sl!==1?'s':'') + '</span></div></div>' +
-    '<table class="pl-table"><thead><tr>' +
-    '<th style="width:34px">Sl.</th>' +
-    '<th style="width:22%">Ref.</th>' +
-    '<th>Description of Items</th>' +
-    '<th style="width:52px" class="al">Qty</th>' +
-    '<th style="width:52px">Unit</th>' +
-    '<th style="width:70px" class="al">Rate</th>' +
-    '<th style="width:88px" class="al">Amount</th>' +
-    '</tr></thead><tbody>' + rowsHtml + '</tbody></table>';
+  var cardsWrap = '<div class="pl-lead"><div class="pl-l-title">Bill of Quantities <span class="pl-l-k">' + sl + ' item' + (sl!==1?'s':'') + '</span></div></div>' +
+    '<div class="pl-cards">' + cardsHtml + '</div>';
 
   // ── Totals ledger ──
   var t = computeTotals(items);
@@ -2073,9 +2060,9 @@ function buildPrintSingle() {
     '<div class="pl-final"><span class="l-l">Final Total</span><span class="l-v">' + money(t.final) + '</span></div>' +
     '</div></section>';
 
-  var signHtml = plFoot(by);
+  var signHtml = plFoot();
 
-  return plHero(subject, ref) + tableHtml + ledgerHtml + signHtml + '</div>';
+  return plHero(subject, ref) + cardsWrap + ledgerHtml + signHtml + '</div>';
 }
 
 function formatDate(d) {
@@ -2111,7 +2098,7 @@ function buildPrintMulti() {
     cols.map(function(){ return '<td></td>'; }).join('') + '</tr></tbody></table>';
 
   return plHero(est.name, est.ref || '') + tableHtml +
-    plFoot(est.by) + '</div>';
+    plFoot() + '</div>';
 }
 
 window.addEventListener('beforeprint', function() {
