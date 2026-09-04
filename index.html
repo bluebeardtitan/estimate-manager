@@ -246,6 +246,9 @@ tr.group-hdr:hover{background:var(--group-hdr-bg) !important}
 .pl-doc{font-family:'IBM Plex Sans',sans-serif;color:#181715}
 /* Masthead — "ESTIMATE", name of work, reference */
 .pl-masthead{font-family:'IBM Plex Serif',serif;font-size:30px;font-weight:600;letter-spacing:5px;text-align:center;text-transform:uppercase;color:#181715;margin-bottom:8px}
+.pl-work-heading{position:relative;width:100%;margin-bottom:10px;overflow:hidden}
+.pl-work-heading::before{content:'';position:absolute;inset:0;background:#181715;transform:skewX(-4deg);transform-origin:top left}
+.pl-work-heading span{position:relative;display:inline-block;padding:8px 20px 8px 28px;font-family:'IBM Plex Serif',serif;font-size:12px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#fff}
 .pl-title{font-family:'IBM Plex Serif',serif;font-size:17px;font-weight:600;line-height:1.25;text-align:center;margin:0 0 6px}
 .pl-refno{display:flex;align-items:baseline;justify-content:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1.6px;text-transform:uppercase;color:#6f6c65;margin-bottom:10px}
 .pl-refno .pl-refno-v{color:#181715;font-weight:500;letter-spacing:.3px}
@@ -292,7 +295,8 @@ table.pl-table tr.pl-total td{font-family:'IBM Plex Mono',monospace;font-size:11
 .annex-item-title{font-family:'IBM Plex Serif',serif;font-size:11.5px;font-weight:600;color:#181715;margin-bottom:3px}
 .annex-step{margin-left:14px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:#3f3e3a;line-height:1.5}
 @media print{
-  @page{size:A4;margin:14mm 13mm 16mm 13mm}
+  @page{size:A4;margin:14mm 13mm 16mm 13mm;margin-top:0;margin-bottom:0}
+  @page{@bottom-center{content:counter(page) " / "counter(pages);font-family:var(--mono);font-size:9px;color:#555}}
   html,body{background:#fff!important;color:#181715!important}
   html,body,#print-doc{color-scheme:light}
   #topbar,.side-tabs,.history-panel,.search-bar,.btn,.paste-hint,.notif,.modal-overlay,
@@ -744,7 +748,9 @@ function printSignEnabled() {
   return v !== '0';
 }
 var DEFAULT_SIGNATURES = [
-  { cap:'Prepared by', role:'Engineer in Charge' },
+  { cap:'Prepared by', role:'Junior Engineer' },
+  { cap:'Counter-signed by', role:'Assistant Engineer' },
+  { cap:'Checked by', role:'Estimator' },
   { cap:'Approved by', role:'Executive Engineer' }
 ];
 function getSignatures() {
@@ -1754,6 +1760,7 @@ function buildPrintDoc() {
 function plHero(subject, ref, mast) {
   var html = '<div class="pl-doc">' +
     (mast !== false ? '<div class="pl-masthead">Estimate</div>' : '') +
+    '<div class="pl-work-heading"><span>Name of Work:</span></div>' +
     '<div class="pl-title">' + esc(subject) + '</div>' +
     (ref !== null && ref !== undefined
       ? '<div class="pl-refno"><span class="pl-refno-k">Ref.</span><span class="pl-refno-v">' + esc(ref) + '</span></div>'
