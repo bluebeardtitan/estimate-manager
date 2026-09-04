@@ -55,7 +55,7 @@ body{font-family:var(--font);background:var(--surface);color:var(--text);min-hei
 .logo span{color:var(--accent-light)}
 #breadcrumb{display:flex;align-items:center;gap:6px;font-size:13px;color:rgba(255,255,255,.65);flex:1;margin-left:20px}
 .crumb{cursor:pointer}.crumb:hover{color:#fff;text-decoration:underline}
-.bc-sep{opacity:.4}.bc-cur{color:#fff;font-weight:500}
+.bc-sep{opacity:.4}.bc-cur{color:#fff;font-weight:500;max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block;vertical-align:middle}
 #topbar-actions{margin-left:auto;display:flex;gap:8px;align-items:center}
 .btn{display:inline-flex;align-items:center;gap:6px;padding:7px 16px;border-radius:var(--radius);font-family:var(--font);font-size:13px;font-weight:500;cursor:pointer;border:none;transition:all .15s;white-space:nowrap}
 .btn-primary{background:var(--accent);color:#fff}.btn-primary:hover{background:var(--accent-light)}
@@ -672,16 +672,16 @@ function renderBreadcrumb() {
   var html = '<span class="crumb" onclick="goMain()">All Estimates</span><span class="bc-sep"> › </span>';
   if (ctx.view === 'multi') {
     var e = findEst(ctx.estId);
-    html += '<span class="bc-cur">' + esc(e?e.name:'') + '</span>';
+    html += '<span class="bc-cur" title="' + esc(e?e.name:'') + '">' + esc(e?e.name:'') + '</span>';
   } else if (ctx.view === 'single') {
     if (ctx.multiId !== undefined) {
       var me = findEst(ctx.multiId);
       var site = me && me.sites[ctx.siteIdx];
       html += '<span class="crumb" onclick="openMulti(\''+ctx.multiId+'\')">' + esc(me?me.name:'') + '</span>';
-      html += '<span class="bc-sep"> › </span><span class="bc-cur">' + esc(site?site.name:'') + '</span>';
+      html += '<span class="bc-sep"> › </span><span class="bc-cur" title="' + esc(site?site.name:'') + '">' + esc(site?site.name:'') + '</span>';
     } else {
       var es = findEst(ctx.estId);
-      html += '<span class="bc-cur">' + esc(es?es.name:'') + '</span>';
+      html += '<span class="bc-cur" title="' + esc(es?es.name:'') + '">' + esc(es?es.name:'') + '</span>';
     }
   }
   bc.innerHTML = html;
