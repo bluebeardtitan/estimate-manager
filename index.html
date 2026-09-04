@@ -244,54 +244,83 @@ tr.group-hdr:hover{background:var(--group-hdr-bg) !important}
 #print-doc{display:none;background:#fff;color:#181715;color-scheme:light;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 #print-doc, #print-doc *{box-sizing:border-box}
 .pl-doc{font-family:'IBM Plex Sans',sans-serif;color:#181715;padding-bottom:20px}
-/* Masthead — "ESTIMATE", name of work, reference */
-.pl-masthead{font-family:'IBM Plex Serif',serif;font-size:30px;font-weight:600;letter-spacing:5px;text-align:center;text-transform:uppercase;color:#181715;margin-bottom:8px;padding-top:4px}
-.pl-work-heading{position:relative;width:100%;margin-bottom:10px;overflow:hidden}
-.pl-work-heading::before{content:'';position:absolute;inset:0;background:#181715;transform:skewX(-4deg);transform-origin:top left}
-.pl-work-heading span{position:relative;display:inline-block;padding:8px 20px 8px 28px;font-family:'IBM Plex Serif',serif;font-size:12px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#fff}
-.pl-title{font-family:'IBM Plex Serif',serif;font-size:17px;font-weight:600;line-height:1.3;text-align:center;margin:0 0 6px;border-bottom:1px solid #c9c6bd;padding-bottom:8px}
+
+/* ── Masthead — triple-rule frame with hatched band ── */
+.pl-masthead-wrap{border-top:3px solid #181715;border-bottom:3px solid #181715;padding:12px 0;margin-bottom:4px;position:relative;background:repeating-linear-gradient(45deg,transparent,transparent 3px,rgba(0,0,0,.04) 3px,rgba(0,0,0,.04) 4px)}
+.pl-masthead-wrap::before,.pl-masthead-wrap::after{content:'';position:absolute;left:0;right:0;height:1px;background:#181715}
+.pl-masthead-wrap::before{top:3px}.pl-masthead-wrap::after{bottom:3px}
+.pl-masthead{font-family:'IBM Plex Serif',serif;font-size:32px;font-weight:600;letter-spacing:8px;text-align:center;text-transform:uppercase;color:#181715;position:relative;z-index:1}
+
+/* ── Name of Work — parallelogram banner ── */
+.pl-work-heading{position:relative;width:100%;margin:12px 0;overflow:hidden;height:38px}
+.pl-work-heading::before{content:'';position:absolute;inset:0;background:#181715;transform:skewX(-6deg);transform-origin:bottom left}
+.pl-work-heading::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 2px,rgba(255,255,255,.08) 2px,rgba(255,255,255,.08) 3px);transform:skewX(-6deg);transform-origin:bottom left}
+.pl-work-heading span{position:relative;display:inline-block;padding:9px 28px 9px 36px;font-family:'IBM Plex Serif',serif;font-size:13px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#fff;z-index:1}
+
+/* ── Title (work name) ── */
+.pl-title{font-family:'IBM Plex Serif',serif;font-size:17px;font-weight:600;line-height:1.3;text-align:center;margin:0 0 6px;padding:0 0 10px;border-bottom:2px solid #181715;position:relative}
+.pl-title::after{content:'';position:absolute;bottom:-5px;left:0;right:0;height:1px;background:#181715}
+
+/* ── Reference number ── */
 .pl-refno{display:flex;align-items:baseline;justify-content:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1.6px;text-transform:uppercase;color:#6f6c65;margin-bottom:10px}
 .pl-refno .pl-refno-v{color:#181715;font-weight:500;letter-spacing:.3px}
-.pl-rule{height:2.5px;background:#181715;margin:5px 0 2px}
-.pl-rule-sub{height:1px;background:#c9c6bd;margin-bottom:18px}
-/* Section lead */
-.pl-lead{margin:24px 0 9px;display:flex;justify-content:space-between;align-items:baseline}
+
+/* ── Decorative rules ── */
+.pl-rule{height:3px;background:#181715;margin:8px 0 3px}
+.pl-rule-sub{height:1px;background:#181715;margin-bottom:18px}
+
+/* ── Section lead ── */
+.pl-lead{margin:26px 0 10px;display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid #181715;padding-bottom:6px}
 .pl-lead .pl-l-title{font-family:'IBM Plex Serif',serif;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:1.2px;color:#181715}
 .pl-lead .pl-l-k{font-family:'IBM Plex Mono',monospace;font-size:9px;color:#6f6c65;letter-spacing:.4px;text-transform:uppercase}
-/* Ruled table */
-table.pl-table{width:100%;border-collapse:collapse;border-top:1.5px solid #181715;border-left:1.5px solid #181715}
-table.pl-table thead th,table.pl-table tbody td{border-right:1.5px solid #181715;text-align:left;vertical-align:top}
-table.pl-table thead th{font-family:'IBM Plex Mono',monospace;font-size:8.5px;font-weight:500;letter-spacing:1.1px;text-transform:uppercase;padding:7px 10px;background:#f2f0ea;border-bottom:1.5px solid #181715;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+
+/* ── Ruled table — hatched header ── */
+table.pl-table{width:100%;border-collapse:collapse;border:2px solid #181715}
+table.pl-table thead th,table.pl-table tbody td{border-right:1px solid #181715;text-align:left;vertical-align:top}
+table.pl-table thead th:last-child,table.pl-table tbody td:last-child{border-right:none}
+table.pl-table thead th{font-family:'IBM Plex Mono',monospace;font-size:8.5px;font-weight:600;letter-spacing:1.1px;text-transform:uppercase;padding:8px 10px;color:#fff;background:#181715;border-bottom:2px solid #181715;position:relative;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+table.pl-table thead th::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 2px,rgba(255,255,255,.06) 2px,rgba(255,255,255,.06) 3px);pointer-events:none}
 table.pl-table thead th.al,table.pl-table tbody td.al{text-align:right}
-table.pl-table tbody td{padding:7px 10px;font-size:11px;border-bottom:1px solid #c9c6bd}
-table.pl-table td.pl-sl{font-family:'IBM Plex Mono',monospace;color:#6f6c65}
-table.pl-table td.pl-money{font-family:'IBM Plex Mono',monospace;text-align:right;white-space:nowrap;color:#181715}
+table.pl-table tbody td{padding:7px 10px;font-size:11px;border-bottom:1px solid #d0cdc7}
+table.pl-table tbody tr:nth-child(even){background:rgba(0,0,0,.015)}
+table.pl-table td.pl-sl{font-family:'IBM Plex Mono',monospace;color:#6f6c65;text-align:center;font-weight:500}
+table.pl-table td.pl-money{font-family:'IBM Plex Mono',monospace;text-align:right;white-space:nowrap;color:#181715;font-weight:500}
 table.pl-table td.pl-ref{font-family:'IBM Plex Mono',monospace;font-size:8.5px;color:#6f6c65;white-space:nowrap;margin-top:2px}
-table.pl-table tr.pl-group td{background:#f2f0ea;font-family:'IBM Plex Mono',monospace;font-size:8.5px;font-weight:500;letter-spacing:1.3px;text-transform:uppercase;padding:5px 10px;border-bottom:1.5px solid #181715;color:#3f3e3a;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-table.pl-table tr.pl-total td{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;color:#181715;border-top:1.5px solid #181715;border-bottom:1.5px solid #181715;background:#f2f0ea}
-/* Abstract of cost — the ledger box */
-.pl-ledger{margin:28px 0 0;display:flex;justify-content:flex-end;page-break-inside:avoid}
-.pl-ledger-inner{width:320px;border:1.5px solid #181715;border-radius:2px;overflow:hidden}
-.pl-ledger-hd{font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;letter-spacing:1.8px;text-transform:uppercase;color:#fff;background:#181715;padding:7px 12px;text-align:center;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-.pl-ledger-inner .pl-lr{display:flex;justify-content:space-between;align-items:baseline;padding:6px 12px;font-size:10.5px;border-bottom:1px solid #e0ddd7}
+table.pl-table tr.pl-group td{font-family:'IBM Plex Mono',monospace;font-size:8.5px;font-weight:600;letter-spacing:1.3px;text-transform:uppercase;padding:6px 10px;border-bottom:2px solid #181715;color:#181715;background:repeating-linear-gradient(45deg,transparent,transparent 3px,rgba(0,0,0,.05) 3px,rgba(0,0,0,.05) 4px);-webkit-print-color-adjust:exact;print-color-adjust:exact}
+table.pl-table tr.pl-total td{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;color:#181715;border-top:3px double #181715;border-bottom:2px solid #181715;background:#eae8e2;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+
+/* ── Abstract of cost — geometric frame ── */
+.pl-ledger{margin:30px 0 0;display:flex;justify-content:flex-end;page-break-inside:avoid}
+.pl-ledger-inner{width:330px;border:2.5px solid #181715;position:relative}
+.pl-ledger-inner::before{content:'';position:absolute;inset:3px;border:1px solid #181715;pointer-events:none}
+.pl-ledger-hd{font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#fff;padding:8px 14px;text-align:center;background:#181715;position:relative;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.pl-ledger-hd::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 2px,rgba(255,255,255,.07) 2px,rgba(255,255,255,.07) 3px);pointer-events:none}
+.pl-ledger-inner .pl-lr{display:flex;justify-content:space-between;align-items:baseline;padding:6px 14px;font-size:10.5px;border-bottom:1px solid #d0cdc7}
 .pl-ledger-inner .pl-lr .l-l{color:#3f3e3a}
 .pl-ledger-inner .pl-lr .l-v{font-family:'IBM Plex Mono',monospace;text-align:right;color:#181715}
-.pl-ledger-inner .pl-lr.pl-strong{border-top:1.5px solid #181715;border-bottom:none;background:#f8f7f4}
-.pl-ledger-inner .pl-lr.pl-strong .l-l,.pl-ledger-inner .pl-lr.pl-strong .l-v{font-weight:600}
-/* Double-rule close under the final total — the accountancy signature */
-.pl-ledger-inner .pl-final{display:flex;justify-content:space-between;align-items:baseline;padding:8px 12px;border-top:2.5px double #181715;margin-top:4px;font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;color:#181715;background:#f2f0ea;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-.pl-ledger-inner .pl-final .l-l{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:#3f3e3a;font-weight:500}
-.pl-note{font-size:8.5px;color:#6f6c65;font-family:'IBM Plex Mono',monospace;margin-top:14px;text-transform:uppercase;letter-spacing:.6px}
-/* Approvals block — user-defined signature rows, two per line */
-.pl-sign{margin-top:48px;border-top:1px solid #c9c6bd;padding-top:28px;display:grid;grid-template-columns:repeat(2,1fr);gap:36px 50px;page-break-inside:avoid}
-.pl-sign .s-block{min-width:0;overflow-wrap:anywhere}
+.pl-ledger-inner .pl-lr.pl-strong{border-top:1.5px solid #181715;border-bottom:none;background:repeating-linear-gradient(45deg,transparent,transparent 3px,rgba(0,0,0,.03) 3px,rgba(0,0,0,.03) 4px)}
+.pl-ledger-inner .pl-lr.pl-strong .l-l,.pl-ledger-inner .pl-lr.pl-strong .l-v{font-weight:700}
+.pl-ledger-inner .pl-final{display:flex;justify-content:space-between;align-items:baseline;padding:9px 14px;border-top:3px double #181715;margin-top:4px;font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:700;color:#181715;background:#eae8e2;position:relative;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.pl-ledger-inner .pl-final .l-l{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:#3f3e3a;font-weight:600}
+
+/* ── Footer note ── */
+.pl-note{font-size:8.5px;color:#6f6c65;font-family:'IBM Plex Mono',monospace;margin-top:14px;text-transform:uppercase;letter-spacing:.6px;border-top:1px solid #d0cdc7;padding-top:8px}
+
+/* ── Approvals / sign-off — geometric bracket blocks ── */
+.pl-sign{margin-top:50px;border-top:3px solid #181715;padding-top:30px;display:grid;grid-template-columns:repeat(2,1fr);gap:40px 55px;page-break-inside:avoid}
+.pl-sign .s-block{min-width:0;overflow-wrap:anywhere;position:relative;padding:10px 14px;border:1px solid #d0cdc7}
+.pl-sign .s-block::before{content:'';position:absolute;top:-1px;left:-1px;width:10px;height:10px;border-top:2px solid #181715;border-left:2px solid #181715}
+.pl-sign .s-block::after{content:'';position:absolute;bottom:-1px;right:-1px;width:10px;height:10px;border-bottom:2px solid #181715;border-right:2px solid #181715}
 .pl-sign .s-cap{font-size:8.5px;color:#6f6c65;letter-spacing:1.3px;text-transform:uppercase;font-family:'IBM Plex Mono',monospace;margin-bottom:4px;line-height:1.5}
-.pl-sign .s-line{width:160px;border-top:1px solid #181715;margin-top:44px;margin-bottom:4px}
+.pl-sign .s-line{width:160px;border-top:1.5px solid #181715;margin-top:46px;margin-bottom:4px;position:relative}
+.pl-sign .s-line::after{content:'';position:absolute;top:-4px;left:0;width:100%;height:1px;background:repeating-linear-gradient(90deg,#181715 0,#181715 2px,transparent 2px,transparent 5px)}
 .pl-sign .s-role{font-size:10px;color:#3f3e3a;font-family:'IBM Plex Mono',monospace;text-transform:uppercase;letter-spacing:.5px;line-height:1.5;white-space:normal}
-/* Annexures (calculation sheets) */
+
+/* ── Annexures (calculation sheets) ── */
 #printAnnexures{display:none}
-#printAnnexures h3{font-family:'IBM Plex Serif',serif;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:1.2px;color:#181715;margin:0 0 12px;border-bottom:1.5px solid #181715;padding-bottom:6px}
-.annex-item{margin:0 0 8px;padding:0}
+#printAnnexures h3{font-family:'IBM Plex Serif',serif;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:1.2px;color:#fff;margin:0 0 12px;padding:8px 14px;background:#181715;position:relative;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+#printAnnexures h3::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 2px,rgba(255,255,255,.06) 2px,rgba(255,255,255,.06) 3px);pointer-events:none}
+.annex-item{margin:0 0 10px;padding:0;border-left:3px solid #181715;padding-left:12px}
 .annex-item-title{font-family:'IBM Plex Serif',serif;font-size:11.5px;font-weight:600;color:#181715;margin-bottom:3px}
 .annex-step{margin-left:14px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:#3f3e3a;line-height:1.5}
 @media print{
@@ -1759,7 +1788,7 @@ function buildPrintDoc() {
 
 function plHero(subject, ref, mast) {
   var html = '<div class="pl-doc">' +
-    (mast !== false ? '<div class="pl-masthead">Estimate</div>' : '') +
+    (mast !== false ? '<div class="pl-masthead-wrap"><div class="pl-masthead">Estimate</div></div>' : '') +
     '<div class="pl-work-heading"><span>Name of Work:</span></div>' +
     '<div class="pl-title">' + esc(subject) + '</div>' +
     (ref !== null && ref !== undefined
