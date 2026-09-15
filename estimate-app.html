@@ -58,7 +58,14 @@
     <div class="modal-content calc-modal">
       <div class="calc-body">
         <div class="calc-editor">
-          <textarea id="calcInput" placeholder="Enter expressions"></textarea>
+          <textarea id="calcInput" placeholder="Enter expressions, one per line&#10;Use !!expr!! for hidden calculation&#10;Use #comment# for visible notes&#10;Use //hidden// for hidden notes"></textarea>
+          <div class="calc-insert" role="toolbar" aria-label="Insert line templates">
+            <span class="ci-label">Insert</span>
+            <button type="button" class="ci-chip" data-insert="expr">+ Expression</button>
+            <button type="button" class="ci-chip" data-insert="hidden">+ Hidden calc</button>
+            <button type="button" class="ci-chip" data-insert="note">+ Note</button>
+            <button type="button" class="ci-chip" data-insert="hide">+ Hidden note</button>
+          </div>
           <div class="calc-buttons">
             <button id="calcSave">Save</button>
             <button id="calcClear">Clear</button>

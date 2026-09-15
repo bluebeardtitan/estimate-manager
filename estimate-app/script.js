@@ -821,6 +821,25 @@ byId('calcClose').onclick = () => {
   byId('calcOverlay').style.display = 'none';
 };
 
+byId('calcOverlay').querySelectorAll('.ci-chip').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const ta = byId('calcInput');
+    let tpl, sel;
+    switch (btn.dataset.insert) {
+      case 'expr':    tpl = '10 * 400';    sel = [0, tpl.length]; break;
+      case 'hidden':  tpl = '!!5 * 100!!'; sel = [2, tpl.length - 2]; break;
+      case 'note':    tpl = '#Note# ';     sel = [1, 5]; break;
+      case 'hide':    tpl = '//note// ';   sel = [2, 6]; break;
+    }
+    const start = ta.selectionStart, end = ta.selectionEnd;
+    ta.value = ta.value.slice(0, start) + tpl + ta.value.slice(end);
+    const a = start + sel[0], b = start + sel[1];
+    ta.setSelectionRange(a, b);
+    ta.focus();
+    updateLivePreview(ta.value.split('\n'));
+  });
+});
+
 function saveSession() {
   const session = getSessionSnapshot();
 

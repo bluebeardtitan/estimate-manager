@@ -211,6 +211,11 @@ tr.group-hdr:hover{background:var(--group-hdr-bg) !important}
 .calc-editor textarea{width:100%;min-height:180px;padding:10px;border:1.5px solid var(--border);border-radius:var(--radius);font-family:var(--mono);font-size:13px;resize:vertical;background:var(--white);color:var(--text)}
 .calc-editor textarea:focus{outline:none;border-color:var(--accent)}
 .calc-buttons{display:flex;gap:6px;justify-content:flex-end}
+.calc-insert{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.calc-insert .ci-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin-right:2px}
+.calc-insert .ci-chip{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border:1px solid var(--border);border-radius:20px;background:var(--surface);color:var(--text-soft);font-family:var(--mono);font-size:11px;cursor:pointer;transition:all .15s;user-select:none}
+.calc-insert .ci-chip:hover{border-color:var(--accent);color:var(--accent);background:var(--surface2)}
+.calc-insert .ci-chip:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
 .calc-results{flex:1;background:var(--surface2);padding:12px;border-radius:var(--radius);border:1px solid var(--border);overflow-y:auto;max-height:300px}
 .calc-results h4{font-size:12px;font-weight:600;color:var(--text-soft);margin-bottom:8px;text-transform:uppercase;letter-spacing:.4px}
 #calcLiveResults{font-family:var(--mono);font-size:12px;white-space:pre-wrap;color:var(--text);line-height:1.7}
@@ -532,6 +537,13 @@ table.pl-table tr.pl-total td{font-family:'IBM Plex Mono',monospace;font-size:11
     <div class="calc-modal-body">
       <div class="calc-editor">
         <textarea id="calcInput" placeholder="Enter expressions, one per line&#10;Use !!expr!! for hidden calculation&#10;Use #comment# for visible notes&#10;Use //hidden// for hidden notes"></textarea>
+        <div class="calc-insert" role="toolbar" aria-label="Insert line templates">
+          <span class="ci-label">Insert</span>
+          <button type="button" class="ci-chip" data-insert="expr">+ Expression</button>
+          <button type="button" class="ci-chip" data-insert="hidden">+ Hidden calc</button>
+          <button type="button" class="ci-chip" data-insert="note">+ Note</button>
+          <button type="button" class="ci-chip" data-insert="hide">+ Hidden note</button>
+        </div>
         <div class="calc-buttons">
           <button class="btn btn-primary btn-sm" id="calcSave">Save to Cell</button>
           <button class="btn btn-ghost btn-sm" id="calcClear">Clear</button>
@@ -1305,6 +1317,25 @@ document.getElementById('calcClose').addEventListener('click', function() {
 
 document.getElementById('calc-modal').addEventListener('click', function(e) {
   if (e.target === this) document.getElementById('calc-modal').classList.remove('open');
+});
+
+document.querySelectorAll('.calc-insert .ci-chip').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    var ta = document.getElementById('calcInput');
+    var tpl, sel;
+    switch (btn.dataset.insert) {
+      case 'expr':    tpl = '10 * 400';      sel = [0, tpl.length]; break;
+      case 'hidden':  tpl = '!!5 * 100!!';   sel = [2, tpl.length - 2]; break;
+      case 'note':    tpl = '#Note# ';       sel = [1, 5]; break;
+      case 'hide':    tpl = '//note// ';     sel = [2, 6]; break;
+    }
+    var start = ta.selectionStart, end = ta.selectionEnd;
+    ta.value = ta.value.slice(0, start) + tpl + ta.value.slice(end);
+    var a = start + sel[0], b = start + sel[1];
+    ta.setSelectionRange(a, b);
+    ta.focus();
+    updateLivePreview(ta.value.split('\n'));
+  });
 });
 
 /* ── SCHEDULE / CSV IMPORT ──────── */
