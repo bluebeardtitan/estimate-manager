@@ -242,8 +242,10 @@ window.closeScheduleModal = closeScheduleModal;
 
 function safeBase64Encode(str) {
   const utf8Bytes = new TextEncoder().encode(str);
-  const base64String = btoa(String.fromCharCode(...utf8Bytes));
-  return base64String;
+  let bin = '';
+  // Chunked concatenation avoids RangeError for large CSV payloads
+  for (let i = 0; i < utf8Bytes.length; i++) bin += String.fromCharCode(utf8Bytes[i]);
+  return btoa(bin);
 }
 
 
@@ -523,9 +525,10 @@ function insertSubtotalRow() {
   const amtTD = document.createElement('td'); // Amount
   amtTD.textContent = '0.00';
 
-  const editTD = document.createElement('td'); // Edit Button (Empty for subtotal)
+  const editTD = document.createElement('td'); // Edit Button (Delete for subtotal rows)
+  const delBtn = createButton('subtotal-del-btn', '🗑️', () => archiveRow(delBtn));
+  editTD.appendChild(delBtn);
 
-  
   tr.append(checkboxTd, td1, td2, td3, td4, td5, td6, amtTD, editTD);
 
   const activeRow = activeCalcCell?.closest('tr');
@@ -554,7 +557,7 @@ function calculateAmounts() {
 
   document.querySelectorAll('#estimateTable tbody tr').forEach(tr => {
     if (tr.classList.contains('subtotal-row')) {
-      tr.cells[6].textContent = subtotal.toFixed(2);
+      tr.cells[COL.AMT].textContent = subtotal.toFixed(2);
       grand += subtotal;
       subtotal = 0;
     } else {

@@ -185,6 +185,10 @@ table.mt tbody td:last-child{border-right:none}
 .notif.show{transform:translateY(0);opacity:1}
 tr.group-hdr td{background:var(--group-hdr-bg);padding:5px 10px;font-size:11px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--group-hdr-text);border-bottom:1.5px solid var(--border-strong);border-top:1.5px solid var(--border-strong);cursor:default}
 tr.group-hdr:hover{background:var(--group-hdr-bg) !important}
+tr.sub-hdr td{background:var(--surface2);padding:8px 10px;font-weight:700;border-top:1.5px solid var(--border-strong);border-bottom:1.5px solid var(--border-strong);cursor:default}
+tr.sub-hdr:hover{background:var(--surface2) !important}
+td.td-sub-label{text-align:right;padding-right:16px;font-size:12px;letter-spacing:.5px}
+tr.sub-hdr .td-amt{border-left:1px solid var(--border);padding-left:12px}
 
 /* Expand description button */
 .td-desc-wrap{position:relative}
@@ -326,6 +330,7 @@ table.pl-table tr.pl-total td{font-family:'IBM Plex Mono',monospace;font-size:11
 .pl-card-group{margin:0 0 14px;page-break-inside:avoid;border:1.5px solid #111;background:repeating-linear-gradient(45deg,transparent,transparent 2px,#eeebe5 2px,#eeebe5 3px);padding:7px 14px;font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#111;display:flex;align-items:center;gap:10px}
 .pl-card-group::before{content:'';width:10px;height:10px;border:1.5px solid #111;transform:rotate(45deg)}
 .pl-card-div{height:2px;background:repeating-linear-gradient(90deg,#111 0,#111 4px,transparent 4px,transparent 8px);opacity:.3;margin:2px 0 16px;page-break-inside:avoid}
+.pl-subtotal{display:flex;justify-content:space-between;align-items:baseline;margin:2px 0 16px;padding:7px 14px;border:1.5px solid #111;border-left:5px solid #111;font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:700;color:#111;background:#fff;page-break-inside:avoid}
 
 /* ── Abstract of cost — drafting ledger frame ── */
 .pl-ledger{margin:32px 0 0;display:flex;justify-content:flex-end;page-break-inside:avoid}
@@ -458,6 +463,7 @@ table.pl-table tr.pl-total td{font-family:'IBM Plex Mono',monospace;font-size:11
     <div class="tbl-foot">
       <div class="foot-l">
         <button class="btn btn-secondary btn-sm" id="btn-add-row">＋ Add Row</button>
+        <button class="btn btn-ghost btn-sm" id="btn-add-subtotal" title="Insert a subtotal row that sums the items above it">∑ Subtotal</button>
         <button class="btn btn-ghost btn-sm" id="btn-auto-arrange">⇅ Auto-Arrange</button>
         <button class="btn btn-ghost btn-sm" id="btn-toggle-drag" title="Turn on drag-and-drop row ordering">⇵ Order</button>
         <button class="btn btn-ghost btn-sm" id="btn-open-archived" title="View archived rows">📂 Archived</button>
@@ -702,12 +708,32 @@ function showNotif(msg) {
 }
 function makeRow(d) {
   d = d || {};
-  return { id:genId(), blank:d.blank||false, group:d.group||'', shortDesc:d.shortDesc||'', ref:d.ref||'', desc:d.desc||'', qty:d.qty!==undefined?d.qty:'', rate:d.rate!==undefined?d.rate:'', unit:d.unit||'', calc:d.calc||'' };
+  return { id:genId(), blank:d.blank||false, subtotal:d.subtotal||false, group:d.group||'', shortDesc:d.shortDesc||'', ref:d.ref||'', desc:d.desc||'', qty:d.qty!==undefined?d.qty:'', rate:d.rate!==undefined?d.rate:'', unit:d.unit||'', calc:d.calc||'' };
 }
 function rowAmt(r) {
   var q = parseFloat(r.qty), rt = parseFloat(r.rate);
   if (isNaN(q)||isNaN(rt)||r.qty===''||r.rate==='') return null;
   return Math.round(q*rt*100)/100;
+}
+function isDataRow(r) { return r && !r.blank && !r.subtotal; }
+function runningSubtotal(items, upto) {
+  var s = 0;
+  for (var i = 0; i < upto; i++) {
+    var r = items[i];
+    if (!r) continue;
+    if (r.subtotal) { s = 0; continue; }
+    if (!r.blank) { var a = rowAmt(r); if (a !== null) s += a; }
+  }
+  return s;
+}
+function refreshSubtotals(items) {
+  items = items || ctxGetItems();
+  for (var i = 0; i < items.length; i++) {
+    if (items[i] && items[i].subtotal) {
+      var el = document.getElementById('sub-'+i);
+      if (el) el.textContent = '₹ '+fmtN(runningSubtotal(items, i));
+    }
+  }
 }
 function sumItems(items) {
   return (items||[]).reduce(function(s,r){ var a=rowAmt(r); return s+(a!==null?a:0); }, 0);
@@ -783,7 +809,7 @@ function renderMain() {
     var typeClass = est.type==='single'?'card-type-s':'card-type-m';
     var total = estTotal(est);
     var dateStr = formatDate(est.date);
-    var cnt = est.type==='multi' ? (est.sites||[]).length+' site(s)' : (est.items||[]).filter(function(r){ return !r.blank; }).length+' item(s)';
+    var cnt = est.type==='multi' ? (est.sites||[]).length+' site(s)' : (est.items||[]).filter(function(r){ return !r.blank && !r.subtotal; }).length+' item(s)';
     return '<div class="estimate-card" onclick="openEst(\''+est.id+'\')">'+
       '<button class="card-del" onclick="event.stopPropagation();delEst(\''+est.id+'\')" title="Delete">✕</button>'+
       '<span class="card-type '+typeClass+'">◆ '+typeLabel+'</span>'+
@@ -1004,10 +1030,21 @@ function renderSingleTable() {
   var tbody = document.getElementById('single-tbody');
   var sl = 0;
   var lastGroupKey = null;
+  var subRun = 0;
   var rows = [];
   items.forEach(function(row, i) {
-    if (!row.blank) sl++;
-    if (!row.blank && row.group) {
+    if (row.subtotal) {
+      rows.push('<tr class="sub-hdr" draggable="false" data-idx="'+i+'">'+
+        '<td class="td-sl"></td>'+
+        '<td colspan="5" class="td-sub-label">Subtotal</td>'+
+        '<td class="td-amt" id="sub-'+i+'">₹ '+fmtN(subRun)+'</td>'+
+        '<td class="tda"><button class="rdel" onclick="deleteRow('+i+')" title="Remove subtotal row">×</button></td>'+
+        '</tr>');
+      subRun = 0;
+      return;
+    }
+    if (isDataRow(row)) sl++;
+    if (isDataRow(row) && row.group) {
       var gk = normKey(row.group);
       if (gk !== lastGroupKey) {
         rows.push('<tr class="group-hdr" draggable="false"><td colspan="8">'+esc(row.group)+'</td></tr>');
@@ -1017,6 +1054,7 @@ function renderSingleTable() {
     var slDisp = row.blank ? '' : sl;
     var amt = rowAmt(row);
     var amtDisp = amt !== null ? '₹ '+fmtN(amt) : '';
+    if (amt !== null) subRun += amt;
     var hasCalc = row.calc ? ' style="color:var(--accent)"' : '';
     var dragAttr = dragMode ? 'draggable="true"' : 'draggable="false"';
     rows.push('<tr '+dragAttr+' data-idx="'+i+'">'+
@@ -1049,6 +1087,7 @@ function updateCell(idx, field, value) {
   var amt = rowAmt(items[idx]);
   var el = document.getElementById('amt-'+idx);
   if (el) el.textContent = amt!==null ? '₹ '+fmtN(amt) : '';
+  refreshSubtotals(items);
   updateTotals();
 }
 
@@ -1136,7 +1175,7 @@ function updateTotals() {
 
 function updateRowCount() {
   var items = ctxGetItems();
-  var cnt = items.filter(function(r){ return !r.blank; }).length;
+  var cnt = items.filter(function(r){ return !r.blank && !r.subtotal; }).length;
   document.getElementById('row-count').textContent = cnt + ' item(s)';
 }
 
@@ -1150,9 +1189,21 @@ function addRow(data) {
   if (last) { var inp = last.querySelector('input'); if (inp) inp.focus(); }
 }
 
+function addSubtotalRow() {
+  var items = ctxGetItems();
+  var newRow = makeRow({ subtotal: true });
+  var active = document.activeElement && document.activeElement.closest('tr[data-idx]');
+  var idx = active ? parseInt(active.getAttribute('data-idx'), 10) + 1 : items.length;
+  if (isNaN(idx) || idx < 0 || idx > items.length) idx = items.length;
+  items.splice(idx, 0, newRow);
+  ctxSetItems(items);
+  renderSingleTable();
+  showNotif('∑ Subtotal row added');
+}
+
 function clearAllRows() {
   var items = ctxGetItems();
-  var dataCount = items.filter(function(r){ return !r.blank; }).length;
+  var dataCount = items.filter(function(r){ return !r.blank && !r.subtotal; }).length;
   if (!dataCount) { showNotif('⚠ Nothing to clear'); return; }
   if (!confirm('Delete all ' + dataCount + ' item(s)? This cannot be undone.')) return;
   ctxSetItems([makeRow()]);
@@ -1166,8 +1217,9 @@ function isEmptyRow(r) {
 function deleteRow(idx) {
   var items = ctxGetItems();
   if (!items[idx] || items[idx].blank) return;
+  var isSub = !!items[idx].subtotal;
   var archived = false;
-  if (!isEmptyRow(items[idx])) {
+  if (!isSub && !isEmptyRow(items[idx])) {
     archivedItems.push(JSON.parse(JSON.stringify(items[idx])));
     saveArchived();
     archived = true;
@@ -1176,7 +1228,7 @@ function deleteRow(idx) {
   if (!items.length) items.push(makeRow());
   ctxSetItems(items);
   renderSingleTable();
-  showNotif(archived ? 'Row moved to archive' : 'Empty row removed');
+  showNotif(isSub ? '∑ Subtotal row removed' : (archived ? 'Row moved to archive' : 'Empty row removed'));
 }
 
 /* ── DRAG & DROP ─────────────────── */
@@ -1189,8 +1241,10 @@ function setupRowDrag(tbody) {
       tr.classList.remove('dragging','drag-over');
       return;
     }
-    if (tr.getAttribute('data-idx') === null) { tr.setAttribute('draggable', 'false'); return; }
+    if (tr.getAttribute('data-idx') === null || tr.classList.contains('sub-hdr')) { tr.setAttribute('draggable', 'false'); return; }
     tr.setAttribute('draggable', 'true');
+    if (tr._dragBound) return;
+    tr._dragBound = true;
     tr.addEventListener('dragstart', function(e) {
       dragSrc = tr; tr.classList.add('dragging');
       e.dataTransfer.effectAllowed = 'move';
@@ -1228,7 +1282,7 @@ function toggleDragMode() {
     btn.classList.add('btn-primary');
     btn.title = 'Reorder rows by dragging (click to turn off)';
     tbody.querySelectorAll('tr').forEach(function(tr){
-      if (tr.getAttribute('data-idx') !== null) tr.setAttribute('draggable','true');
+      if (tr.getAttribute('data-idx') !== null && !tr.classList.contains('sub-hdr')) tr.setAttribute('draggable','true');
     });
     setupRowDrag(tbody);
     showNotif('↕ Ordering activated — drag rows to reorder');
@@ -1543,9 +1597,9 @@ function handlePaste(e) {
   var startIdx = parseInt(tr.dataset.idx);
   var colOffset = focusedColIndex(active, tr);
   var items = ctxGetItems();
+  var offset = 0;
   rows.forEach(function(cols, ri) {
-    var targetIdx = startIdx + ri;
-    var isNewRow = targetIdx >= items.length;
+    var targetIdx = startIdx + ri + offset;
     var patch = {};
     cols.forEach(function(val, ci) {
       var fieldIdx = colOffset + ci;
@@ -1553,7 +1607,8 @@ function handlePaste(e) {
       if (!field) return;
       patch[field] = pasteColToValue(val, field);
     });
-    if (isNewRow) { items.push(makeRow(patch)); }
+    if (targetIdx >= items.length) { items.push(makeRow(patch)); }
+    else if (items[targetIdx] && items[targetIdx].subtotal) { items.splice(targetIdx, 0, makeRow(patch)); offset++; }
     else { Object.keys(patch).forEach(function(k){ items[targetIdx][k] = patch[k]; }); }
   });
   ctxSetItems(items);
@@ -1707,8 +1762,11 @@ function exportCSV() {
   var headers = ['Sl.No.','Group','Short Description','Ref.','Description of Items','Quantity','Rate','Unit','Amount'];
   var sl = 0;
   var q = function(v){ return '"'+String(v).replace(/"/g,'""')+'"'; };
-  var rows = items.map(function(row) {
-    if (!row.blank) sl++;
+  var rows = items.map(function(row, i) {
+    if (row.subtotal) {
+      return ['','','','','Subtotal','','','',fmtN(runningSubtotal(items, i))].map(q).join(',');
+    }
+    if (isDataRow(row)) sl++;
     var amt = rowAmt(row);
     return [row.blank?'':sl, row.group, row.shortDesc, row.ref||'', row.desc, row.qty===''?'':row.qty, row.rate===''?'':row.rate, row.unit, amt!==null?fmtN(amt):'']
       .map(q).join(',');
@@ -1727,8 +1785,8 @@ function exportCSV() {
 ═══════════════════════════════════════════════════════ */
 function autoArrangeRows() {
   var items = ctxGetItems();
-  var blanks = items.filter(function(r){ return r.blank; });
-  var data   = items.filter(function(r){ return !r.blank; });
+  var fixed = items.filter(function(r){ return r.blank || r.subtotal; });
+  var data  = items.filter(function(r){ return !r.blank && !r.subtotal; });
   data.sort(function(a, b) {
     var ga = normKey(a.group), gb = normKey(b.group);
     if (ga < gb) return -1; if (ga > gb) return 1;
@@ -1736,7 +1794,7 @@ function autoArrangeRows() {
     if (sa < sb) return -1; if (sa > sb) return 1;
     return 0;
   });
-  ctxSetItems(data.concat(blanks));
+  ctxSetItems(data.concat(fixed));
   renderSingleTable();
   showNotif('✓ Rows arranged by Group → Short Desc');
 }
@@ -2101,9 +2159,13 @@ function buildPrintSingle() {
   // ── Bill of quantities — item cards ──
   var sl = 0, lastGroup = null, firstCard = true;
   var cardsHtml = '';
-  items.forEach(function(row) {
-    if (!row.blank) sl++;
-    if (!row.blank && row.group && row.group !== lastGroup) {
+  items.forEach(function(row, i) {
+    if (row.subtotal) {
+      cardsHtml += '<div class="pl-subtotal"><span>Subtotal</span><span>' + money(runningSubtotal(items, i)) + '</span></div>';
+      return;
+    }
+    if (isDataRow(row)) sl++;
+    if (isDataRow(row) && row.group && row.group !== lastGroup) {
       cardsHtml += '<div class="pl-card-group">' + esc(row.group) + '</div>';
       lastGroup = row.group;
     }
@@ -2234,6 +2296,7 @@ document.addEventListener('keydown', function(e) {
 });
 function bindBtn(id, fn) { document.getElementById(id).addEventListener('click', fn); }
 bindBtn('btn-add-row', addRow);
+bindBtn('btn-add-subtotal', addSubtotalRow);
 bindBtn('btn-auto-arrange', autoArrangeRows);
 bindBtn('btn-toggle-drag', toggleDragMode);
 bindBtn('btn-clear-all', clearAllRows);
