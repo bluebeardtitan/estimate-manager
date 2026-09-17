@@ -1191,14 +1191,28 @@ function addRow(data) {
 
 function addSubtotalRow() {
   var items = ctxGetItems();
-  var newRow = makeRow({ subtotal: true });
-  var active = document.activeElement && document.activeElement.closest('tr[data-idx]');
-  var idx = active ? parseInt(active.getAttribute('data-idx'), 10) + 1 : items.length;
-  if (isNaN(idx) || idx < 0 || idx > items.length) idx = items.length;
-  items.splice(idx, 0, newRow);
+  var total = items.filter(isDataRow).length;
+  var answer = prompt(
+    'Add subtotal below which item?\n\n' +
+    'Enter the item S.No. (1 - ' + total + ').\n' +
+    'Enter 0 or leave blank to place it at the end.',
+    total ? String(total) : ''
+  );
+  if (answer === null) return;
+  var val = parseInt(answer, 10);
+  if (isNaN(val) || val <= 0) val = total;
+  if (val > total) { showNotif('⚠ Item S.No. ' + val + ' does not exist (max ' + total + ')'); return; }
+  var count = 0, insertAt = items.length;
+  for (var i = 0; i < items.length; i++) {
+    if (isDataRow(items[i])) {
+      count++;
+      if (count === val) { insertAt = i + 1; break; }
+    }
+  }
+  items.splice(insertAt, 0, makeRow({ subtotal: true }));
   ctxSetItems(items);
   renderSingleTable();
-  showNotif('∑ Subtotal row added');
+  showNotif(val > 0 ? '∑ Subtotal added below item ' + val : '∑ Subtotal row added');
 }
 
 function clearAllRows() {
