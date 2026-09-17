@@ -64,6 +64,48 @@ function extractExpressionOnly(line) {
     .replace(/!!(.*?)!!/g, '$1')
     .trim();
 }
+function exprToTeX(expr) {
+  return String(expr || '')
+    .replace(/\bsqrt\(([^()]*)\)/g, '\\sqrt{$1}')
+    .replace(/\*/g, ' \\times ')
+    .replace(/\bpi\b/g, '\\pi')
+    .trim();
+}
+function renderAnnexStep(container, line) {
+  const hiddenMatch = line.match(/!!(.*?)!!/);
+  const capList = (line.match(/#(.*?)#/g) || []).map(c => c.replace(/^#|#$/g, '')).join(' ');
+  const raw = line.replace(/!!(.*?)!!/g, '').replace(/\/\/.*?\/\//g, '').replace(/#.*?#/g, '').trim();
+  const row = document.createElement('div');
+  row.className = 'annex-step';
+  if (capList) {
+    const cap = document.createElement('span');
+    cap.className = 'annex-cap';
+    cap.textContent = capList;
+    row.appendChild(cap);
+  }
+  let value = null, err = false;
+  if (hiddenMatch) {
+    try { value = parseFloat(math.evaluate(hiddenMatch[1], mathScope)).toFixed(2); }
+    catch { err = true; }
+  } else if (raw) {
+    try { value = parseFloat(math.evaluate(raw, mathScope)).toFixed(2); }
+    catch { err = true; }
+  }
+  if (raw) {
+    const m = document.createElement('span');
+    m.className = 'annex-math';
+    try { katex.render(exprToTeX(raw), m, { throwOnError: true, displayMode: false }); }
+    catch { m.textContent = raw.replace(/\*/g, '×'); }
+    row.appendChild(m);
+  }
+  if (value !== null || err) {
+    const a = document.createElement('span');
+    a.className = 'annex-answer' + (err ? ' annex-err' : '');
+    a.textContent = err ? '✗' : value;
+    row.appendChild(a);
+  }
+  if (row.childNodes.length) container.appendChild(row);
+}
 function clearSavedSession() {
   if (!confirm("Clear saved session and CSV history? This cannot be undone ❗")) return;
 
@@ -975,43 +1017,7 @@ window.addEventListener('beforeprint', () => {
       title.textContent = `${count++}. [Item S.No.-${serial}] ${desc}`;
       itemDiv.appendChild(title);
 
-      items[rid].forEach(line => {
-        const expr = extractExpressionOnly(line);
-        const label = replaceCommentsForDisplay(line);
-
-        const stepDiv = document.createElement('div');
-        stepDiv.className = 'annex-step';
-
-        // detect hidden only inside !!
-        const hiddenMatch = line.match(/!!(.*?)!!/);
-
-        if (hiddenMatch) {
-          const hiddenExpr = hiddenMatch[1];
-          try {
-            const val = math.evaluate(hiddenExpr, mathScope);
-            stepDiv.textContent = `${label} = ${parseFloat(val).toFixed(2)}`;
-          } catch {
-            stepDiv.textContent = `${label} ❌`;
-          }
-          itemDiv.appendChild(stepDiv);
-          return;
-        }
-
-        if (!expr && label) {
-          stepDiv.textContent = label;
-          itemDiv.appendChild(stepDiv);
-          return;
-        }
-
-        try {
-          const val = math.evaluate(expr, mathScope);
-          stepDiv.textContent = `${label} = ${parseFloat(val).toFixed(2)}`;
-        } catch {
-          stepDiv.textContent = `${label} ❌`;
-        }
-
-        itemDiv.appendChild(stepDiv);
-      });
+      items[rid].forEach(line => renderAnnexStep(itemDiv, line));
 
       section.appendChild(itemDiv);
     });

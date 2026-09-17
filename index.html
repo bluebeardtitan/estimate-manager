@@ -5,7 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Estimate Manager</title>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Serif:wght@400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
+<script src="estimate-app/lib/math.js"></script>
+<link rel="stylesheet" href="estimate-app/lib/katex.min.css">
+<script src="estimate-app/lib/katex.min.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -360,7 +362,15 @@ table.pl-table tr.pl-total td{font-family:'IBM Plex Mono',monospace;font-size:11
 #printAnnexures h3{font-family:'IBM Plex Serif',serif;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:1.6px;color:#111;margin:0 0 12px;padding:9px 14px;border-left:3px solid #111;background:repeating-linear-gradient(45deg,transparent,transparent 2px,#e6e1d8 2px,#e6e1d8 3px);border-top:2px solid #111;border-bottom:2px solid #111}
 .annex-item{margin:0 0 12px;padding:0 0 0 12px;border-left:3px solid #111;position:relative}
 .annex-item-title{font-family:'IBM Plex Serif',serif;font-size:11.5px;font-weight:600;color:#111;margin-bottom:3px;background:#f6f4ef;padding:3px 8px}
-.annex-step{margin-left:14px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:#111;opacity:.78;line-height:1.5}
+/* ── Calculation working lines — traced arithmetic in KaTeX,
+   answer dropped into the right-hand answer column. Ink-only,
+   aligns with the ledger's mono figures and drafting rails.  */
+.annex-step{display:flex;align-items:baseline;gap:14px;margin-left:14px;padding:2.5px 0;line-height:1.5;page-break-inside:avoid}
+.annex-cap{font-family:'IBM Plex Mono',monospace;font-size:8.5px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:#111;opacity:.6}
+.annex-math{flex:1 1 auto;min-width:0;font-size:8.5px;color:#111;padding-left:10px}
+.annex-math .katex{color:#111}
+.annex-answer{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;color:#111;white-space:nowrap;margin-left:auto}
+.annex-answer.annex-err{font-weight:400;opacity:.6}
 @media print{
   @page{size:A4;margin:18mm 14mm 22mm 14mm}
   @page{@bottom-center{content:counter(page) " / "counter(pages);font-family:'IBM Plex Mono',monospace;font-size:9px;color:#6f6c65;letter-spacing:.5px}}
@@ -1950,6 +1960,53 @@ if (crEl) {
 ═══════════════════════════════════════════════════════ */
 function money(n){ return '₹ ' + fmtN(n); }
 
+/* ── Annexure working lines — mathjs expression → TeX for KaTeX ── */
+function exprToTeX(e) {
+  return String(e || '')
+    .replace(/\bsqrt\(([^()]*)\)/g, '\\sqrt{$1}')
+    .replace(/\*/g, ' \\times ')
+    .replace(/\bpi\b/g, '\\pi')
+    .trim();
+}
+
+/* Renders one calculation line: caption (mono) + equation (KaTeX)
+   on the left, evaluated answer in the right-hand answer column. */
+function annexStep(container, line) {
+  var hiddenMatch = line.match(/!!(.*?)!!/);
+  var capList = (line.match(/#(.*?)#/g) || []).map(function(c){ return c.replace(/^#|#$/g,''); }).join(' ');
+  var raw = line.replace(/!!(.*?)!!/g,'').replace(/\/\/.*?\/\//g,'').replace(/#.*?#/g,'').trim();
+  var row = document.createElement('div');
+  row.className = 'annex-step';
+  if (capList) {
+    var cap = document.createElement('span');
+    cap.className = 'annex-cap';
+    cap.textContent = capList;
+    row.appendChild(cap);
+  }
+  var value = null, err = false;
+  if (hiddenMatch) {
+    try { value = parseFloat(math.evaluate(hiddenMatch[1], mathScope)).toFixed(2); }
+    catch(e) { err = true; }
+  } else if (raw) {
+    try { value = parseFloat(math.evaluate(raw, mathScope)).toFixed(2); }
+    catch(e) { err = true; }
+  }
+  if (raw) {
+    var m = document.createElement('span');
+    m.className = 'annex-math';
+    try { katex.render(exprToTeX(raw), m, { throwOnError: true, displayMode: false }); }
+    catch(e) { m.textContent = raw.replace(/\*/g,'×'); }
+    row.appendChild(m);
+  }
+  if (value !== null || err) {
+    var a = document.createElement('span');
+    a.className = 'annex-answer' + (err ? ' annex-err' : '');
+    a.textContent = err ? '✗' : value;
+    row.appendChild(a);
+  }
+  if (row.childNodes.length) container.appendChild(row);
+}
+
 function buildPrintDoc() {
   var doc = document.getElementById('print-doc');
   doc.innerHTML = '';
@@ -2155,24 +2212,7 @@ window.addEventListener('beforeprint', function() {
       title.className = 'annex-item-title';
       title.textContent = (count++) + '. [Item S.No.-'+(ri+1)+'] ' + (row.shortDesc||row.desc||'Item');
       itemDiv.appendChild(title);
-      lines.forEach(function(line) {
-        var expr = line.replace(/\/\/.*?\/\//g,'').replace(/#.*?#/g,'').replace(/!!(.*?)!!/g,'$1').trim();
-        var label = line.replace(/!!(.*?)!!/g,'').replace(/\/\/.*?\/\//g,'').replace(/#(.*?)#/g,'$1').trim();
-        var stepDiv = document.createElement('div');
-        stepDiv.className = 'annex-step';
-        var hiddenMatch = line.match(/!!(.*?)!!/);
-        if (hiddenMatch) {
-          try { var v = math.evaluate(hiddenMatch[1], mathScope); stepDiv.textContent = label + ' = ' + parseFloat(v).toFixed(2); }
-          catch(e) { stepDiv.textContent = label + ' ❌'; }
-          itemDiv.appendChild(stepDiv);
-          return;
-        }
-        if (!expr && label) { stepDiv.textContent = label; itemDiv.appendChild(stepDiv); return; }
-        if (!expr) return;
-        try { var v = math.evaluate(expr, mathScope); stepDiv.textContent = label + ' = ' + parseFloat(v).toFixed(2); }
-        catch(e) { stepDiv.textContent = label + ' ❌'; }
-        itemDiv.appendChild(stepDiv);
-      });
+      lines.forEach(function(line) { annexStep(itemDiv, line); });
       section.appendChild(itemDiv);
     });
     container.appendChild(section);

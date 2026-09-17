@@ -206,12 +206,42 @@ textarea#calcInput { width: 100%; height: 180px; font-family: monospace; font-si
   background: #f4f4f4;
 }
 .annex-item-title { font-weight: bold; margin-bottom: 4px; }
+/* Annexure working lines — traced arithmetic in KaTeX, answer
+   dropped into the right-hand answer column (print) */
 .annex-step {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
   margin-left: 15px;
-  margin-bottom: 2px;
-  font-family: monospace;
-  color: #333;
+  line-height: 1.5;
+  page-break-inside: avoid;
 }
+.annex-cap {
+  font-family: monospace;
+  font-size: 0.8em;
+  font-weight: bold;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #333;
+  opacity: 0.75;
+}
+.annex-math {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 8.5px;
+  color: #000;
+  padding-left: 10px;
+}
+.annex-math .katex { color: #000; }
+.annex-answer {
+  font-family: monospace;
+  font-size: 0.95em;
+  font-weight: bold;
+  color: #000;
+  white-space: nowrap;
+  margin-left: auto;
+}
+.annex-answer.annex-err { font-weight: normal; opacity: 0.6; }
 
 /* Hidden file input */
 .hidden-upload { display: none; }
